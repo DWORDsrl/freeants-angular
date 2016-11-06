@@ -8,6 +8,6 @@
   "license": "MIT",
   "homepage": "",
   "dependencies": {
-    "angularfreeants": "~0.2.0"
+    "freeants-angular": "~1.0.0"
   }
 }
