@@ -15,9 +15,6 @@
 
                     for (var i = 0; i < data.length; i++) {
                         var thing = new ThingModel(data[i]);
-                        if (thing.value == null || thing.value == "")
-                            thing.value = {};
-                        thing.value = angular.fromJson(thing.value);
                         pool.push(thing);
                     }
 
@@ -28,7 +25,9 @@
                     function (response) {
                     return $q.reject(response);
                 });
-            },              
+            },
+
+            //TODO: A cosa serve?
             toThingModel: function (array, thingsModel, thingKind) {
                 for (var i = 0; i < array.length; i++) {
                     var t = new ThingModel();
@@ -55,10 +54,6 @@
 					    for (var i = 0; i < data.length; i++) {
 
 					        var thing = new ThingModel(data[i]);
-					        if (thing.value == null || thing.value == "")
-					            thing.value = {};
-					        thing.value = angular.fromJson(thing.value);
-					        angular.extend(thing, { children: [] });
 
 					        things.push(thing);
 
