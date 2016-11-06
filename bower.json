@@ -1,0 +1,27 @@
+{
+  "name": "angularfreeants",
+  "version": "0.2.4",
+  "authors": [
+    "DWORD s.r.l."
+  ],
+  "description": "FreeAnts Angular SDK",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/*",
+    "!dist/*.*",
+    "!examples/**/*.*",
+    "!README.md"
+  ],
+  "dependencies": {
+    "angular": "^1.5.6",
+    "angular-translate": "^2.8.0",
+    "jquery": "^2.2.3",
+    "signalr": "^2.2.0"
+  },
+  "devDependencies": {},
+  "resolutions": {
+    "angular": "^1.5.6"
+  }
+}

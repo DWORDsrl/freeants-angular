@@ -1,0 +1,13 @@
+{
+  "name": "Free Ants SDK - Example",
+  "authors": [
+    "DWORD s.r.l."
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "dependencies": {
+    "angularfreeants": "~0.2.0"
+  }
+}

@@ -1,0 +1,132 @@
+﻿<!DOCTYPE html>
+
+<html lang="it" ng-app="thingsAngular">
+<head>
+    <meta charset="utf-8" />
+    <title>Things Console with FreeAnts Angular SDK</title>
+    <!-- Base Libraries -->
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-translate/angular-translate.min.js"></script>
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/signalr/jquery.signalR.min.js"></script>
+
+    <script src="bower_components/angularfreeants/dist/angularfreeants.debug.js"></script>
+    <!--<script src="bower_components/angularfreeants/dist/angularfreeants.min.js"></script>-->
+
+    <script>
+        'use strict'
+
+        var app = angular.module('thingsAngular', ['freeants']);
+
+        app.constant("path", {
+            server: "http://titaggocoreportal.azurewebsites.net/",
+            api: "http://titaggocoreportal.azurewebsites.net/api"
+        });
+
+        app.config(['accountManagerProvider',
+            function (accountManagerProvider) {
+
+                accountManagerProvider.setAppName("thingsAngular");
+                accountManagerProvider.setStorage(localStorage, "AccessTokenOrDWApiKey");
+                accountManagerProvider.setApiKey("<Insert your DWAPIKey>");
+
+        }]);
+
+        app.run(['$http', '$rootScope', 'SignalRConnector', 'path', 'thingsDataContext', 'thingUserRightsDataContext', 'ThingsManager', 'accountManagerService',
+            function ($http, $rootScope, SignalRConnector, path, thingsDataContext, thingUserRightsDataContext, ThingsManager, accountManagerService) {
+
+                var dataContexts = {
+                    thingsDataContext: thingsDataContext,
+                    thingUserRightsDataContext: thingUserRightsDataContext
+                };
+                $rootScope.MainThingsManager = new ThingsManager(dataContexts);
+
+                //Initialize SignalR
+               function connectionStatus(change) {
+                   switch (change.newState) {
+                       case mynotifier.connected:
+                           {
+                               console.log("connected");
+                               break;
+                           }
+                       case mynotifier.connecting:
+                           {
+                               console.log("connecting");
+                               break;
+                           }
+                       case mynotifier.reconnecting:
+                           {
+                               console.log("reconnecting");
+                               break;
+                           }
+                       case mynotifier.disconnected:
+                       default:
+                           {
+                               console.log("disconnected");
+                               break;
+                           }
+                   }
+               }
+               function onReconnected() {
+                   console.log("OnReconnected");
+               };
+
+               var mynotifier = new SignalRConnector(connectionStatus, onReconnected);
+
+               mynotifier.setHook('onCreateThing', function (thing) {
+                   console.log('OnCreateThing');
+               });
+               mynotifier.setHook('onCreateChildThingId', function (parentThingId, childThingId, kind) {
+                   console.log('onCreateChildThingId');
+               });
+               mynotifier.setHook('onUpdateThingValue', function (thingId, value) {
+                   console.log('onUpdateThingValue');
+               });
+               mynotifier.setHook('onDeleteChildThingId', function (parentThingId, childThingId, kind) {
+                   console.log('onDeleteChildThingId');
+               });
+
+               function subscribeSuccess() {
+                   console.log('SignalR Subscribe Success');
+               }
+               function subscribeFail() {
+                   console.log('SignalR Subscribe Failed');
+               }
+               mynotifier.subscribe(path.server + "signalr", "DWApiKey", accountManagerService.getApiKey, subscribeSuccess, subscribeFail);
+
+            }]);
+
+        // Define the `ThingsListController` controller
+        app.controller('ThingsListController', ['$rootScope', '$scope', function ThingsListController($rootScope, $scope) {
+
+            $scope.things = [];
+
+            var getThingsParams = {
+                parentThingId: null,
+                filter: null,
+                top: 30,
+                skip: 0,
+                orderBy: null,
+                valueFilter: null
+            };
+            $rootScope.MainThingsManager.getThings(getThingsParams)
+			.then(function (things) {
+			    $scope.things = things;
+			});
+
+        }]);
+
+    </script>
+
+</head>
+<body>
+    <div ng-controller="ThingsListController">
+        <ul>
+            <li ng-repeat="thing in things">
+                <span>{{thing.name}}</span>
+            </li>
+        </ul>
+    </div>
+</body>
+
+</html>
