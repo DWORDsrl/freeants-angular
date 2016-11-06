@@ -1,6 +1,6 @@
 {
   "name": "freeants-angular",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "authors": [
     "DWORD s.r.l."
   ],
@@ -12,7 +12,8 @@
     "**/*",
     "!dist/*.*",
     "!examples/**/*.*",
-    "!README.md"
+    "!README.md",
+	"!LICENSE"
   ],
   "dependencies": {
     "angular": "^1.5.6",
