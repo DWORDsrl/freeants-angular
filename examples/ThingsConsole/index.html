@@ -10,8 +10,8 @@
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/signalr/jquery.signalR.min.js"></script>
 
-    <script src="bower_components/freeants-angular/dist/angularfreeants.debug.js"></script>
-    <!--<script src="bower_components/freeants-angular/dist/angularfreeants.min.js"></script>-->
+    <script src="bower_components/freeants-angular/dist/freeants-freeants.debug.js"></script>
+    <!--<script src="bower_components/freeants-angular/dist/freeants-freeants.min.js"></script>-->
 
     <script>
         'use strict'
@@ -97,11 +97,14 @@
             }]);
 
         // Define the `ThingsListController` controller
-        app.controller('ThingsListController', ['$rootScope', '$scope', function ThingsListController($rootScope, $scope) {
+        app.controller('ThingsListController', ['$scope', 'thingsManager1', function ThingsListController($scope, thingsManager1) {
 
             $scope.things = [];
 
-            var getThingsParams = {
+            var timeout = $q.defer();
+            var def = $q.defer();
+
+            var getThingsParams = {			
                 parentThingId: null,
                 filter: null,
                 top: 20,
@@ -109,10 +112,37 @@
                 orderBy: null,
                 valueFilter: null
             };
-            $rootScope.MainThingsManager.getThings(getThingsParams)
+            thingsManager1.getThings(getThingsParams, timeout)
 			.then(function (things) {
-			    $scope.things = things;
+                var promises = [];
+
+                for (var i = 0; i < things.length; i++) {
+                    var getThingsParams = {
+                        parentThingId: null,
+                        filter: null,
+                        top: 20,
+                        skip: 0,
+                        orderBy: null,
+                        valueFilter: null
+                    };  
+                    promises.push(thingsManager1.elapseThing(things[i], getThingsParams, timeout));
+                }       
+
+                $q.race(promises)
+                .then(function (data) {
+                    def.resolve(things);
+                }, function (data) {
+                    timeout.resolve();
+                    def.reject(data);
+                });                
 			});
+
+            def.promise
+            .then(function(things) {
+                $scope.things = things;
+            },function(error) {
+                alert(error.data);
+            });
 
         }]);
 

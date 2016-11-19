@@ -1,7 +1,7 @@
 ﻿
 (function () {
     'use strict';
-    angular.module('freeants').factory('ThingsManager', ['$http', '$q', 'ThingModel', 'thingClaims', function ($http, $q, ThingModel, thingClaims) {
+    angular.module('freeants').factory('ThingsManager', [ '$q', 'ThingModel', function ($q, ThingModel) {
 
         var objDataContexts;
 
@@ -86,4 +86,43 @@
 
     return ThingsManager
 }]);
+
+	angular.module('freeants').factory('thingsManager1', ['$q', 'thingsDataContext', 'ThingModel', function ($q, thingsDataContext, ThingModel) {
+
+        function getThings(parameter, defer) {
+            function getSucceded(data) {
+                var pool = [];
+
+                for (var i = 0; i < data.length; i++) {
+                    var thing = new ThingModel(data[i]);
+                    pool.push(thing);
+                }
+
+                return pool;
+            }
+            return thingsDataContext.getThings(parameter, defer)
+                .then(getSucceded);
+        }        
+          
+        function elapseThing(thing, parameter, defer) {
+            if (thing.elapsed == true)
+                return;
+
+            parameter.parentThingId = "thing.id";
+            
+            return getThings(parameter, defer)
+            .then(function (things) {                    
+                thing.children = things;
+                thing.elapsed = true;
+
+                return things;
+            });
+        }
+
+        return {
+            getThings: getThings,
+            elapseThing: elapseThing 
+        }
+    }]);
+	
 }());

@@ -10,16 +10,31 @@ gulp.task('clean', function () {
     // Return the promise that del produces.
     return del(['dist']);
 });
-// Debug
-gulp.task('debug', ['clean'], function () {
+// DebugOld
+gulp.task('debugOld', ['clean'], function () {
     return gulp.src(['src/module.js','src/*.js'])
       .pipe(concat('angularfreeants.debug.js'))
       .pipe(gulp.dest('dist'));
 });
-// Concatenate JS Files
-gulp.task('minify', ['clean'], function () {
+// minifyOld
+gulp.task('minifyOld', ['clean'], function () {
     return gulp.src(['src/module.js', 'src/*.js'])
       .pipe(concat('angularfreeants.js'))
+      .pipe(rename({ suffix: '.min' }))
+      .pipe(uglify())
+      .pipe(gulp.dest('dist'));
+});
+
+// Debug
+gulp.task('debug', ['clean'], function () {
+    return gulp.src(['src/module.js','src/*.js'])
+      .pipe(concat('freeants-angular.debug.js'))
+      .pipe(gulp.dest('dist'));
+});
+// minify
+gulp.task('minify', ['clean'], function () {
+    return gulp.src(['src/module.js', 'src/*.js'])
+      .pipe(concat('freeants-angular.js'))
       .pipe(rename({ suffix: '.min' }))
       .pipe(uglify())
       .pipe(gulp.dest('dist'));
@@ -31,4 +46,4 @@ gulp.task('examples', ['clean'], function () {
 });
 
 // Default Task
-gulp.task('default', ['clean', 'debug', 'minify','examples']);
+gulp.task('default', ['clean','debug', 'minify', 'debugOld', 'minifyOld','examples']);
