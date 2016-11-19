@@ -1234,7 +1234,7 @@
             if (thing.elapsed == true)
                 return;
 
-            parameter.parentThingId = "thing.id";
+            parameter.parentThingId = thing.id;
             
             return getThings(parameter, defer)
             .then(function (things) {                    
