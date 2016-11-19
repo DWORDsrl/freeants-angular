@@ -2,6 +2,6 @@
 
 Free Ants Angular SDK - Lab version
 
-1.0.11 - Bug fix
+1.0.12 - Bug fix
 
 

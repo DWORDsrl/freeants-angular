@@ -97,7 +97,7 @@
             }]);
 
         // Define the `ThingsListController` controller
-        app.controller('ThingsListController', ['$q', '$scope', 'thingsManager1', function ThingsListController($scope, thingsManager1) {
+        app.controller('ThingsListController', ['$q', '$scope', 'thingsManager1', function ThingsListController($q, $scope, thingsManager1) {
 
             $scope.things = [];
 
