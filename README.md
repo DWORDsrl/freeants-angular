@@ -2,6 +2,8 @@
 
 Free Ants Angular SDK - Lab version
 
+1.0.15 - 11-20-2016 - Improvements in examples 2
+
 1.0.14 - 11-20-2016 - Improvements in examples
 
 1.0.13 - 11-20-2016 - Add example.html for test and development support

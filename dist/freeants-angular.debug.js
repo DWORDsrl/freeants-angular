@@ -2,6 +2,92 @@
     "use strict";
     angular.module("freeants", [])
 })();
+
+(function() {
+    'use strict';
+    
+    angular.module('freeants').factory('accountDataContext', ['$http', 'helpers', 'path', function ($http, helpers, path) {
+
+    // routes
+    function accountUrl() { return path.api + "/Account"; }
+    function getUserInfoUrl() { return accountUrl() + "/UserInfo"; }
+    function forgotPasswordUrl(email,culture) { return accountUrl() + "/ForgotPassword/" + email + "/" +culture }
+    function resetPasswordUrl() { return accountUrl() + "/ResetPassword"; }
+    function changePasswordUrl() { return accountUrl() + "/ChangePassword"; }
+    function registerByOnlyEmailUrl(email, culture) { return accountUrl() + "/RegisterByOnlyEmail/" + email +"/" + culture }
+    function confirmAccountByOnlyEmailUrl() { return accountUrl() + "/ConfirmAccountByOnlyEmail/" }
+
+    return {
+
+      forgotPassword: function (email,culture) {
+            var req = $http({
+                method: 'GET',
+                headers: helpers.getSecurityHeaders(),
+                url: forgotPasswordUrl(email,culture)
+            }).then(function (response) {
+                return response.data;
+            });
+            return req;
+        },
+        changePassword: function (passModel) {
+            var req = $http({
+                method: 'POST',
+                headers: helpers.getSecurityHeaders(),
+                url: changePasswordUrl(),
+                data: passModel
+            }).then(function (response) {
+                return response.data;
+            });
+            return req;
+        },
+
+        resetPassword: function (passModel) {
+            var req = $http({
+                method: 'POST',
+                headers: helpers.getSecurityHeaders(),
+                url: resetPasswordUrl(),
+                data: passModel
+            }).then(function (response) {
+                return response.data;
+            });
+            return req;
+        },
+
+        registerByOnlyEmail: function (email, culture) {
+            var req = $http({
+                method: 'GET',
+                headers: helpers.getSecurityHeaders(),
+                url: registerByOnlyEmailUrl(email, culture)
+            }).then(function (response) {
+                return response.data;
+            });
+            return req;
+        },
+        confirmAccountByOnlyEmail: function (confirmModel) {
+            var req = $http({
+                method: 'POST',
+                headers: helpers.getSecurityHeaders(),
+                url: confirmAccountByOnlyEmailUrl(),
+                data: confirmModel
+            }).then(function (response) {
+                return response.data;
+            });
+            return req;
+        },
+
+        getUserInfo: function () {
+            var req = $http({
+                method: 'GET',
+                headers: helpers.getSecurityHeaders(),
+                url: getUserInfoUrl()
+            }).then(function (response) {
+                return response.data;
+            });
+            return req;
+        }
+    }
+}]);
+}());
 (function () {
     'use strict';
     angular.module('freeants')
@@ -424,6 +510,24 @@
 }());
 (function () {
     'use strict';
+    angular.module('freeants').factory('asyncLoader', ['$q', '$timeout', 'translationService', function ($q, $timeout, translationService) {
+            var loader = function (options) {
+                var deferred = $q.defer();
+                var languages = translationService.getLanguages();
+                var language = {};
+                if (languages && languages[options.key])
+                    language = languages[options.key];
+
+                $timeout(function () {
+                    deferred.resolve(language);
+                }, 2000);
+                return deferred.promise;
+            };
+            return loader;
+    }]);
+}());
+(function () {
+    'use strict';
 
     angular.module('freeants')
 
@@ -481,195 +585,6 @@
         "ThingUserChangeClaimsAllClaims": 0x7FFFFFFF
 });
 }());
-
-(function() {
-    'use strict';
-    
-    angular.module('freeants').factory('pushNotificationsDataContext', ['$http', 'helpers', 'path', '$q', function ($http, helpers, path, $q) {
-
-    //End points
-    function pushNotificationsRegisterUrl() {
-        return path.api + "/pushNotificationsRegister";
-    }
-    function pushNotificationsPushUrl() {
-        return path.api + "/pushNotificationsPush";
-    }
-    return {
-
-        // deviceInstallationSample = {
-        //    installationId: '1',// TODO: Generare una GUID e memorizzare sulla localstorage
-        //    platform: 'gcm',    // TODO: Reperire a runtime la piattaforma
-        //    handle: data.registrationId,
-        //    thingsIds: ['2140c212-0865-4845-8b5e-c5153007dfa5']
-        //}
-        register: function (deviceInstallation) {
-            var req = $http({
-                method: 'PUT',
-                headers: helpers.getSecurityHeaders(),
-                url: pushNotificationsRegisterUrl(),
-                data: deviceInstallation
-            }).then(function (response) {
-                return response.data;
-            });
-            return req;
-        },
-
-        // pushMessageSample = {
-        //    pns: 'gcm',// TODO: Generare una GUID e memorizzare sulla localstorage
-        //    thingId: '2140c212-0865-4845-8b5e-c5153007dfa5',
-        //    message: {...}
-        //}
-        push: function (pushMessage) {
-            var req = $http({
-                method: 'POST',
-                headers: helpers.getSecurityHeaders(),
-                url: pushNotificationsPushUrl(),
-                data: pushMessage
-            }).then(function (response) {
-                return response.data;
-            });
-            return req;
-        }
-    }
-}]);
-}());
-(function() {
-    'use strict';
-
-    angular.module('freeants').factory('ThingModel', [function () {
-		
-        function ThingModel(thingData) {
-                        
-            this.setData(thingData);
-
-        };
-
-        ThingModel.prototype = {
-            elapsed : false,
-            setData: function (thingData) {
-
-                if (thingData) {
-                    angular.extend(this, thingData);
-                }
-
-                if (this.value == null || this.value == "") {
-                    this.value = {};
-                }
-                this.value = angular.fromJson(this.value);
-
-                if (!this.children) {
-                    angular.extend(this, { children: [] });
-                }
-            }
-        };
-
-        return ThingModel;
-    }]);
-}());
-
-(function() {
-    'use strict';
-    
-    angular.module('freeants').factory('accountDataContext', ['$http', 'helpers', 'path', function ($http, helpers, path) {
-
-    // routes
-    function accountUrl() { return path.api + "/Account"; }
-    function getUserInfoUrl() { return accountUrl() + "/UserInfo"; }
-    function forgotPasswordUrl(email,culture) { return accountUrl() + "/ForgotPassword/" + email + "/" +culture }
-    function resetPasswordUrl() { return accountUrl() + "/ResetPassword"; }
-    function changePasswordUrl() { return accountUrl() + "/ChangePassword"; }
-    function registerByOnlyEmailUrl(email, culture) { return accountUrl() + "/RegisterByOnlyEmail/" + email +"/" + culture }
-    function confirmAccountByOnlyEmailUrl() { return accountUrl() + "/ConfirmAccountByOnlyEmail/" }
-
-    return {
-
-      forgotPassword: function (email,culture) {
-            var req = $http({
-                method: 'GET',
-                headers: helpers.getSecurityHeaders(),
-                url: forgotPasswordUrl(email,culture)
-            }).then(function (response) {
-                return response.data;
-            });
-            return req;
-        },
-        changePassword: function (passModel) {
-            var req = $http({
-                method: 'POST',
-                headers: helpers.getSecurityHeaders(),
-                url: changePasswordUrl(),
-                data: passModel
-            }).then(function (response) {
-                return response.data;
-            });
-            return req;
-        },
-
-        resetPassword: function (passModel) {
-            var req = $http({
-                method: 'POST',
-                headers: helpers.getSecurityHeaders(),
-                url: resetPasswordUrl(),
-                data: passModel
-            }).then(function (response) {
-                return response.data;
-            });
-            return req;
-        },
-
-        registerByOnlyEmail: function (email, culture) {
-            var req = $http({
-                method: 'GET',
-                headers: helpers.getSecurityHeaders(),
-                url: registerByOnlyEmailUrl(email, culture)
-            }).then(function (response) {
-                return response.data;
-            });
-            return req;
-        },
-        confirmAccountByOnlyEmail: function (confirmModel) {
-            var req = $http({
-                method: 'POST',
-                headers: helpers.getSecurityHeaders(),
-                url: confirmAccountByOnlyEmailUrl(),
-                data: confirmModel
-            }).then(function (response) {
-                return response.data;
-            });
-            return req;
-        },
-
-        getUserInfo: function () {
-            var req = $http({
-                method: 'GET',
-                headers: helpers.getSecurityHeaders(),
-                url: getUserInfoUrl()
-            }).then(function (response) {
-                return response.data;
-            });
-            return req;
-        }
-    }
-}]);
-}());
-(function () {
-    'use strict';
-    angular.module('freeants').factory('asyncLoader', ['$q', '$timeout', 'translationService', function ($q, $timeout, translationService) {
-            var loader = function (options) {
-                var deferred = $q.defer();
-                var languages = translationService.getLanguages();
-                var language = {};
-                if (languages && languages[options.key])
-                    language = languages[options.key];
-
-                $timeout(function () {
-                    deferred.resolve(language);
-                }, 2000);
-                return deferred.promise;
-            };
-            return loader;
-    }]);
-}());
 (function () {
     'use strict';
     
@@ -704,14 +619,42 @@
                 return ret;
             },
 
-            getTotalItemsFromResponse: function () {
-                var str = request.getResponseHeader("Content-Range");
+            getTotalItemsFromResponse: function (response) {
+                var str = response.headers("Content-Range");
                 if (str != undefined && str != null) {
                     var arr = str.split('/');
                     if (arr.length == 2)
                         return parseInt(arr[1]);
                 }
                 return null;
+            },
+            getRangeItemsFromResponse: function(response) {
+                var contentRange = response.headers("Content-Range");
+
+                var top = 0;
+                var skip = 0;
+                var totalItems = 0;
+                if (contentRange) {
+                    var arr1 = contentRange.split('/');
+                    if (arr1.length != 0) {
+                        var arr2 = arr1[0].split(" ");
+                        if (arr2.length == 2) {
+                            var arr3 = arr2[1].split("-");
+                            if (arr3.length == 2) {
+                                top = parseInt(arr3[0]);
+                                skip = parseInt(arr3[1]);
+                            }
+                        }
+
+                        if (arr1.length == 2)
+                            totalItems = parseInt(arr1[1]);
+                    }
+                }
+                return {
+                    top: top,
+                    skip: skip,
+                    totalItems: totalItems
+                }
             },
 
             generateUUID: function () {
@@ -836,6 +779,58 @@
                 },
                 url: url + loginUrl,
                 data: $.param(data)
+            }).then(function (response) {
+                return response.data;
+            });
+            return req;
+        }
+    }
+}]);
+}());
+
+(function() {
+    'use strict';
+    
+    angular.module('freeants').factory('pushNotificationsDataContext', ['$http', 'helpers', 'path', '$q', function ($http, helpers, path, $q) {
+
+    //End points
+    function pushNotificationsRegisterUrl() {
+        return path.api + "/pushNotificationsRegister";
+    }
+    function pushNotificationsPushUrl() {
+        return path.api + "/pushNotificationsPush";
+    }
+    return {
+
+        // deviceInstallationSample = {
+        //    installationId: '1',// TODO: Generare una GUID e memorizzare sulla localstorage
+        //    platform: 'gcm',    // TODO: Reperire a runtime la piattaforma
+        //    handle: data.registrationId,
+        //    thingsIds: ['2140c212-0865-4845-8b5e-c5153007dfa5']
+        //}
+        register: function (deviceInstallation) {
+            var req = $http({
+                method: 'PUT',
+                headers: helpers.getSecurityHeaders(),
+                url: pushNotificationsRegisterUrl(),
+                data: deviceInstallation
+            }).then(function (response) {
+                return response.data;
+            });
+            return req;
+        },
+
+        // pushMessageSample = {
+        //    pns: 'gcm',// TODO: Generare una GUID e memorizzare sulla localstorage
+        //    thingId: '2140c212-0865-4845-8b5e-c5153007dfa5',
+        //    message: {...}
+        //}
+        push: function (pushMessage) {
+            var req = $http({
+                method: 'POST',
+                headers: helpers.getSecurityHeaders(),
+                url: pushNotificationsPushUrl(),
+                data: pushMessage
             }).then(function (response) {
                 return response.data;
             });
@@ -1002,6 +997,7 @@
 
     return {
 
+        // deprecate
         getThings: function (parameter, defer) {
             var urlRaw = thingsUrl() + "?" +
                     (!!parameter.parentThingId ? ("&$parentId=" + parameter.parentThingId) : "") +
@@ -1016,8 +1012,30 @@
                 headers: helpers.getSecurityHeaders(),
                 timeout: (defer) ? (defer.promise) : null,
                 url: urlRaw
-            }).then(function (response) {
+            }).then(function (response) {                
                 return response.data;
+            });
+            return req;
+        },
+        getThings1: function (parameter, defer) {
+            var urlRaw = thingsUrl() + "?" +
+                    (!!parameter.parentThingId ? ("&$parentId=" + parameter.parentThingId) : "") +
+                    (!!parameter.filter ? ("&$filter=" + parameter.filter) : "") +
+                    (!!parameter.top ? ("&$top=" + parameter.top) : "") +
+                    (!!parameter.skip ? ("&$skip=" + parameter.skip) : "") +
+                    (parameter.deleteStatus == null || parameter.deleteStatus == undefined ? "" : "&$deletedStatus=" + parameter.deleteStatus) +
+                    (!!parameter.orderBy ? ("&$orderby=" + parameter.orderBy) : "") +
+                    (!!parameter.valueFilter ? ("&$valueFilter=" + parameter.valueFilter) : "");
+            var req = $http({
+                method: 'GET',
+                headers: helpers.getSecurityHeaders(),
+                timeout: (defer) ? (defer.promise) : null,
+                url: urlRaw
+            }).then(function (response) {                                            
+                return {
+                    things: response.data,
+                    itemsRange: helpers.getRangeItemsFromResponse(response)
+                };
             });
             return req;
         },
@@ -1124,9 +1142,42 @@
     }
 }]);
 }());
+(function() {
+    'use strict';
+
+    angular.module('freeants').factory('ThingModel', [function () {
+		
+        function ThingModel(thingData) {
+                        
+            this.setData(thingData);
+
+        };
+
+        ThingModel.prototype = {
+            childrenSkip : 0,
+            childrenTotalItems: Number.MAX_SAFE_INTEGER,
+            children: [],
+            setData: function (thingData) {
+
+                if (thingData) {
+                    angular.extend(this, thingData);
+                }
+
+                if (this.value == null || this.value == "") {
+                    this.value = {};
+                }
+                this.value = angular.fromJson(this.value);
+            }
+        };
+
+        return ThingModel;
+    }]);
+}());
 
 (function () {
     'use strict';
+
+    // Deprecate
     angular.module('freeants').factory('ThingsManager', [ '$q', 'ThingModel', function ($q, ThingModel) {
 
         var objDataContexts;
@@ -1213,47 +1264,63 @@
     return ThingsManager
 }]);
 
-	angular.module('freeants').factory('thingsManager1', ['$q', 'thingsDataContext', 'ThingModel', function ($q, thingsDataContext, ThingModel) {
+	angular.module('freeants').factory('thingsManager', ['$q', 'thingsDataContext', 'ThingModel', function ($q, thingsDataContext, ThingModel) {
 
         function getThings(parameter, defer) {
             function getSucceded(data) {
-                var pool = [];
+                var things = [];
 
-                for (var i = 0; i < data.length; i++) {
-                    var thing = new ThingModel(data[i]);
-                    pool.push(thing);
+                for (var i = 0; i < data.things.length; i++) {
+                    var thing = new ThingModel(data.things[i]);
+                    things.push(thing);
                 }
 
-                return pool;
+                return {
+                    things: things,
+                    itemsRange: data.itemsRange
+                }
             }
-            return thingsDataContext.getThings(parameter, defer)
+            return thingsDataContext.getThings1(parameter, defer)
                 .then(getSucceded);
         }        
           
-        function elapseThing(thing, parameter, defer) {
-            if (thing.elapsed == true)
-                return;
+        function elapseThing(thing, parameter, cancel) {
 
+            parameter.skip = thing.childrenSkip;
             parameter.parentThingId = thing.id;
-            
-            return getThings(parameter, defer)
-            .then(function (things) {
-                if (thing.elapsed == false) {
-                    thing.children = things;
-                    thing.elapsed = true;
-                    return;
-                }
-                // Useful for pagination
-                for (var i = 0; i < things.length;i++)
-                    thing.children.push(things[i]);
 
-                return things;
+            thing.childrenSkip = thing.childrenSkip + parameter.top;
+            //  Fix range
+            if (thing.childrenSkip > thing.childrenTotalItems) {
+                thing.childrenSkip = thing.childrenTotalItems;
+            }                        
+            
+            return getThings(parameter, cancel)
+            .then(function (data) {
+
+                thing.childrenTotalItems = data.itemsRange.totalItems;
+                //  Fix range
+                if (thing.childrenSkip > thing.childrenTotalItems) {
+                    thing.childrenSkip = thing.childrenTotalItems;
+                }
+
+                for (var i = 0; i < data.things.length;i++)
+                    thing.children.push(data.things[i]);
+
+                return data;
             });
         }
 
+        function collapseThing(thing, cancel) {
+            cancel.resolve();
+            thing.children = [];
+            thing.childrenSkip = 0;
+        }
+
         return {
-            getThings: getThings,
-            elapseThing: elapseThing 
+            getThings: getThings,            
+            elapseThing: elapseThing,
+            collapseThing: collapseThing
         }
     }]);
 	
