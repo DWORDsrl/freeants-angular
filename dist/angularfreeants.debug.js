@@ -1237,9 +1237,15 @@
             parameter.parentThingId = thing.id;
             
             return getThings(parameter, defer)
-            .then(function (things) {                    
-                thing.children = things;
-                thing.elapsed = true;
+            .then(function (things) {
+                if (thing.elapsed == false) {
+                    thing.children = things;
+                    thing.elapsed = true;
+                    return;
+                }
+                // Useful for pagination
+                for (var i = 0; i < things.length;i++)
+                    thing.children.push(things[i]);
 
                 return things;
             });

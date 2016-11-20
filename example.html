@@ -10,8 +10,23 @@
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/signalr/jquery.signalR.min.js"></script>
 
-    <script src="bower_components/freeants-angular/dist/freeants-angular.debug.js"></script>
-    <!--<script src="bower_components/freeants-angular/dist/freeants-angular.min.js"></script>-->
+	<!-- Must be the first!!!!!! -->
+	<script src="src/module.js"></script>
+	
+    <script src="src/_account.datacontext.js"></script>
+    <script src="src/_asyncLoader.js"></script>
+	<script src="src/_helpers.js"></script>
+	<script src="src/_localizator.js"></script>
+	<script src="src/_login.datacontext.js"></script>
+	<script src="src/_signalr.connector.js"></script>
+	<script src="src/_thing.datacontext.js"></script>
+	<script src="src/_things.manager.js"></script>
+	<script src="src/_thingUserRights.datacontext.js"></script>
+	<script src="src/_user.datacontext.js"></script>
+	<script src="src/accountManager.js"></script>
+	<script src="src/constants.js"></script>
+	<script src="src/pushNotifications.datacontext.js"></script>
+	<script src="src/ThingModel.js"></script>
 
     <script>
         'use strict'
@@ -28,7 +43,7 @@
 
                 accountManagerProvider.setAppName("thingsAngular");
                 accountManagerProvider.setStorage(localStorage, "AccessTokenOrDWApiKey");
-                accountManagerProvider.setApiKey("<Insert your DWAPIKey>");
+                accountManagerProvider.setApiKey("Insert your DWApiKey");
 
         }]);
 
@@ -150,6 +165,9 @@
 
 </head>
 <body>
+	<div>
+		// Must be the first!!!!
+	</div>
     <div ng-controller="ThingsListController">
         <ul>
             <li ng-repeat="thing in things">
