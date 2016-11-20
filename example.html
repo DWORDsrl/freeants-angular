@@ -43,7 +43,7 @@
 
                 accountManagerProvider.setAppName("thingsAngular");
                 accountManagerProvider.setStorage(localStorage, "AccessTokenOrDWApiKey");
-                accountManagerProvider.setApiKey("Insert your DWApiKey");
+                accountManagerProvider.setApiKey("6fce33cc-2e21-4669-9000-dc2b5bc9cc99");
 
         }]);
 
@@ -112,7 +112,7 @@
             }]);
 
         // Define the `ThingsListController` controller
-        app.controller('ThingsListController', ['$q', '$scope', 'thingsManager1', function ThingsListController($q, $scope, thingsManager1) {
+        app.controller('ThingsListController', ['$q', '$scope', 'thingsManager', function ThingsListController($q, $scope, thingsManager) {
 
             $scope.things = [];
 
@@ -127,11 +127,11 @@
                 orderBy: null,
                 valueFilter: null
             };
-            thingsManager1.getThings(getThingsParams, timeout)
-			.then(function (things) {
+            thingsManager.getThings(getThingsParams, timeout)
+			.then(function (data1) {
                 var promises = [];
 
-                for (var i = 0; i < things.length; i++) {
+                for (var i = 0; i < data1.things.length; i++) {
                     var getThingsParams = {
                         parentThingId: null,
                         filter: null,
@@ -140,12 +140,12 @@
                         orderBy: null,
                         valueFilter: null
                     };  
-                    promises.push(thingsManager1.elapseThing(things[i], getThingsParams, timeout));
+                    promises.push(thingsManager.elapseThing(data1.things[i], getThingsParams, timeout));
                 }       
 
                 $q.all(promises)
                 .then(function (data) {
-                    def.resolve(things);
+                    def.resolve(data1);
                 }, function (data) {
                     timeout.resolve();
                     def.reject(data);
@@ -153,8 +153,8 @@
 			});
 
             def.promise
-            .then(function(things) {
-                $scope.things = things;
+            .then(function(data) {
+                $scope.things = data.things;
             },function(error) {
                 alert(error.data);
             });
@@ -166,7 +166,7 @@
 </head>
 <body>
 	<div>
-		// Must be the first!!!!
+		// Be the first!!!!
 	</div>
     <div ng-controller="ThingsListController">
         <ul>

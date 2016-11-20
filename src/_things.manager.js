@@ -87,46 +87,42 @@
     return ThingsManager
 }]);
 
-	angular.module('freeants').factory('thingsManager1', ['$q', 'thingsDataContext', 'ThingModel', function ($q, thingsDataContext, ThingModel) {
+	angular.module('freeants').factory('thingsManager', ['$q', 'thingsDataContext', 'ThingModel', function ($q, thingsDataContext, ThingModel) {
 
         function getThings(parameter, defer) {
             function getSucceded(data) {
-                var pool = [];
+                var things = [];
 
-                for (var i = 0; i < data.length; i++) {
-                    var thing = new ThingModel(data[i]);
-                    pool.push(thing);
+                for (var i = 0; i < data.things.length; i++) {
+                    var thing = new ThingModel(data.things[i]);
+                    things.push(thing);
                 }
 
-                return pool;
+                return {
+                    things: things,
+                    itemsRange: data.itemsRange
+                }
             }
-            return thingsDataContext.getThings(parameter, defer)
+            return thingsDataContext.getThings1(parameter, defer)
                 .then(getSucceded);
         }        
           
         function elapseThing(thing, parameter, defer) {
-            if (thing.elapsed == true)
-                return;
 
             parameter.parentThingId = thing.id;
             
             return getThings(parameter, defer)
-            .then(function (things) {
-                if (thing.elapsed == false) {
-                    thing.children = things;
-                    thing.elapsed = true;
-                    return;
-                }
-                // Useful for pagination
-                for (var i = 0; i < things.length;i++)
-                    thing.children.push(things[i]);
+            .then(function (data) {                
 
-                return things;
+                for (var i = 0; i < data.things.length;i++)
+                    thing.children.push(data.things[i]);
+
+                return data;
             });
         }
 
         return {
-            getThings: getThings,
+            getThings: getThings,            
             elapseThing: elapseThing 
         }
     }]);

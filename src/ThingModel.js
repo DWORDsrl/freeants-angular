@@ -10,7 +10,7 @@
         };
 
         ThingModel.prototype = {
-            elapsed : false,
+            childrenTotalItems: 0,
             setData: function (thingData) {
 
                 if (thingData) {

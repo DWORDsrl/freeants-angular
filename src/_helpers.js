@@ -32,14 +32,42 @@
                 return ret;
             },
 
-            getTotalItemsFromResponse: function () {
-                var str = request.getResponseHeader("Content-Range");
+            getTotalItemsFromResponse: function (response) {
+                var str = response.headers("Content-Range");
                 if (str != undefined && str != null) {
                     var arr = str.split('/');
                     if (arr.length == 2)
                         return parseInt(arr[1]);
                 }
                 return null;
+            },
+            getRangeItemsFromResponse: function(response) {
+                var contentRange = response.headers("Content-Range");
+
+                var top = 0;
+                var skip = 0;
+                var totalItems = 0;
+                if (contentRange) {
+                    var arr1 = contentRange.split('/');
+                    if (arr1.length != 0) {
+                        var arr2 = arr1[0].split(" ");
+                        if (arr2.length == 2) {
+                            var arr3 = arr2[1].split("-");
+                            if (arr3.length == 2) {
+                                top = parseInt(arr3[0]);
+                                skip = parseInt(arr3[1]);
+                            }
+                        }
+
+                        if (arr1.length == 2)
+                            totalItems = parseInt(arr1[1]);
+                    }
+                }
+                return {
+                    top: top,
+                    skip: skip,
+                    totalItems: totalItems
+                }
             },
 
             generateUUID: function () {

@@ -47,6 +47,7 @@
 
     return {
 
+        // deprecate
         getThings: function (parameter, defer) {
             var urlRaw = thingsUrl() + "?" +
                     (!!parameter.parentThingId ? ("&$parentId=" + parameter.parentThingId) : "") +
@@ -61,8 +62,31 @@
                 headers: helpers.getSecurityHeaders(),
                 timeout: (defer) ? (defer.promise) : null,
                 url: urlRaw
-            }).then(function (response) {
+            }).then(function (response) {                
                 return response.data;
+            });
+            return req;
+        },
+        getThings1: function (parameter, defer) {
+            var urlRaw = thingsUrl() + "?" +
+                    (!!parameter.parentThingId ? ("&$parentId=" + parameter.parentThingId) : "") +
+                    (!!parameter.filter ? ("&$filter=" + parameter.filter) : "") +
+                    (!!parameter.top ? ("&$top=" + parameter.top) : "") +
+                    (!!parameter.skip ? ("&$skip=" + parameter.skip) : "") +
+                    (parameter.deleteStatus == null || parameter.deleteStatus == undefined ? "" : "&$deletedStatus=" + parameter.deleteStatus) +
+                    (!!parameter.orderBy ? ("&$orderby=" + parameter.orderBy) : "") +
+                    (!!parameter.valueFilter ? ("&$valueFilter=" + parameter.valueFilter) : "");
+            var req = $http({
+                method: 'GET',
+                headers: helpers.getSecurityHeaders(),
+                timeout: (defer) ? (defer.promise) : null,
+                url: urlRaw
+            }).then(function (response) {   
+                var dummy = helpers.getTotalItemsFromResponse(response);                         
+                return {
+                    things: response.data,
+                    itemsRange: helpers.getRangeItemsFromResponse(response)
+                };
             });
             return req;
         },
