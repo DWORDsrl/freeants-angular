@@ -81,8 +81,7 @@
                 headers: helpers.getSecurityHeaders(),
                 timeout: (defer) ? (defer.promise) : null,
                 url: urlRaw
-            }).then(function (response) {   
-                var dummy = helpers.getTotalItemsFromResponse(response);                         
+            }).then(function (response) {                                            
                 return {
                     things: response.data,
                     itemsRange: helpers.getRangeItemsFromResponse(response)
