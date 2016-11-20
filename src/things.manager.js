@@ -1,6 +1,8 @@
 ﻿
 (function () {
     'use strict';
+
+    // Deprecate
     angular.module('freeants').factory('ThingsManager', [ '$q', 'ThingModel', function ($q, ThingModel) {
 
         var objDataContexts;
@@ -107,12 +109,25 @@
                 .then(getSucceded);
         }        
           
-        function elapseThing(thing, parameter, defer) {
+        function elapseThing(thing, parameter, cancel) {
 
+            parameter.skip = thing.childrenSkip;
             parameter.parentThingId = thing.id;
+
+            thing.childrenSkip = thing.childrenSkip + parameter.top;
+            //  Fix range
+            if (thing.childrenSkip > thing.childrenTotalItems) {
+                thing.childrenSkip = thing.childrenTotalItems;
+            }                        
             
-            return getThings(parameter, defer)
-            .then(function (data) {                
+            return getThings(parameter, cancel)
+            .then(function (data) {
+
+                thing.childrenTotalItems = data.itemsRange.totalItems;
+                //  Fix range
+                if (thing.childrenSkip > thing.childrenTotalItems) {
+                    thing.childrenSkip = thing.childrenTotalItems;
+                }
 
                 for (var i = 0; i < data.things.length;i++)
                     thing.children.push(data.things[i]);
@@ -121,9 +136,16 @@
             });
         }
 
+        function collapseThing(thing, cancel) {
+            cancel.resolve();
+            thing.children = [];
+            thing.childrenSkip = 0;
+        }
+
         return {
             getThings: getThings,            
-            elapseThing: elapseThing 
+            elapseThing: elapseThing,
+            collapseThing: collapseThing
         }
     }]);
 	

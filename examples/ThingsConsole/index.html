@@ -43,7 +43,7 @@
 
                 accountManagerProvider.setAppName("thingsAngular");
                 accountManagerProvider.setStorage(localStorage, "AccessTokenOrDWApiKey");
-                accountManagerProvider.setApiKey("6fce33cc-2e21-4669-9000-dc2b5bc9cc99");
+                accountManagerProvider.setApiKey("inser your DWApiKey");
 
         }]);
 
@@ -116,38 +116,57 @@
 
             $scope.things = [];
 
-            var timeout = $q.defer();
+            var cancel = $q.defer();
             var def = $q.defer();
 
             var getThingsParams = {			
                 parentThingId: null,
-                filter: null,
+                filter: "Name eq 'favorite'",
                 top: 20,
                 skip: 0,
                 orderBy: null,
                 valueFilter: null
             };
-            thingsManager.getThings(getThingsParams, timeout)
+            thingsManager.getThings(getThingsParams, cancel)
 			.then(function (data1) {
                 var promises = [];
 
                 for (var i = 0; i < data1.things.length; i++) {
                     var getThingsParams = {
-                        parentThingId: null,
+                        //parentThingId: null,
                         filter: null,
                         top: 20,
-                        skip: 0,
+                        //skip: 0,
                         orderBy: null,
                         valueFilter: null
                     };  
-                    promises.push(thingsManager.elapseThing(data1.things[i], getThingsParams, timeout));
-                }       
+                    promises.push(thingsManager.elapseThing(data1.things[i], getThingsParams, cancel));
+                }
+
+                for (var i = 0; i < data1.things.length; i++) {
+                    thingsManager.collapseThing(data1.things[i], cancel);
+                }
+                
+                promises = [];
+                cancel = $q.defer();
+
+                for (var i = 0; i < data1.things.length; i++) {
+                    var getThingsParams = {
+                        //parentThingId: null,
+                        filter: null,
+                        top: 20,
+                        //skip: 0,
+                        orderBy: null,
+                        valueFilter: null
+                    };                     
+                    promises.push(thingsManager.elapseThing(data1.things[i], getThingsParams, cancel));
+                }        
 
                 $q.all(promises)
                 .then(function (data) {
                     def.resolve(data1);
                 }, function (data) {
-                    timeout.resolve();
+                    cancel.resolve();
                     def.reject(data);
                 });                
 			});
@@ -166,12 +185,18 @@
 </head>
 <body>
 	<div>
-		// Be the first!!!!
+		// Bravo!
 	</div>
     <div ng-controller="ThingsListController">
         <ul>
             <li ng-repeat="thing in things">
+                <span>{{thing.id}}</span>
                 <span>{{thing.name}}</span>
+                <ul>
+                    <li ng-repeat="child in thing.children">
+                        <span>{{child.name}}</span>
+                    </li>
+                </ul>
             </li>
         </ul>
     </div>

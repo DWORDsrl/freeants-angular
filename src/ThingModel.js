@@ -10,7 +10,9 @@
         };
 
         ThingModel.prototype = {
-            childrenTotalItems: 0,
+            childrenSkip : 0,
+            childrenTotalItems: Number.MAX_SAFE_INTEGER,
+            children: [],
             setData: function (thingData) {
 
                 if (thingData) {
@@ -21,10 +23,6 @@
                     this.value = {};
                 }
                 this.value = angular.fromJson(this.value);
-
-                if (!this.children) {
-                    angular.extend(this, { children: [] });
-                }
             }
         };
 
