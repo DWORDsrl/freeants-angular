@@ -40,10 +40,5 @@ gulp.task('minify', ['clean'], function () {
       .pipe(gulp.dest('dist'));
 });
 
-//gulp.task('examples', ['clean'], function () {
-//    return gulp.src(['examples/**/*.*'])
-//      .pipe(gulp.dest('dist/examples'));
-//});
-
 // Default Task
 gulp.task('default', ['clean','debug', 'minify', 'debugOld', 'minifyOld']);
