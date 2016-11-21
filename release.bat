@@ -1,4 +1,4 @@
-
+@ECHO off
 if "%1"=="" goto blank
 
 ECHO "Releasing version %1 ..."
