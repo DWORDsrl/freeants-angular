@@ -2,6 +2,8 @@
 
 Free Ants Angular SDK - Lab version
 
+1.0.17 - 11-21-2016 - Improvements in thingsManager 2 and changed examples
+
 1.0.16 - 11-21-2016 - Improvements in thingsManager
 
 1.0.15 - 11-20-2016 - Improvements in examples 2

@@ -4,15 +4,15 @@
     angular.module('freeants').factory('ThingModel', [function () {
 		
         function ThingModel(thingData) {
-                        
+            
+            this.childrenSkip = 0;
+            this.childrenTotalItems = Number.MAX_SAFE_INTEGER;
+            this.children = [];
+            
             this.setData(thingData);
-
         };
 
         ThingModel.prototype = {
-            childrenSkip : 0,
-            childrenTotalItems: Number.MAX_SAFE_INTEGER,
-            children: [],
             setData: function (thingData) {
 
                 if (thingData) {

@@ -43,7 +43,7 @@
 
                 accountManagerProvider.setAppName("thingsAngular");
                 accountManagerProvider.setStorage(localStorage, "AccessTokenOrDWApiKey");
-                accountManagerProvider.setApiKey("inser your DWApiKey");
+                accountManagerProvider.setApiKey("insert your DWApiKey");
 
         }]);
 
@@ -104,81 +104,72 @@
                notifierConnector.subscribe(path.server + "signalr", "DWApiKey", accountManagerService.getApiKey, subscribeSuccess, subscribeFail);
         }]);
 
-        app.factory('localThingsManager', ['$q', 'thingsManager',  function ($q, thingsManager) {
-            var things = [];
+        app.factory('appsManager', ['$q', 'thingsManager', 'ThingModel',  function ($q, thingsManager, ThingModel) {
 
-            var cancel = $q.defer();
-            var def = $q.defer();
+            var mainThing = new ThingModel();
 
-            var getThingsParams = {			
-                parentThingId: null,
-                filter: "Name eq 'favorite'",
-                top: 20,
-                skip: 0,
-                orderBy: null,
-                valueFilter: null
-            };
-            thingsManager.getThings(getThingsParams, cancel)
-			.then(function (data1) {
-                var promises = [];
+            var getAppsParams = {			
+                    //parentThingId: null,
+                    filter: "Name eq 'favorite'",
+                    top: 2,
+                    //skip: 0,
+                    orderBy: null,
+                    valueFilter: null
+                };
 
-                for (var i = 0; i < data1.things.length; i++) {
-                    var getThingsParams = {
-                        //parentThingId: null,
+            var getServicesParams = {
+                        parentThingId: null,
                         filter: null,
-                        top: 20,
-                        //skip: 0,
+                        top: 3,
+                        skip: 0,
                         orderBy: null,
                         valueFilter: null
-                    };  
-                    promises.push(thingsManager.elapseThing(data1.things[i], getThingsParams, cancel));
-                }
+                    };
 
-                for (var i = 0; i < data1.things.length; i++) {
-                    thingsManager.collapseThing(data1.things[i], cancel);
-                }
+            function getMoreServices(app, cancel) {
+                return thingsManager.elapseThing(app, getServicesParams, cancel)
+            }
+            
+            function getMoreApps(cancel) {
                 
-                promises = [];
-                cancel = $q.defer();
-
-                for (var i = 0; i < data1.things.length; i++) {
-                    var getThingsParams = {
-                        //parentThingId: null,
-                        filter: null,
-                        top: 20,
-                        //skip: 0,
-                        orderBy: null,
-                        valueFilter: null
-                    };                     
-                    promises.push(thingsManager.elapseThing(data1.things[i], getThingsParams, cancel));
-                }        
-
-                $q.all(promises)
+                var def = $q.defer();
+                                
+                thingsManager.elapseThing(mainThing, getAppsParams, cancel)
                 .then(function (data) {
-                    def.resolve(data1);
-                }, function (data) {
-                    cancel.resolve();
-                    def.reject(data);
-                });                
-			});
+                    var promises = [];
 
-            def.promise
-            .then(function(data) {
-                for (var i = 0;i < data.things.length;i++)
-                    things.push(data.things[i]);
-            },function(error) {
-                alert(error.data);
-            });
+                    // Try to get all things children
+                    for (var i = 0; i < data.things.length; i++) {
+                        promises.push(getMoreServices(data.things[i], cancel));
+                    }
+
+                    $q.all(promises)
+                    .then(function () {
+                        def.resolve();
+                    }, function (data) {
+                        cancel.resolve();
+                        def.reject(data);
+                    });
+                });
+
+                return def.promise;
+            }
 
             return {
-                things : things
+                things: mainThing.children,                
+                getMoreApps: getMoreApps,
+                getMoreServices: getMoreServices
             }
 
         }]);
         // Define the `ThingsListController` controller
-        app.controller('ThingsListController', ['$scope', 'localThingsManager', function ThingsListController( $scope, localThingsManager) {
+        app.controller('ThingsListController', ['$scope', 'appsManager', function ThingsListController( $scope, appsManager) {
 
-            $scope.things = localThingsManager.things;
+            $scope.things = appsManager.things;
+
+            appsManager.getMoreApps(null).then(function() {
+                appsManager.getMoreServices($scope.things[0]);
+            });
            
         }]);
 
