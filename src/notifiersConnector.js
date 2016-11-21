@@ -2,6 +2,7 @@
 (function () {
     'use strict';
 
+    // Deprecate
     angular.module('freeants').factory('SignalRConnector', function () {
 
         var authTypeT = "";

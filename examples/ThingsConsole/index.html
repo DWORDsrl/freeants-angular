@@ -28,7 +28,7 @@
 
                 accountManagerProvider.setAppName("thingsAngular");
                 accountManagerProvider.setStorage(localStorage, "AccessTokenOrDWApiKey");
-                accountManagerProvider.setApiKey("inser your DWApiKey");
+                accountManagerProvider.setApiKey("Insert your DWApiKey");
 
         }]);
 
@@ -74,7 +74,7 @@
                    console.log('onCreateChildThingId');
                });
                notifierConnector.setHook('onUpdateThingValue', function (thingId, value) {
-                   console.log('onUpdateThingValue');
+                   console.log('onUpdateThingValue 1');
                });
                notifierConnector.setHook('onDeleteChildThingId', function (parentThingId, childThingId, kind) {
                    console.log('onDeleteChildThingId');
@@ -89,7 +89,7 @@
                notifierConnector.subscribe(path.server + "signalr", "DWApiKey", accountManagerService.getApiKey, subscribeSuccess, subscribeFail);
         }]);
 
-        app.factory('appsManager', ['$q', 'thingsManager', 'ThingModel',  function ($q, thingsManager, ThingModel) {
+        app.factory('appsManager', ['$q', 'thingsManager', 'ThingModel',  'notifierConnector', function ($q, thingsManager, ThingModel, notifierConnector) {
 
             var mainThing = new ThingModel();
 
@@ -111,7 +111,17 @@
                         valueFilter: null
                     };
 
-            function getMoreServices(app, cancel) {
+            notifierConnector.setHook('onCreateThing', function (thing) {
+                   console.log('OnCreateThing');
+            });
+            notifierConnector.setHook('onDeleteChildThingId', function (parentThingId, childThingId, kind) {
+                console.log('onDeleteChildThingId');
+            });
+            notifierConnector.setHook('onUpdateThingValue', function (thingId, value) {
+                console.log('onUpdateThingValue 2');
+            });
+
+            function getMoreAppsServices(app, cancel) {
                 return thingsManager.elapseThing(app, getServicesParams, cancel)
             }
             
@@ -125,14 +135,15 @@
 
                     // Try to get all things children
                     for (var i = 0; i < data.things.length; i++) {
-                        promises.push(getMoreServices(data.things[i], cancel));
+                        promises.push(getMoreAppsServices(data.things[i], cancel));
                     }
 
                     $q.all(promises)
                     .then(function () {
                         def.resolve();
                     }, function (data) {
-                        cancel.resolve();
+                        if (cancel)
+                            cancel.resolve();
                         def.reject(data);
                     });
                 });
@@ -143,20 +154,23 @@
             return {
                 things: mainThing.children,                
                 getMoreApps: getMoreApps,
-                getMoreServices: getMoreServices
+                getMoreAppsServices: getMoreAppsServices
             }
 
         }]);
         // Define the `ThingsListController` controller
-        app.controller('ThingsListController', ['$scope', 'appsManager', function ThingsListController( $scope, appsManager) {
+        app.controller('ThingsListController', ['$q', '$scope', 'appsManager', function ThingsListController($q, $scope, appsManager) {
+
+            var abortHttpCalls = $q.defer();
 
             $scope.things = appsManager.things;
 
-            appsManager.getMoreApps(null).then(function() {
-                appsManager.getMoreServices($scope.things[0]);
+            appsManager.getMoreApps(abortHttpCalls).then(function() {
+                appsManager.getMoreAppsServices($scope.things[0], abortHttpCalls);
             });
            
         }]);
+
     </script>
 
 </head>
