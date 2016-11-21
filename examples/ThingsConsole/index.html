@@ -33,13 +33,7 @@
         }]);
 
         app.run(['$http', '$rootScope', 'SignalRConnector', 'path', 'thingsDataContext', 'thingUserRightsDataContext', 'ThingsManager', 'accountManagerService',
-            function ($http, $rootScope, SignalRConnector, path, thingsDataContext, thingUserRightsDataContext, ThingsManager, accountManagerService) {
-
-                var dataContexts = {
-                    thingsDataContext: thingsDataContext,
-                    thingUserRightsDataContext: thingUserRightsDataContext
-                };
-                $rootScope.MainThingsManager = new ThingsManager(dataContexts);
+            function ($http, $rootScope, SignalRConnector, path, thingsDataContext, thingUserRightsDataContext, ThingsManager, accountManagerService) {                
 
                 //Initialize SignalR
                function connectionStatus(change) {

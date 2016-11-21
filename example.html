@@ -18,7 +18,7 @@
 	<script src="src/helpers.js"></script>
 	<script src="src/localizator.js"></script>
 	<script src="src/login.datacontext.js"></script>
-	<script src="src/signalr.connector.js"></script>
+	<script src="src/notifiersConnector.js"></script>
 	<script src="src/thing.datacontext.js"></script>
 	<script src="src/things.manager.js"></script>
 	<script src="src/thingUserRights.datacontext.js"></script>
@@ -43,38 +43,32 @@
 
                 accountManagerProvider.setAppName("thingsAngular");
                 accountManagerProvider.setStorage(localStorage, "AccessTokenOrDWApiKey");
-                accountManagerProvider.setApiKey("inser your DWApiKey");
+                accountManagerProvider.setApiKey("6fce33cc-2e21-4669-9000-dc2b5bc9cc99");
 
         }]);
 
-        app.run(['$http', '$rootScope', 'SignalRConnector', 'path', 'thingsDataContext', 'thingUserRightsDataContext', 'ThingsManager', 'accountManagerService',
-            function ($http, $rootScope, SignalRConnector, path, thingsDataContext, thingUserRightsDataContext, ThingsManager, accountManagerService) {
-
-                var dataContexts = {
-                    thingsDataContext: thingsDataContext,
-                    thingUserRightsDataContext: thingUserRightsDataContext
-                };
-                $rootScope.MainThingsManager = new ThingsManager(dataContexts);
+        app.run(['$http', '$rootScope', 'notifierConnector', 'path', 'thingsDataContext', 'thingUserRightsDataContext', 'ThingsManager', 'accountManagerService',
+            function ($http, $rootScope, notifierConnector, path, thingsDataContext, thingUserRightsDataContext, ThingsManager, accountManagerService) {
 
                 //Initialize SignalR
                function connectionStatus(change) {
                    switch (change.newState) {
-                       case mynotifier.connected:
+                       case notifierConnector.connected:
                            {
                                console.log("connected");
                                break;
                            }
-                       case mynotifier.connecting:
+                       case notifierConnector.connecting:
                            {
                                console.log("connecting");
                                break;
                            }
-                       case mynotifier.reconnecting:
+                       case notifierConnector.reconnecting:
                            {
                                console.log("reconnecting");
                                break;
                            }
-                       case mynotifier.disconnected:
+                       case notifierConnector.disconnected:
                        default:
                            {
                                console.log("disconnected");
@@ -86,18 +80,18 @@
                    console.log("OnReconnected");
                };
 
-               var mynotifier = new SignalRConnector(connectionStatus, onReconnected);
+               notifierConnector.init(connectionStatus, onReconnected);
 
-               mynotifier.setHook('onCreateThing', function (thing) {
+               notifierConnector.setHook('onCreateThing', function (thing) {
                    console.log('OnCreateThing');
                });
-               mynotifier.setHook('onCreateChildThingId', function (parentThingId, childThingId, kind) {
+               notifierConnector.setHook('onCreateChildThingId', function (parentThingId, childThingId, kind) {
                    console.log('onCreateChildThingId');
                });
-               mynotifier.setHook('onUpdateThingValue', function (thingId, value) {
+               notifierConnector.setHook('onUpdateThingValue', function (thingId, value) {
                    console.log('onUpdateThingValue');
                });
-               mynotifier.setHook('onDeleteChildThingId', function (parentThingId, childThingId, kind) {
+               notifierConnector.setHook('onDeleteChildThingId', function (parentThingId, childThingId, kind) {
                    console.log('onDeleteChildThingId');
                });
 
@@ -107,14 +101,11 @@
                function subscribeFail() {
                    console.log('SignalR Subscribe Failed');
                }
-               mynotifier.subscribe(path.server + "signalr", "DWApiKey", accountManagerService.getApiKey, subscribeSuccess, subscribeFail);
+               notifierConnector.subscribe(path.server + "signalr", "DWApiKey", accountManagerService.getApiKey, subscribeSuccess, subscribeFail);
+        }]);
 
-            }]);
-
-        // Define the `ThingsListController` controller
-        app.controller('ThingsListController', ['$q', '$scope', 'thingsManager', function ThingsListController($q, $scope, thingsManager) {
-
-            $scope.things = [];
+        app.factory('localThingsManager', ['$q', 'thingsManager',  function ($q, thingsManager) {
+            var things = [];
 
             var cancel = $q.defer();
             var def = $q.defer();
@@ -173,11 +164,22 @@
 
             def.promise
             .then(function(data) {
-                $scope.things = data.things;
+                for (var i = 0;i < data.things.length;i++)
+                    things.push(data.things[i]);
             },function(error) {
                 alert(error.data);
             });
 
+            return {
+                things : things
+            }
+
+        }]);
+        // Define the `ThingsListController` controller
+        app.controller('ThingsListController', ['$scope', 'localThingsManager', function ThingsListController( $scope, localThingsManager) {
+
+            $scope.things = localThingsManager.things;
+           
         }]);
 
     </script>

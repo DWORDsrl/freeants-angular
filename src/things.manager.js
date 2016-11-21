@@ -2,7 +2,6 @@
 (function () {
     'use strict';
 
-    // Deprecate
     angular.module('freeants').factory('ThingsManager', [ '$q', 'ThingModel', function ($q, ThingModel) {
 
         var objDataContexts;
@@ -23,10 +22,7 @@
                     return pool;
                 }
                 return objDataContexts.thingsDataContext.getThings(parameter, defer)
-                    .then(getSucceeded,
-                    function (response) {
-                    return $q.reject(response);
-                });
+                    .then(getSucceeded);
             },
 
             //TODO: A cosa serve?
@@ -84,12 +80,19 @@
                 var deferred = $q.defer();
                 return getThingsSuccess(deferred);
             }
-    };
+        };
 
-    return ThingsManager
-}]);
+        return ThingsManager
+    }]);
 
 	angular.module('freeants').factory('thingsManager', ['$q', 'thingsDataContext', 'ThingModel', function ($q, thingsDataContext, ThingModel) {
+
+        function createThing(thing) {
+            return thingsDataContext.createThing(thing)
+            .then(function (data) {
+                return new ThingModel(data);
+            });
+        }
 
         function getThings(parameter, defer) {
             function getSucceded(data) {
@@ -143,6 +146,7 @@
         }
 
         return {
+            createThing: createThing,
             getThings: getThings,            
             elapseThing: elapseThing,
             collapseThing: collapseThing

@@ -788,58 +788,6 @@
 }]);
 }());
 
-(function() {
-    'use strict';
-    
-    angular.module('freeants').factory('pushNotificationsDataContext', ['$http', 'helpers', 'path', '$q', function ($http, helpers, path, $q) {
-
-    //End points
-    function pushNotificationsRegisterUrl() {
-        return path.api + "/pushNotificationsRegister";
-    }
-    function pushNotificationsPushUrl() {
-        return path.api + "/pushNotificationsPush";
-    }
-    return {
-
-        // deviceInstallationSample = {
-        //    installationId: '1',// TODO: Generare una GUID e memorizzare sulla localstorage
-        //    platform: 'gcm',    // TODO: Reperire a runtime la piattaforma
-        //    handle: data.registrationId,
-        //    thingsIds: ['2140c212-0865-4845-8b5e-c5153007dfa5']
-        //}
-        register: function (deviceInstallation) {
-            var req = $http({
-                method: 'PUT',
-                headers: helpers.getSecurityHeaders(),
-                url: pushNotificationsRegisterUrl(),
-                data: deviceInstallation
-            }).then(function (response) {
-                return response.data;
-            });
-            return req;
-        },
-
-        // pushMessageSample = {
-        //    pns: 'gcm',// TODO: Generare una GUID e memorizzare sulla localstorage
-        //    thingId: '2140c212-0865-4845-8b5e-c5153007dfa5',
-        //    message: {...}
-        //}
-        push: function (pushMessage) {
-            var req = $http({
-                method: 'POST',
-                headers: helpers.getSecurityHeaders(),
-                url: pushNotificationsPushUrl(),
-                data: pushMessage
-            }).then(function (response) {
-                return response.data;
-            });
-            return req;
-        }
-    }
-}]);
-}());
-
 (function () {
     'use strict';
 
@@ -947,6 +895,162 @@
 
         return SignalRConnector;
     });
+
+    angular.module('freeants').factory('notifierConnector', function () {
+
+        var authTypeT = "";
+        var accessTokenOrApiKeyCallBack = null
+        var connection = $.hubConnection();
+        var myHub = connection.createHubProxy('signalrnotifier');
+        var isStarted = false;
+        var tryReconnection = true;
+
+        return {
+
+            connected: $.signalR.connectionState.connected,
+
+            disconnected: $.signalR.connectionState.disconnected,
+
+            connecting: $.signalR.connectionState.connecting,
+
+            reconnecting: $.signalR.connectionState.reconnecting,
+
+            init: function(stateChangedHook, reconnectedHook) {
+                connection.logging = true;
+                connection.received(function (data) { });
+                connection.error(function (error) { });
+                connection.stateChanged(function (change) {
+                    if (change.newState === $.signalR.connectionState.connected) {
+                        isStarted = true;
+                        tryReconnection = true;
+                    }
+                    else if (change.newState === $.signalR.connectionState.disconnected) {
+                        isStarted = false;
+                    }
+                    else if (change.newState === $.signalR.connectionState.connecting) {
+                    }
+                    else if (change.newState === $.signalR.connectionState.reconnecting) {
+                    }
+
+                    if (stateChangedHook != null)
+                        stateChangedHook(change);
+                });
+                connection.reconnected(function () {
+                    if (reconnectedHook != null)
+                        reconnectedHook();
+                });
+                connection.starting(function () {
+                });
+                connection.connectionSlow(function () {
+                });
+                connection.reconnecting(function () {
+                });
+                connection.disconnected(function () {
+                    if (tryReconnection == false)
+                        return;
+
+                    setTimeout(function () {
+                        connection.qs = angular.fromJson("{\"" + authTypeT + "\":\"" + accessTokenOrApiKeyCallBack() + "\"}");
+                        connection.start();// TODO: bisogna gestire il successo o il fallimento dello start come in subscribe
+                    }, 5000); // Restart connection after 5 seconds.
+                });
+            },
+
+            subscribe: function (url, authType, accessTknOrApiKeyCallBack, subscribeSuccess, subscribeFail) {
+
+                if (isStarted == true)
+                    return;
+
+                accessTokenOrApiKeyCallBack = accessTknOrApiKeyCallBack;
+
+                authTypeT = authType;
+
+                var accessTokenOrApiKeyJson = "{\"" + authType + "\":\"" + accessTokenOrApiKeyCallBack() + "\"}";
+
+                if (url && url !== "")
+                    connection.url = url;
+
+                connection.qs = angular.fromJson(accessTokenOrApiKeyJson);
+                connection.start()
+                .done(function () {
+                    if (subscribeSuccess != null)
+                        subscribeSuccess();
+                })
+                .fail(function () {
+                    if (subscribeFail != null)
+                        subscribeFail();
+                });
+            },
+
+            unsubscribe: function () {
+
+                if (isStarted == false)
+                    return;
+
+                tryReconnection = false;
+                connection.stop();
+            },
+
+            setHook: function (eventName, hook) {
+                myHub.on(eventName, hook);
+            }
+
+        };
+
+    });
+
+}());
+
+(function() {
+    'use strict';
+    
+    angular.module('freeants').factory('pushNotificationsDataContext', ['$http', 'helpers', 'path', '$q', function ($http, helpers, path, $q) {
+
+    //End points
+    function pushNotificationsRegisterUrl() {
+        return path.api + "/pushNotificationsRegister";
+    }
+    function pushNotificationsPushUrl() {
+        return path.api + "/pushNotificationsPush";
+    }
+    return {
+
+        // deviceInstallationSample = {
+        //    installationId: '1',// TODO: Generare una GUID e memorizzare sulla localstorage
+        //    platform: 'gcm',    // TODO: Reperire a runtime la piattaforma
+        //    handle: data.registrationId,
+        //    thingsIds: ['2140c212-0865-4845-8b5e-c5153007dfa5']
+        //}
+        register: function (deviceInstallation) {
+            var req = $http({
+                method: 'PUT',
+                headers: helpers.getSecurityHeaders(),
+                url: pushNotificationsRegisterUrl(),
+                data: deviceInstallation
+            }).then(function (response) {
+                return response.data;
+            });
+            return req;
+        },
+
+        // pushMessageSample = {
+        //    pns: 'gcm',// TODO: Generare una GUID e memorizzare sulla localstorage
+        //    thingId: '2140c212-0865-4845-8b5e-c5153007dfa5',
+        //    message: {...}
+        //}
+        push: function (pushMessage) {
+            var req = $http({
+                method: 'POST',
+                headers: helpers.getSecurityHeaders(),
+                url: pushNotificationsPushUrl(),
+                data: pushMessage
+            }).then(function (response) {
+                return response.data;
+            });
+            return req;
+        }
+    }
+}]);
 }());
 
 (function() {
@@ -997,7 +1101,7 @@
 
     return {
 
-        // deprecate
+        // Deprecate
         getThings: function (parameter, defer) {
             var urlRaw = thingsUrl() + "?" +
                     (!!parameter.parentThingId ? ("&$parentId=" + parameter.parentThingId) : "") +
@@ -1177,7 +1281,6 @@
 (function () {
     'use strict';
 
-    // Deprecate
     angular.module('freeants').factory('ThingsManager', [ '$q', 'ThingModel', function ($q, ThingModel) {
 
         var objDataContexts;
@@ -1198,10 +1301,7 @@
                     return pool;
                 }
                 return objDataContexts.thingsDataContext.getThings(parameter, defer)
-                    .then(getSucceeded,
-                    function (response) {
-                    return $q.reject(response);
-                });
+                    .then(getSucceeded);
             },
 
             //TODO: A cosa serve?
@@ -1259,12 +1359,19 @@
                 var deferred = $q.defer();
                 return getThingsSuccess(deferred);
             }
-    };
+        };
 
-    return ThingsManager
-}]);
+        return ThingsManager
+    }]);
 
 	angular.module('freeants').factory('thingsManager', ['$q', 'thingsDataContext', 'ThingModel', function ($q, thingsDataContext, ThingModel) {
+
+        function createThing(thing) {
+            return thingsDataContext.createThing(thing)
+            .then(function (data) {
+                return new ThingModel(data);
+            });
+        }
 
         function getThings(parameter, defer) {
             function getSucceded(data) {
@@ -1318,6 +1425,7 @@
         }
 
         return {
+            createThing: createThing,
             getThings: getThings,            
             elapseThing: elapseThing,
             collapseThing: collapseThing

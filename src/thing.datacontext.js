@@ -47,7 +47,7 @@
 
     return {
 
-        // deprecate
+        // Deprecate
         getThings: function (parameter, defer) {
             var urlRaw = thingsUrl() + "?" +
                     (!!parameter.parentThingId ? ("&$parentId=" + parameter.parentThingId) : "") +
