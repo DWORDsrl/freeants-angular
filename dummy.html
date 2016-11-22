@@ -44,7 +44,7 @@
 
                 accountManagerProvider.setAppName("thingsAngular");
                 accountManagerProvider.setStorage(localStorage, "AccessTokenOrDWApiKey");
-                accountManagerProvider.setApiKey("Insert your DWApiKey");
+                accountManagerProvider.setApiKey("6fce33cc-2e21-4669-9000-dc2b5bc9cc99");
 
         }]);
 
@@ -105,11 +105,14 @@
                notifierConnector.subscribe(path.server + "signalr", "DWApiKey", accountManagerService.getApiKey, subscribeSuccess, subscribeFail);
         }]);
 
-        app.factory('appsManager', ['$q', 'thingsManager', 'ThingModel',  'notifierConnector', function ($q, thingsManager, ThingModel, notifierConnector) {
+        app.factory('AppsManager', ['$q', 'thingsManager', 'ThingModel',  'notifierConnector', function ($q, thingsManager, ThingModel, notifierConnector) {
 
-            var mainThing = new ThingModel();
+            function AppsManager() {
 
-            var getAppsParams = {			
+                this.mainThing = new ThingModel();
+                this.apps = this.mainThing.children;
+
+                this.getAppsParams = {			
                     //parentThingId: null,
                     filter: "Name eq 'favorite'",
                     top: 2,
@@ -117,8 +120,7 @@
                     orderBy: null,
                     valueFilter: null
                 };
-
-            var getServicesParams = {
+                this.getServicesParams = {
                         parentThingId: null,
                         filter: null,
                         top: 3,
@@ -126,6 +128,7 @@
                         orderBy: null,
                         valueFilter: null
                     };
+            }    
 
             notifierConnector.setHook('onCreateThing', function (thing) {
                 console.log('OnCreateThing');
@@ -137,21 +140,23 @@
                 console.log('onUpdateThingValue 2');
             });
 
-            function getMoreAppsServices(app, cancel) {
-                return thingsManager.elapseThing(app, getServicesParams, cancel)
+            AppsManager.prototype.getMoreAppsServices = function getMoreAppsServices(app, cancel) {
+                return thingsManager.elapseThing(app, this.getServicesParams, cancel)
             }
             
-            function getMoreApps(cancel) {
+            AppsManager.prototype.getMoreApps = function getMoreApps(cancel) {
                 
+                var self = this;
+
                 var def = $q.defer();
                                 
-                thingsManager.elapseThing(mainThing, getAppsParams, cancel)
+                thingsManager.elapseThing(this.mainThing, this.getAppsParams, cancel)
                 .then(function (data) {
                     var promises = [];
 
                     // Try to get all things children
                     for (var i = 0; i < data.things.length; i++) {
-                        promises.push(getMoreAppsServices(data.things[i], cancel));
+                        promises.push(self.getMoreAppsServices(data.things[i], cancel));
                     }
 
                     $q.all(promises)
@@ -167,18 +172,16 @@
                 return def.promise;
             }
 
-            return {
-                apps: mainThing.children,                
-                getMoreApps: getMoreApps,
-                getMoreAppsServices: getMoreAppsServices
-            }
+            return AppsManager;
 
         }]);
         // Define the `ThingsListController` controller
-        app.controller('ThingsListController', ['$q', '$scope', 'appsManager', function ThingsListController($q, $scope, appsManager) {
+        app.controller('ThingsListController', ['$q', '$scope', 'AppsManager', function ThingsListController($q, $scope, AppsManager) {
+
+            var appsManager = new AppsManager();
 
             var abortHttpCalls = $q.defer();
-
+            
             $scope.apps = appsManager.apps;
 
             appsManager.getMoreApps(abortHttpCalls).then(function() {
@@ -188,7 +191,7 @@
         }]);
 
 
-  app.controller('PushNotificationCtrl', ['$scope', 'pushNotificationsDataContext', function ThingsListController($scope, pushNotificationsDataContext) {
+        app.controller('PushNotificationCtrl', ['$scope', 'pushNotificationsDataContext', function ThingsListController($scope, pushNotificationsDataContext) {
             $scope.checkboxLanguage = {
                 it: false,
                 en: false,
@@ -262,19 +265,21 @@
 	<div>
 		// Bravo!
 	</div>
+    
     <div ng-controller="ThingsListController">
         <ul>
             <li ng-repeat="app in apps">
                 <span>{{app.id}}</span> - 
                 <span>{{app.name}}</span>
                 <ul>
-                    <li ng-repeat="child in apps.children">
+                    <li ng-repeat="child in app.children">
                         <span>{{child.name}}</span>
                     </li>
                 </ul>
             </li>
         </ul>
     </div>
+
     <div ng-controller="PushNotificationCtrl">
         <h3>Test send</h3>
         <input type="text" ng-model="hubId" placeholder="ThingHub ID">
