@@ -187,6 +187,74 @@
            
         }]);
 
+
+  app.controller('PushNotificationCtrl', ['$scope', 'pushNotificationsDataContext', function ThingsListController($scope, pushNotificationsDataContext) {
+            $scope.checkboxLanguage = {
+                it: false,
+                en: false,
+                de: false
+            };
+            $scope.checkboxPlatforms = {
+                gcm: false,
+                apns: false
+            };
+            
+            //ThingId Azure PushNotificationHUB
+            $scope.hubId = "";
+            
+            //Local Messages
+            $scope.localMessages = [];
+            $scope.addRemoveMessage = function(value){
+                
+                var indexFound;
+               
+                for(var i=0; i < $scope.localMessages.length; i++){
+                    if($scope.localMessages[i].culture == value)
+                        indexFound = i;
+                }
+                
+                if(indexFound !=undefined)
+                   $scope.localMessages.splice(indexFound, 1);     
+
+                else 
+                    $scope.localMessages.push({title: "", message: "", culture: value});     
+            };
+            
+            //Platforms
+            $scope.platforms = [];
+            $scope.addRemovePlatform = function(value){
+                
+                var indexFound;
+               
+                for(var i=0; i < $scope.platforms.length; i++){
+                    if($scope.platforms[i] == value)
+                        indexFound = i;
+                }
+                
+                if(indexFound !=undefined)
+                   $scope.platforms.splice(indexFound, 1);     
+                else 
+                    $scope.platforms.push(value);     
+                    
+            };
+            
+            //Send Push Notification
+            $scope.SendPushNotification = function(){
+                var pushModel = {
+                    pns: $scope.platforms,
+                    thingId: $scope.hubId,
+                    localMessages : $scope.localMessages
+                };
+                
+                pushNotificationsDataContext.push(pushModel)
+                .then(function(data){
+                    console.log(data);
+                }, function(error){
+                    console.log(error);
+                })
+            }
+            
+        }]);
     </script>
 
 </head>
@@ -197,7 +265,7 @@
     <div ng-controller="ThingsListController">
         <ul>
             <li ng-repeat="app in apps">
-                <span>{{app.id}}</span>
+                <span>{{app.id}}</span> - 
                 <span>{{app.name}}</span>
                 <ul>
                     <li ng-repeat="child in apps.children">
@@ -207,6 +275,43 @@
             </li>
         </ul>
     </div>
+    <div ng-controller="PushNotificationCtrl">
+        <h3>Test send</h3>
+        <input type="text" ng-model="hubId" placeholder="ThingHub ID">
+        <br>
+          <p>Platforms:</p><hr>
+        <label>Google:
+            <input type="checkbox" ng-model="checkboxPlatforms.gcm" ng-change="addRemovePlatform('gcm')">
+        </label>
+        <label>Apple:
+            <input type="checkbox" ng-model="checkboxPlatforms.apns" ng-change="addRemovePlatform('apns')">
+        </label><br><br>
+        <p>Languages:</p><hr>
+        <label>IT:
+            <input type="checkbox" ng-model="checkboxLanguage.it" ng-change="addRemoveMessage('IT')">
+        </label>
+        <label>EN:
+            <input type="checkbox" ng-model="checkboxLanguage.en" ng-change="addRemoveMessage('EN')">
+        </label>
+        <label>DE:
+            <input type="checkbox" ng-model="checkboxLanguage.de" ng-change="addRemoveMessage('DE')">
+        </label><br/><br />
+        <div ng-repeat="localMessage in localMessages">
+            <p>Add message for {{localMessage.culture}}</p>
+            <input type="text" ng-model="localMessage.culture" hidden/>
+            <input type="text" placeholder="Title {{localMessage.culture}}" ng-model="localMessage.title" />
+            <input type="text" placeholder="Message {{localMessage.culture}}" ng-model="localMessage.message" />
+            <hr>
+        </div>
+        <button ng-click="SendPushNotification()">Send</button><br>
+        <code>
+            {{platforms}}
+        </code>
+        <br>
+        <code>
+            {{localMessages}}
+        </code>
+        
+    </div>
 </body>
-
 </html>

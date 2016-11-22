@@ -31,10 +31,10 @@
             return req;
         },
 
-        // pushMessageSample = {
-        //    pns: 'gcm',// TODO: Generare una GUID e memorizzare sulla localstorage
+      // pushMessageSample = {
+        //    pns: ['gcm', 'apns'],
         //    thingId: '2140c212-0865-4845-8b5e-c5153007dfa5',
-        //    message: {...}
+        //    localMessages: [{title:"", message:"", culture: "EN"}]
         //}
         push: function (pushMessage) {
             var req = $http({
