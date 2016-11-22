@@ -10,9 +10,25 @@
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/signalr/jquery.signalR.min.js"></script>
 
-	<script src="bower_components/freeants-angular/dist/freeants-angular.debug.js"></script>
-    <!--<script src="bower_components/freeants-angular/dist/freeants-angular.min.js"></script>-->
+    // Must be the First
+    <script src="src/module.js"></script>
 
+	<script src="src/account.datacontext.js"></script>
+    <script src="src/accountManager.js"></script>
+    <script src="src/asyncLoader.js"></script>
+    <script src="src/constants.js"></script>
+    <script src="src/helpers.js"></script>
+    <script src="src/localizator.js"></script>
+    <script src="src/login.datacontext.js"></script>
+    <script src="src/notifiersConnector.js"></script>
+    <script src="src/pushNotifications.datacontext.js"></script>
+    <script src="src/thing.datacontext.js"></script>
+    <script src="src/thingmodel.js"></script>
+    <script src="src/things.manager.js"></script>
+    <script src="src/thingUserRights.datacontext.js"></script>
+    <script src="src/translationService.js"></script>
+    <script src="src/user.datacontext.js"></script>
+    
     <script>
         'use strict'
 
