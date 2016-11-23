@@ -48,8 +48,8 @@
 
         }]);
 
-        app.run(['$http', '$rootScope', 'notifierConnector', 'path', 'thingsDataContext', 'thingUserRightsDataContext', 'ThingsManager', 'accountManagerService',
-            function ($http, $rootScope, notifierConnector, path, thingsDataContext, thingUserRightsDataContext, ThingsManager, accountManagerService) {
+        app.run([ 'path', 'accountManagerService', 'notifierConnector', 
+            function (path, accountManagerService, notifierConnector) {
 
                 //Initialize SignalR
                function connectionStatus(change) {
