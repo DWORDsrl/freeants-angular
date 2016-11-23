@@ -106,8 +106,10 @@
         }]);
 
         app.factory('AppsManager', ['$q', 'thingsManager', 'ThingModel',  'notifierConnector', function ($q, thingsManager, ThingModel, notifierConnector) {
-
+        
             function AppsManager() {
+
+                var self = this;
 
                 this.mainThing = new ThingModel();
                 this.apps = this.mainThing.children;
@@ -128,17 +130,26 @@
                         orderBy: null,
                         valueFilter: null
                     };
-            }    
 
-            notifierConnector.setHook('onCreateThing', function (thing) {
-                console.log('OnCreateThing');
-            });
-            notifierConnector.setHook('onDeleteChildThingId', function (parentThingId, childThingId, kind) {
-                console.log('onDeleteChildThingId');
-            });
-            notifierConnector.setHook('onUpdateThingValue', function (thingId, value) {
-                console.log('onUpdateThingValue 2');
-            });
+                this.onCreateThing = function onCreateThing(thing) {
+                }
+                this.onDeleteChildThingId = function onDeleteChildThingId(parentThingId, childThingId, kind) {
+                }
+                this.onUpdateThingValue = function onUpdateThingValue(thingId, value) {
+                }
+
+                notifierConnector.setHook('onCreateThing', function (thing) {
+                    self.onCreateThing(thing);
+                });
+                notifierConnector.setHook('onDeleteChildThingId', function (parentThingId, childThingId, kind) {
+                    self.onDeleteChildThingId(parentThingId, childThingId, kind);
+                });
+                notifierConnector.setHook('onUpdateThingValue', function (thingId, value) {
+                    self.onUpdateThingValue(thingId, value);
+                });
+            }
+
+            //AppsManager.prototype.mainThing = new ThingModel();
 
             AppsManager.prototype.getMoreAppsServices = function getMoreAppsServices(app, cancel) {
                 return thingsManager.elapseThing(app, this.getServicesParams, cancel)
@@ -184,12 +195,10 @@
             
             $scope.apps = appsManager.apps;
 
-            appsManager.getMoreApps(abortHttpCalls).then(function() {
+            appsManager.getMoreApps(abortHttpCalls).then(function() {                
                 appsManager.getMoreAppsServices($scope.apps[0], abortHttpCalls);
-            });
-           
+            });           
         }]);
-
 
         app.controller('PushNotificationCtrl', ['$scope', 'pushNotificationsDataContext', function ThingsListController($scope, pushNotificationsDataContext) {
             $scope.checkboxLanguage = {
