@@ -5,15 +5,15 @@
     angular.module('freeants').factory('schedulerDataContext', ['$http', 'helpers', 'path', function ($http, helpers, path) {
 
       //End points
-    function SchedulerRegisterUrl() {
-        return path.api + "/SchedulerRegister";
+    function SchedulerUrl() {
+        return path.api + "/Scheduler";
     }
     return {
         schedule: function (schedulerObject) {
             var req = $http({
                 method: 'POST',
                 headers: helpers.getSecurityHeaders(),
-                url: SchedulerRegisterUrl(),
+                url: SchedulerUrl(),
                 data: schedulerObject
             }).then(function (response) {
                 return response.data;
@@ -24,7 +24,7 @@
             var req = $http({
                 method: 'PUT',
                 headers: helpers.getSecurityHeaders(),
-                url: SchedulerRegisterUrl() + "/" + schedulerId,
+                url: SchedulerUrl() + "/" + schedulerId,
                 data: schedulerObject
             }).then(function (response) {
                 return response.data;
@@ -35,7 +35,7 @@
             var req = $http({
                 method: 'DELETE',
                 headers: helpers.getSecurityHeaders(),
-                url: SchedulerRegisterUrl() + "/" + schedulerId,
+                url: SchedulerUrl() + "/" + schedulerId,
                 data: {thingId: thingId}
             }).then(function (response) {
                 return response.data;
