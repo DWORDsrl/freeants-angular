@@ -22,6 +22,7 @@
     <script src="src/login.datacontext.js"></script>
     <script src="src/notifiersConnector.js"></script>
     <script src="src/pushNotifications.datacontext.js"></script>
+    <script src="src/scheduler.datacontext.js"></script>
     <script src="src/thing.datacontext.js"></script>
     <script src="src/thingmodel.js"></script>
     <script src="src/things.manager.js"></script>
@@ -44,7 +45,7 @@
 
                 accountManagerProvider.setAppName("thingsAngular");
                 accountManagerProvider.setStorage(localStorage, "AccessTokenOrDWApiKey");
-                accountManagerProvider.setApiKey("Insert your DWApiKey");
+                accountManagerProvider.setApiKey("Set ApiKey");
 
         }]);
 
@@ -188,7 +189,7 @@
         }]);
 
 
-  app.controller('PushNotificationCtrl', ['$scope', 'pushNotificationsDataContext', function ThingsListController($scope, pushNotificationsDataContext) {
+  app.controller('PushNotificationCtrl', ['$rootScope', '$scope', 'pushNotificationsDataContext', function ThingsListController($rootScope, $scope, pushNotificationsDataContext) {
             $scope.checkboxLanguage = {
                 it: false,
                 en: false,
@@ -199,8 +200,11 @@
                 apns: false
             };
             
+            $scope.image = "";
+            $scope.extraInfo = "";
+            
             //ThingId Azure PushNotificationHUB
-            $scope.hubId = "";
+            $scope.hubId = "8a7bc59a-aa97-409e-9fc9-c07760f17963";
             
             //Local Messages
             $scope.localMessages = [];
@@ -240,19 +244,66 @@
             
             //Send Push Notification
             $scope.SendPushNotification = function(){
-                var pushModel = {
+                $rootScope.pushModel = {
                     pns: $scope.platforms,
                     thingId: $scope.hubId,
-                    localMessages : $scope.localMessages
+                    localMessages : $scope.localMessages,
+                    image: $scope.image,
+                    extraInfo: $scope.extraInfo
                 };
                 
-                pushNotificationsDataContext.push(pushModel)
+                pushNotificationsDataContext.push($rootScope.pushModel)
                 .then(function(data){
                     console.log(data);
                 }, function(error){
                     console.log(error);
                 })
             }
+            
+             $scope.SavePushNotification = function(){
+                $rootScope.pushModel = {
+                    pns: $scope.platforms,
+                    thingId: $scope.hubId,
+                    localMessages : $scope.localMessages,
+                    image: $scope.image,
+                    extraInfo: $scope.extraInfo
+                };
+                
+              
+            }
+            
+        }]);
+        app.controller('SchedulerCtrl', ['$rootScope', '$scope', 'schedulerDataContext', function ThingsListController($rootScope, $scope, schedulerDataContext) {
+            
+            $scope.modelScheduling = {};
+            $scope.modelScheduling.tags = {
+                id: ""
+            }
+            $scope.modelScheduling.first = "";
+            $scope.modelScheduling.thingId = "5ec29397-72fc-4437-bc04-0f18910a731d";
+            $scope.modelScheduling.url = "http://titaggocoreportal.azurewebsites.net/api/PushNotificationsPushATrigger?DWApiKey=dfa1e8b4-a7dc-4bdd-99cb-7c08a4a75b50";
+            $scope.convertPostData = function(){
+                var modJson = {
+                    thingId: $rootScope.pushModel.thingId,
+                    pns: angular.toJson($rootScope.pushModel.pns),
+                    localMessages: angular.toJson($rootScope.pushModel.localMessages),
+                    image: $rootScope.pushModel.image,
+                    extraInfo: $rootScope.pushModel.extraInfo
+                };
+               
+                $scope.modelScheduling.postData = angular.toJson(modJson);
+            }
+            
+            $scope.schedule = function(){
+                schedulerDataContext.schedule($scope.modelScheduling)
+                .then(function(data){
+                    console.log(data);
+                }, function(error){
+                    console.log(error);
+                })
+                
+            }
+            
             
         }]);
     </script>
@@ -303,7 +354,13 @@
             <input type="text" placeholder="Message {{localMessage.culture}}" ng-model="localMessage.message" />
             <hr>
         </div>
+        <br>
+          <input type="text" ng-model="image" placeholder="Image URL">
+          <input type="text" ng-model="extraInfo" placeholder="EtraInfo URL parameters"><br>
+
         <button ng-click="SendPushNotification()">Send</button><br>
+        <button ng-click="SavePushNotification()">Save</button><br>
+
         <code>
             {{platforms}}
         </code>
@@ -311,7 +368,53 @@
         <code>
             {{localMessages}}
         </code>
-        
+    </div>
+     <div ng-controller="SchedulerCtrl">
+        <h3>Test Scheduler</h3>
+        <label>Enable
+          <input type="checkbox" ng-model="modelScheduling.status" ng-change="convertPostData()">
+        </label>
+        <input type="text" ng-model="modelScheduling.thingId" placeholder="Scheduler ID">
+        <br>
+  
+          <p>When:</p>
+            <select ng-model="modelScheduling.timeValue">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+          </select>
+          <select ng-model="modelScheduling.timeQuantity">
+              <option value="Minute">Minute</option>
+              <option value="Hour">Hour</option>
+              <option value="Day">Day</option>
+              <option value="Mouth">Mouth</option>
+             <option value="Year">Year</option>
+          </select>
+           <input type="text" ng-model="modelScheduling.first" placeholder="Start at">
+        <label>How many time execute?
+            <select ng-model="modelScheduling.count">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+            </select>   
+          </label>
+          <label>How many time retries if request fail?
+            <select ng-model="modelScheduling.retires">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+            </select>   
+          </label>
+          <input type="text" ng-model="modelScheduling.tags.id" placeholder="tagId"><br>
+
+          <button ng-click="schedule()">Schedule</button><br>
+          <hr>
+        <code>
+            {{modelScheduling}}
+        </code>
     </div>
 </body>
 </html>
