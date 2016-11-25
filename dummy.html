@@ -10,7 +10,7 @@
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/signalr/jquery.signalR.min.js"></script>
 
-    // Must be the First
+    <!-- Must be the First -->    
     <script src="src/module.js"></script>
 
 	<script src="src/account.datacontext.js"></script>
@@ -326,7 +326,11 @@
 
             appsManager.getMoreApps(abortHttpCalls).then(function() {                
                 appsManager.getMoreAppsServices($scope.apps[0], abortHttpCalls);
-            });           
+            });
+
+            $scope.getMoreApps = function() {
+                appsManager.getMoreApps(abortHttpCalls);
+            }           
         }]);
 
         app.controller('PushNotificationCtrl', ['$scope', 'pushNotificationsDataContext', function ThingsListController($scope, pushNotificationsDataContext) {
@@ -404,10 +408,13 @@
 		// Bravo!
 	</div>
 
-    <div id="wrapper" >
-	    <div id="columns">
-    
-            <div ng-controller="ThingsListController">
+    <div ng-controller="ThingsListController">
+        <button ng-click="getMoreApps()">
+            getMoreThings
+        </button>
+
+        <div id="wrapper" >
+            <div id="columns">    
                 <div class="pin"  ng-repeat="app in apps">
                     <span>{{app.id}}</span> - 
                     <span>{{app.name}}</span>
