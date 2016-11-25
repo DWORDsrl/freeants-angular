@@ -125,11 +125,7 @@
 
                 accountManagerProvider.setAppName("thingsAngular");
                 accountManagerProvider.setStorage(localStorage, "AccessTokenOrDWApiKey");
-<<<<<<< HEAD
                 accountManagerProvider.setApiKey("Set ApiKey");
-=======
-                accountManagerProvider.setApiKey("6fce33cc-2e21-4669-9000-dc2b5bc9cc99");
->>>>>>> e554f61bbbb3d81007ba540a97aa2fb319e6a340
 
         }]);
 
@@ -338,11 +334,9 @@
             }           
         }]);
 
-<<<<<<< HEAD
-  app.controller('PushNotificationCtrl', ['$rootScope', '$scope', 'pushNotificationsDataContext', function ThingsListController($rootScope, $scope, pushNotificationsDataContext) {
-=======
-        app.controller('PushNotificationCtrl', ['$scope', 'pushNotificationsDataContext', function ThingsListController($scope, pushNotificationsDataContext) {
->>>>>>> e554f61bbbb3d81007ba540a97aa2fb319e6a340
+
+        app.controller('PushNotificationCtrl', ['$rootScope', '$scope', 'pushNotificationsDataContext', function ThingsListController($rootScope, $scope, pushNotificationsDataContext) {
+
             $scope.checkboxLanguage = {
                 it: false,
                 en: false,
@@ -426,6 +420,7 @@
             }
             
         }]);
+
         app.controller('SchedulerCtrl', ['$rootScope', '$scope', 'schedulerDataContext', function ThingsListController($rootScope, $scope, schedulerDataContext) {
             
             $scope.modelScheduling = {};
