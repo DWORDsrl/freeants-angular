@@ -2,6 +2,8 @@
 
 Free Ants Angular SDK - Lab version
 
+1.0.21 - 25-11-2016 - Added scheduling support
+
 1.0.20 - 11-21-2016 - Removed example.html
 
 1.0.19 - 11-21-2016 - Bug fix

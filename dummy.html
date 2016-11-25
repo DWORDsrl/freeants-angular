@@ -30,6 +30,7 @@
     <script src="src/translationService.js"></script>
     <script src="src/user.datacontext.js"></script>
 
+    <!-- Layout like pinterest -->
     <style>
 
         body {
@@ -125,7 +126,7 @@
 
                 accountManagerProvider.setAppName("thingsAngular");
                 accountManagerProvider.setStorage(localStorage, "AccessTokenOrDWApiKey");
-                accountManagerProvider.setApiKey("Set ApiKey");
+                accountManagerProvider.setApiKey("6fce33cc-2e21-4669-9000-dc2b5bc9cc99");
 
         }]);
 
@@ -334,7 +335,6 @@
             }           
         }]);
 
-
         app.controller('PushNotificationCtrl', ['$rootScope', '$scope', 'pushNotificationsDataContext', function ThingsListController($rootScope, $scope, pushNotificationsDataContext) {
 
             $scope.checkboxLanguage = {
@@ -473,11 +473,13 @@
                     <span>{{app.id}}</span> - 
                     <span>{{app.name}}</span>
                     <img ng-src="{{app.value.image}}" />
+                    <!--
                     <ul>
                         <li ng-repeat="child in app.children">
                             <span>{{child.name}}</span>
                         </li>
                     </ul>
+                    -->
                 </div>
             </div>
         </div>
@@ -526,6 +528,7 @@
             {{localMessages}}
         </code>
     </div>
+
      <div ng-controller="SchedulerCtrl">
         <h3>Test Scheduler</h3>
         <label>Enable
