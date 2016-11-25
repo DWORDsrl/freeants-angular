@@ -15,6 +15,9 @@
         "ThingUserVisibilityVisible": 1,
         "ThingUserVisibilityHidden": 2,
 
+        "ThingDeletedStatusOk": 1,
+        "ThingDeletedStatusDeletede": 2,
+
         "ThingUserReadClaimsCanReadThingUserChangeClaims": 1,
         "ThingUserReadClaimsCanReadCreationDate": 2,
         "ThingUserReadClaimsCanReadName": 4,

@@ -28,6 +28,86 @@
     <script src="src/thingUserRights.datacontext.js"></script>
     <script src="src/translationService.js"></script>
     <script src="src/user.datacontext.js"></script>
+
+    <style>
+
+        body {
+            background: url(http://subtlepatterns.com/patterns/scribble_light.png) ;
+        }
+
+        #wrapper {
+            width: 90%;
+            max-width: 1100px;
+            min-width: 800px;
+            margin: 50px auto;
+        }
+
+        #columns {
+            -webkit-column-count: 3;
+            -webkit-column-gap: 10px;
+            -webkit-column-fill: auto;
+            -moz-column-count: 3;
+            -moz-column-gap: 10px;
+            -moz-column-fill: auto;
+            column-count: 3;
+            column-gap: 15px;
+            column-fill: auto;
+        }
+
+        .pin {
+            display: inline-block;
+            background: #FEFEFE;
+            border: 2px solid #FAFAFA;
+            box-shadow: 0 1px 2px rgba(34, 25, 25, 0.4);
+            margin: 0 2px 15px;
+            -webkit-column-break-inside: avoid;
+            -moz-column-break-inside: avoid;
+            column-break-inside: avoid;
+            padding: 15px;
+            padding-bottom: 5px;
+            background: -webkit-linear-gradient(45deg, #FFF, #F9F9F9);
+            opacity: 1;
+            
+            -webkit-transition: all .2s ease;
+            -moz-transition: all .2s ease;
+            -o-transition: all .2s ease;
+            transition: all .2s ease;
+        }
+
+        .pin img {
+            width: 100%;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 15px;
+            margin-bottom: 5px;
+        }
+
+        .pin p {
+            font: 12px/18px Arial, sans-serif;
+            color: #333;
+            margin: 0;
+        }
+
+        @media (min-width: 960px) {
+            #columns {
+                -webkit-column-count: 4;
+                -moz-column-count: 4;
+                column-count: 4;
+            }
+        }
+
+        @media (min-width: 1100px) {
+            #columns {
+                -webkit-column-count: 5;
+                -moz-column-count: 5;
+                column-count: 5;
+            }
+        }
+
+        #columns:hover .pin:not(:hover) {
+            opacity: 0.4;
+        }
+
+    </style>
     
     <script>
         'use strict'
@@ -48,61 +128,110 @@
 
         }]);
 
-        app.run([ 'path', 'accountManagerService', 'notifierConnector', 
-            function (path, accountManagerService, notifierConnector) {
+        app.factory('mainNotifier', ['notifierConnector', 'accountManagerService', 'path', '$timeout',
+            function (notifierConnector, accountManagerService, path, $timeout) {
 
-                //Initialize SignalR
-               function connectionStatus(change) {
-                   switch (change.newState) {
-                       case notifierConnector.connected:
-                           {
-                               console.log("connected");
-                               break;
-                           }
-                       case notifierConnector.connecting:
-                           {
-                               console.log("connecting");
-                               break;
-                           }
-                       case notifierConnector.reconnecting:
-                           {
-                               console.log("reconnecting");
-                               break;
-                           }
-                       case notifierConnector.disconnected:
-                       default:
-                           {
-                               console.log("disconnected");
-                               break;
-                           }
-                   }
-               }
-               function onReconnected() {
-                   console.log("OnReconnected");
-               };
+            function connectionStatus(change) {
+                switch (change.newState) {
+                    case notifierConnector.connected:
+                        {
+                            console.log("SignalR connected");
+                            break;
+                        }
+                    case notifierConnector.connecting:
+                        {
+                            console.log("SignalR connecting");
+                            break;
+                        }
+                    case notifierConnector.reconnecting:
+                        {
+                            console.log("SignalR reconnecting");
+                            break;
+                        }
+                    case notifierConnector.disconnected:
+                        {
+                            console.log("SignalR disconnected");
+                            break;
+                        }
+                    default:
+                        {
+                            console.log("SignalR connection status not recognized");
+                            break;
+                        }
+                }
+                //TODO: Questo timeout serve come workarround per aggiornare lo stato di connessione di signalR.
+                //      Togliendolo lo stato di connessione non si aggiorna
+                $timeout(null, 1);
+            }
+            function onReconnected() { }
 
-               notifierConnector.init(connectionStatus, onReconnected);
+            notifierConnector.init(connectionStatus, onReconnected);
 
-               notifierConnector.setHook('onCreateThing', function (thing) {
-                   console.log('OnCreateThing');
-               });
-               notifierConnector.setHook('onCreateChildThingId', function (parentThingId, childThingId, kind) {
-                   console.log('onCreateChildThingId');
-               });
-               notifierConnector.setHook('onUpdateThingValue', function (thingId, value) {
-                   console.log('onUpdateThingValue 1');
-               });
-               notifierConnector.setHook('onDeleteChildThingId', function (parentThingId, childThingId, kind) {
-                   console.log('onDeleteChildThingId');
-               });
+            function subscribeSuccess() {
+                console.log('SignalR Subscribe Success');
+            }
+            function subscribeFail() {
+                console.log('SignalR Subscribe Failed');
+            }
 
-               function subscribeSuccess() {
-                   console.log('SignalR Subscribe Success');
-               }
-               function subscribeFail() {
-                   console.log('SignalR Subscribe Failed');
-               }
-               notifierConnector.subscribe(path.server + "signalr", "DWApiKey", accountManagerService.getApiKey, subscribeSuccess, subscribeFail);
+            notifierConnector.setHook('onCreateThing', function (thing) {
+
+                //INFO: Inserire qui il codice utile
+
+                //TODO: Questo timeout serve come workarround per aggiornare lo stato di connessione di signalR.
+                //      Togliendolo lo stato di connessione non si aggiorna
+                $timeout(null, 1);
+            });
+            notifierConnector.setHook('onDeleteThing', function (thingId) {
+
+                //INFO: Inserire qui il codice utile
+
+                //TODO: Questo timeout serve come workarround per aggiornare lo stato di connessione di signalR.
+                //      Togliendolo lo stato di connessione non si aggiorna
+                $timeout(null, 1);
+            });
+            notifierConnector.setHook('onCreateChildThingId', function (parent, child, kind) {
+
+                //INFO: Inserire qui il codice utile
+
+                //TODO: Questo timeout serve come workarround per aggiornare lo stato di connessione di signalR.
+                //      Togliendolo lo stato di connessione non si aggiorna
+                $timeout(null, 1);
+            });
+            notifierConnector.setHook('onUpdateThingValue', function (thingId, value) {
+
+                //INFO: Inserire qui il codice utile
+
+                //TODO: Questo timeout serve come workarround per aggiornare lo stato di connessione di signalR.
+                //      Togliendolo lo stato di connessione non si aggiorna
+                $timeout(null, 1);
+            });
+            notifierConnector.setHook('onDeleteChildThingId', function (parent, child, kind) {
+
+                //INFO: Inserire qui il codice utile
+
+                //TODO: Questo timeout serve come workarround per aggiornare lo stato di connessione di signalR.
+                //      Togliendolo lo stato di connessione non si aggiorna
+                $timeout(null, 1);
+            });
+
+            var extport = {
+                subscribe: function () {
+                    notifierConnector.subscribe(path.server + "signalr", "DWApiKey", accountManagerService.getApiKey, subscribeSuccess, subscribeFail);
+                },
+                unsubscribe: function () {
+                    notifierConnector.unsubscribe();
+                },
+                connectionStatus: notifierConnector.disconnected
+            }
+
+            return extport;
+        }])
+
+        app.run(['mainNotifier', 
+            function (mainNotifier) {
+
+                mainNotifier.subscribe();
         }]);
 
         app.factory('AppsManager', ['$q', 'thingsManager', 'ThingModel',  'notifierConnector', function ($q, thingsManager, ThingModel, notifierConnector) {
@@ -116,8 +245,8 @@
 
                 this.getAppsParams = {			
                     //parentThingId: null,
-                    filter: "Name eq 'favorite'",
-                    top: 2,
+                    filter: "Kind eq 'B1996416-43C2-4193-938B-0275C27479AF'",
+                    top: 20,
                     //skip: 0,
                     orderBy: null,
                     valueFilter: null
@@ -274,19 +403,23 @@
 	<div>
 		// Bravo!
 	</div>
+
+    <div id="wrapper" >
+	    <div id="columns">
     
-    <div ng-controller="ThingsListController">
-        <ul>
-            <li ng-repeat="app in apps">
-                <span>{{app.id}}</span> - 
-                <span>{{app.name}}</span>
-                <ul>
-                    <li ng-repeat="child in app.children">
-                        <span>{{child.name}}</span>
-                    </li>
-                </ul>
-            </li>
-        </ul>
+            <div ng-controller="ThingsListController">
+                <div class="pin"  ng-repeat="app in apps">
+                    <span>{{app.id}}</span> - 
+                    <span>{{app.name}}</span>
+                    <img ng-src="{{app.value.image}}" />
+                    <ul>
+                        <li ng-repeat="child in app.children">
+                            <span>{{child.name}}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div ng-controller="PushNotificationCtrl">
