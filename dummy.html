@@ -30,6 +30,7 @@
     <script src="src/translationService.js"></script>
     <script src="src/user.datacontext.js"></script>
 
+    <!-- Can be copied to examples -->    
     <!-- Layout like pinterest -->
     <style>
 
@@ -110,11 +111,19 @@
         }
 
     </style>
-    
+
+    <!-- Can be copied to examples -->
     <script>
         'use strict'
 
         var app = angular.module('thingsAngular', ['freeants']);
+
+    </script>
+    
+    <!-- Can be copied to examples -->
+    <script>
+
+        'use strict'
 
         app.constant("path", {
             server: "http://titaggocoreportal.azurewebsites.net/",
@@ -335,7 +344,13 @@
             }           
         }]);
 
-        app.controller('PushNotificationCtrl', ['$rootScope', '$scope', 'pushNotificationsDataContext', function ThingsListController($rootScope, $scope, pushNotificationsDataContext) {
+    </script>
+
+    <!-- Dont copy to examples -->
+    <script>
+            'use strict'
+
+            app.controller('PushNotificationCtrl', ['$rootScope', '$scope', 'pushNotificationsDataContext', function ThingsListController($rootScope, $scope, pushNotificationsDataContext) {
 
             $scope.checkboxLanguage = {
                 it: false,
@@ -452,16 +467,19 @@
                 
             }
             
-            
         }]);
+
     </script>
 
 </head>
 <body>
+
+    <!-- Can be copied to examples -->    
 	<div>
 		// Bravo!
 	</div>
 
+    <!-- Can be copied to examples -->
     <div ng-controller="ThingsListController">
         <button ng-click="getMoreApps()">
             getMoreThings
@@ -485,6 +503,7 @@
         </div>
     </div>
 
+    <!-- Dont copy to examples -->
     <div ng-controller="PushNotificationCtrl">
         <h3>Test send</h3>
         <input type="text" ng-model="hubId" placeholder="ThingHub ID">
