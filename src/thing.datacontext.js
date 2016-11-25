@@ -1,5 +1,4 @@
-﻿
-(function() {
+﻿(function() {
     'use strict';
     
     angular.module('freeants').factory('thingsDataContext', ['$http', 'helpers', 'path', '$q', function ($http, helpers, path, $q) {
@@ -67,7 +66,7 @@
             });
             return req;
         },
-        getThings1: function (parameter, defer) {
+        getThings1: function (parameter, timeout) {
             var urlRaw = thingsUrl() + "?" +
                     (!!parameter.parentThingId ? ("&$parentId=" + parameter.parentThingId) : "") +
                     (!!parameter.filter ? ("&$filter=" + parameter.filter) : "") +
@@ -79,7 +78,7 @@
             var req = $http({
                 method: 'GET',
                 headers: helpers.getSecurityHeaders(),
-                timeout: (defer) ? (defer.promise) : null,
+                timeout: (timeout) ? (timeout.promise) : null,
                 url: urlRaw
             }).then(function (response) {                                            
                 return {

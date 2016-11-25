@@ -1,5 +1,4 @@
-﻿
-(function () {
+﻿(function () {
     'use strict';
     angular.module('freeants').factory('thingUserRightsDataContext', ['$q', '$http', 'helpers', 'path', function ($q, $http, helpers, path) {
 

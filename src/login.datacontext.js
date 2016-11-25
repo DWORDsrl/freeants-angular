@@ -1,5 +1,4 @@
-﻿
-(function () {
+﻿(function () {
     'use strict';
     
     angular.module('freeants').factory('loginDataContext', ['$http', 'helpers', function ($http, helpers) {

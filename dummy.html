@@ -3,7 +3,9 @@
 <html lang="it" ng-app="thingsAngular">
 <head>
     <meta charset="utf-8" />
+
     <title>Things Console with FreeAnts Angular SDK</title>
+
     <!-- Base Libraries -->
     <script src="bower_components/angular/angular.js"></script>
     <script src="bower_components/angular-translate/angular-translate.min.js"></script>
@@ -245,7 +247,7 @@
                 mainNotifier.subscribe();
         }]);
 
-        app.factory('AppsManager', ['$q', 'thingsManager', 'ThingModel',  'notifierConnector', function ($q, thingsManager, ThingModel, notifierConnector) {
+        app.factory('AppsManager', ['$q', '$filter', 'thingsManager', 'ThingModel',  'notifierConnector', function ($q, $filter, thingsManager, ThingModel, notifierConnector) {
         
             function AppsManager() {
 
@@ -256,8 +258,9 @@
 
                 this.getAppsParams = {			
                     //parentThingId: null,
-                    filter: "Kind eq 'B1996416-43C2-4193-938B-0275C27479AF'",
-                    top: 20,
+                    //filter: "Kind eq 'B1996416-43C2-4193-938B-0275C27479AF'",
+                    filter: "Kind eq '5F22D6AC-FAFA-4CDA-A460-1AF5E09A2D93'",
+                    top: 5,
                     //skip: 0,
                     orderBy: null,
                     valueFilter: null
@@ -276,6 +279,10 @@
                 this.onDeleteChildThingId = function onDeleteChildThingId(parentThingId, childThingId, kind) {
                 }
                 this.onUpdateThingValue = function onUpdateThingValue(thingId, value) {
+                    var result = $filter('filter')(this.mainThing.children, { id: thingId });
+                    if (result.length == 0)
+                        return;
+                    result[0].value = value;
                 }
 
                 notifierConnector.setHook('onCreateThing', function (thing) {
@@ -422,16 +429,14 @@
                 })
             }
             
-             $scope.SavePushNotification = function(){
+            $scope.SavePushNotification = function(){
                 $rootScope.pushModel = {
                     pns: $scope.platforms,
                     thingId: $scope.hubId,
                     localMessages : $scope.localMessages,
                     image: $scope.image,
                     extraInfo: $scope.extraInfo
-                };
-                
-              
+                };              
             }
             
         }]);
@@ -490,7 +495,13 @@
                 <div class="pin"  ng-repeat="app in apps">
                     <span>{{app.id}}</span> - 
                     <span>{{app.name}}</span>
+
+                    <span>{{app.value}}</span>
+                    
+                    <!--
                     <img ng-src="{{app.value.image}}" />
+                    -->
+
                     <!--
                     <ul>
                         <li ng-repeat="child in app.children">

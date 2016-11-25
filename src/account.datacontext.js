@@ -1,5 +1,4 @@
-﻿
-(function() {
+﻿(function() {
     'use strict';
     
     angular.module('freeants').factory('accountDataContext', ['$http', 'helpers', 'path', function ($http, helpers, path) {

@@ -1,5 +1,4 @@
-﻿
-(function() {
+﻿(function() {
     'use strict';
     
     angular.module('freeants').factory('pushNotificationsDataContext', ['$http', 'helpers', 'path', '$q', function ($http, helpers, path, $q) {
