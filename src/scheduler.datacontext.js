@@ -31,12 +31,12 @@
             });
             return req;
         },
-         delete: function (schedulerId) {
+         delete: function (thingId, schedulerId) {
             var req = $http({
                 method: 'DELETE',
                 headers: helpers.getSecurityHeaders(),
                 url: SchedulerRegisterUrl() + "/" + schedulerId,
-                data: null
+                data: {thingId: thingId}
             }).then(function (response) {
                 return response.data;
             });
