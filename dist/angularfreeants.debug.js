@@ -543,6 +543,9 @@
         "ThingUserVisibilityVisible": 1,
         "ThingUserVisibilityHidden": 2,
 
+        "ThingDeletedStatusOk": 1,
+        "ThingDeletedStatusDeletede": 2,
+
         "ThingUserReadClaimsCanReadThingUserChangeClaims": 1,
         "ThingUserReadClaimsCanReadCreationDate": 2,
         "ThingUserReadClaimsCanReadName": 4,
@@ -676,7 +679,7 @@
                 if (!results[2]) return '';
                 return decodeURIComponent(results[2].replace(/\+/g, " "));
             },
-           validateEmail: function (email) {
+            validateEmail: function (email) {
                 var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                 return re.test(email);
             }
@@ -1034,10 +1037,10 @@
             return req;
         },
 
-        // pushMessageSample = {
-        //    pns: 'gcm',// TODO: Generare una GUID e memorizzare sulla localstorage
+      // pushMessageSample = {
+        //    pns: ['gcm', 'apns'],
         //    thingId: '2140c212-0865-4845-8b5e-c5153007dfa5',
-        //    message: {...}
+        //    localMessages: [{title:"", message:"", culture: "EN"}]
         //}
         push: function (pushMessage) {
             var req = $http({
@@ -1045,6 +1048,31 @@
                 headers: helpers.getSecurityHeaders(),
                 url: pushNotificationsPushUrl(),
                 data: pushMessage
+            }).then(function (response) {
+                return response.data;
+            });
+            return req;
+        }
+    }
+}]);
+}());
+
+(function() {
+    'use strict';
+    
+    angular.module('freeants').factory('schedulerDataContext', ['$http', 'helpers', 'path', function ($http, helpers, path) {
+
+      //End points
+    function SchedulerRegisterUrl() {
+        return path.api + "/SchedulerRegister";
+    }
+    return {
+        schedule: function (schedulerObject) {
+            var req = $http({
+                method: 'PUT',
+                headers: helpers.getSecurityHeaders(),
+                url: SchedulerRegisterUrl(),
+                data: schedulerObject
             }).then(function (response) {
                 return response.data;
             });
