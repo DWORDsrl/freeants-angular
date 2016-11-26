@@ -1,9 +1,7 @@
 ﻿(function () {
     'use strict';
 
-    angular.module('freeants')
-
-    .constant("thingClaims", {
+    angular.module('freeants').constant("thingClaims", {
     
         "ThingUserRoleAdministrator": 1,
         "ThingUserRoleUser": 2,
