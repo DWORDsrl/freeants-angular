@@ -1,20 +1,16 @@
-﻿
-(function () {
+﻿(function () {
     'use strict';
-    angular.module('freeants').factory('thingUserRightsDataContext', ['$q', '$http', 'helpers', 'path', function ($q, $http, helpers, path) {
+    angular.module('freeants').factory('userDataContext', ['$http', 'helpers', function ($http, helpers) {
 
-    // routes
-    function thingsUserRoleStatusUrl(thingId, userId) {
-        return path.api + "/things/" + thingId + "/usersrights" + (userId != undefined ? ("/" + userId) : "");
-    }
+    function usersUrl(id) { return GlobalPathApiUri + "/users/" + (id || ""); }
 
     return {
 
-        getThingUsersRights: function (parameter) {
+        getUsers : function (filter, orderBy, top, skip) {
             var req = $http({
                 method: 'GET',
                 headers: helpers.getSecurityHeaders(),
-                url: thingsUserRoleStatusUrl(parameter.thingId) + "?&parentId=" +
+                url: usersUrl() + "?&parentId=" +
                     (parameter.id == null || parameter.id == undefined ? "" : parameter.id) +
                     ((parameter.filter != null || parameter.filter != undefined) ? ("&$filter=" + parameter.filter) : "") +
                     ((parameter.top != null || parameter.top != undefined) ? ("&$top=" + parameter.top) : "") +
@@ -22,49 +18,52 @@
                     ((parameter.orderBy != null || parameter.orderBy != undefined) ? ("&$orderby=" + parameter.orderBy) : "")
             }).then(function (response) {
                 return response.data;
-            }, function (response) {
-                return $q.reject(response);
             });
             return req;
         },
 
-        createThingUserRights: function (thingId, thingUserRights) {
+        getUser : function (userId) {
+            var req = $http({
+                method: 'GET',
+                headers: helpers.getSecurityHeaders(),
+                url: usersUrl(userId)
+            }).then(function (response) {
+                return response.data;
+            });
+            return req;
+        },
+
+        createUser : function (userModel) {
             var req = $http({
                 method: 'POST',
                 headers: helpers.getSecurityHeaders(),
-                url: thingsUserRoleStatusUrl(thingId),
-                data: thingUserRights
+                url: usersUrl(),
+                data: userModel
             }).then(function (response) {
                 return response.data;
-            }, function (response) {
-                return $q.reject(response);
             });
             return req;
         },
 
-        updateThingUserRights: function (thingId, userId, thingUserRights) {
+        updateUser : function (userId, userModel) {
             var req = $http({
                 method: 'PUT',
                 headers: helpers.getSecurityHeaders(),
-                url: thingsUserRoleStatusUrl(thingId, userId),
-                data: thingUserRights
+                url: usersUrl(userId),
+                data: userModel
             }).then(function (response) {
                 return response.data;
-            }, function (response) {
-                return $q.reject(response);
             });
             return req;
         },
 
-        deleteThingUserRights: function (thingId, userId) {
+        deleteUser: function (userId) {
             var req = $http({
                 method: 'DELETE',
                 headers: helpers.getSecurityHeaders(),
-                url: thingsUserRoleStatusUrl(thingId, userId)
+                url: usersUrl(userId)
             }).then(function (response) {
                 return response.data;
-            }, function (response) {
-                return $q.reject(response);
             });
             return req;
         }

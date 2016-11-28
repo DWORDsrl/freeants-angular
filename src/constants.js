@@ -1,9 +1,7 @@
 ﻿(function () {
     'use strict';
 
-    angular.module('freeants')
-
-    .constant("thingClaims", {
+    angular.module('freeants').constant("thingClaims", {
     
         "ThingUserRoleAdministrator": 1,
         "ThingUserRoleUser": 2,
@@ -16,7 +14,7 @@
         "ThingUserVisibilityHidden": 2,
 
         "ThingDeletedStatusOk": 1,
-        "ThingDeletedStatusDeletede": 2,
+        "ThingDeletedStatusDeleted": 2,
 
         "ThingUserReadClaimsCanReadThingUserChangeClaims": 1,
         "ThingUserReadClaimsCanReadCreationDate": 2,

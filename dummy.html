@@ -3,7 +3,9 @@
 <html lang="it" ng-app="thingsAngular">
 <head>
     <meta charset="utf-8" />
+
     <title>Things Console with FreeAnts Angular SDK</title>
+
     <!-- Base Libraries -->
         <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/angular/angular.js"></script>
@@ -11,31 +13,33 @@
     <script src="bower_components/signalr/jquery.signalR.min.js"></script>
     <script src="bower_components/ngInfiniteScroll/build/ng-infinite-scroll.min.js"></script>
     
- 
-
-    <!-- Must be the First -->    
+     <!-- Must be the First -->    
     <script src="src/module.js"></script>
 
-	<script src="src/account.datacontext.js"></script>
+	<script src="src/accountDatacontext.js"></script>
     <script src="src/accountManager.js"></script>
     <script src="src/asyncLoader.js"></script>
     <script src="src/constants.js"></script>
     <script src="src/helpers.js"></script>
     <script src="src/localizator.js"></script>
-    <script src="src/login.datacontext.js"></script>
+    <script src="src/loginDatacontext.js"></script>
     <script src="src/notifiersConnector.js"></script>
-    <script src="src/pushNotifications.datacontext.js"></script>
-    <script src="src/scheduler.datacontext.js"></script>
-    <script src="src/thing.datacontext.js"></script>
-    <script src="src/thingmodel.js"></script>
-    <script src="src/things.manager.js"></script>
-    <script src="src/thingUserRights.datacontext.js"></script>
+    <script src="src/pushNotificationsDatacontext.js"></script>
+    <script src="src/schedulerDatacontext.js"></script>
+    <script src="src/thingDatacontext.js"></script>
+    <script src="src/ThingModel.js"></script>
+    <script src="src/thingsManager.js"></script>
+    <script src="src/thingUserRightsDatacontext.js"></script>
     <script src="src/translationService.js"></script>
-    <script src="src/user.datacontext.js"></script>
+    <script src="src/userDatacontext.js"></script>
 
+<<<<<<< HEAD
     
 
 
+=======
+    <!-- Can be copied to examples -->    
+>>>>>>> 17041aae94bc9834bb9076c3df5c52c303802768
     <!-- Layout like pinterest -->
     <style>
 
@@ -116,7 +120,8 @@
         }
 
     </style>
-    
+
+    <!-- Can be copied to examples -->
     <script>
         'use strict'
         
@@ -124,6 +129,13 @@
         // you might call this after your module initalization
         angular.module('infinite-scroll').value('THROTTLE_MILLISECONDS', 500)
         var app = angular.module('thingsAngular', ['freeants', 'infinite-scroll']);
+
+    </script>
+    
+    <!-- Can be copied to examples -->
+    <script>
+
+        'use strict'
 
         app.constant("path", {
             server: "http://titaggocoreportal.azurewebsites.net/",
@@ -245,7 +257,7 @@
                 mainNotifier.subscribe();
         }]);
 
-        app.factory('AppsManager', ['$q', 'thingsManager', 'ThingModel',  'notifierConnector', function ($q, thingsManager, ThingModel, notifierConnector) {
+        app.factory('AppsManager', ['$q', '$filter', 'thingsManager', 'ThingModel',  'notifierConnector', function ($q, $filter, thingsManager, ThingModel, notifierConnector) {
         
             function AppsManager() {
 
@@ -257,7 +269,8 @@
                 this.getAppsParams = {			
                     //parentThingId: null,
                     filter: "Kind eq 'B1996416-43C2-4193-938B-0275C27479AF'",
-                    top: 20,
+                    //filter: "Kind eq '5F22D6AC-FAFA-4CDA-A460-1AF5E09A2D93'",
+                    top: 5,
                     //skip: 0,
                     orderBy: null,
                     valueFilter: null
@@ -276,6 +289,10 @@
                 this.onDeleteChildThingId = function onDeleteChildThingId(parentThingId, childThingId, kind) {
                 }
                 this.onUpdateThingValue = function onUpdateThingValue(thingId, value) {
+                    var result = $filter('filter')(this.mainThing.children, { id: thingId });
+                    if (result.length == 0)
+                        return;
+                    result[0].value = value;
                 }
 
                 notifierConnector.setHook('onCreateThing', function (thing) {
@@ -349,7 +366,13 @@
             }           
         }]);
 
-        app.controller('PushNotificationCtrl', ['$rootScope', '$scope', 'pushNotificationsDataContext', function ThingsListController($rootScope, $scope, pushNotificationsDataContext) {
+    </script>
+
+    <!-- Dont copy to examples -->
+    <script>
+            'use strict'
+
+            app.controller('PushNotificationCtrl', ['$rootScope', '$scope', 'pushNotificationsDataContext', function ThingsListController($rootScope, $scope, pushNotificationsDataContext) {
 
             $scope.checkboxLanguage = {
                 it: false,
@@ -421,16 +444,14 @@
                 })
             }
             
-             $scope.SavePushNotification = function(){
+            $scope.SavePushNotification = function(){
                 $rootScope.pushModel = {
                     pns: $scope.platforms,
                     thingId: $scope.hubId,
                     localMessages : $scope.localMessages,
                     image: $scope.image,
                     extraInfo: $scope.extraInfo
-                };
-                
-              
+                };              
             }
             
         }]);
@@ -466,17 +487,24 @@
                 
             }
             
-            
         }]);
+
     </script>
 
 </head>
 <body>
+
+    <!-- Can be copied to examples -->    
 	<div>
 		// Bravo!
 	</div>
 
+<<<<<<< HEAD
     <div ng-controller="ThingsListController" infinite-scroll='getMoreApps()' infinite-scroll-disabled='disableAppScroll' infinite-scroll-use-document-bottom="true"> 
+=======
+    <!-- Can be copied to examples -->
+    <div ng-controller="ThingsListController">
+>>>>>>> 17041aae94bc9834bb9076c3df5c52c303802768
         <button ng-click="getMoreApps()">
             getMoreThings
         </button>
@@ -486,7 +514,12 @@
                 <div class="pin"  ng-repeat="app in apps">
                     <span>{{app.id}}</span> - 
                     <span>{{app.name}}</span>
+                    <!--
+                    <span>{{app.value}}</span>
+                    -->
+
                     <img ng-src="{{app.value.image}}" />
+
                     <!--
                     <ul>
                         <li ng-repeat="child in app.children">
@@ -499,6 +532,7 @@
         </div>
     </div>
 
+    <!-- Dont copy to examples -->
     <div ng-controller="PushNotificationCtrl">
         <h3>Test send</h3>
         <input type="text" ng-model="hubId" placeholder="ThingHub ID">

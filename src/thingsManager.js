@@ -1,5 +1,4 @@
-﻿
-(function () {
+﻿(function () {
     'use strict';
 
     // Deprecate
@@ -95,7 +94,7 @@
             });
         }
 
-        function getThings(parameter, defer) {
+        function getThings(parameter, timeout) {
             function getSucceded(data) {
                 var things = [];
 
@@ -109,7 +108,7 @@
                     itemsRange: data.itemsRange
                 }
             }
-            return thingsDataContext.getThings1(parameter, defer)
+            return thingsDataContext.getThings1(parameter, timeout)
                 .then(getSucceded);
         }        
           
@@ -141,7 +140,8 @@
         }
 
         function collapseThing(thing, cancel) {
-            cancel.resolve();
+            if (cancel)
+                cancel.resolve();
             thing.children = [];
             thing.childrenSkip = 0;
         }
