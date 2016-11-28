@@ -19,7 +19,8 @@
     "angular": "^1.5.6",
     "angular-translate": "^2.8.0",
     "jquery": "^2.2.3",
-    "signalr": "^2.2.0"
+    "signalr": "^2.2.0",
+    "ngInfiniteScroll" : "1.0.0"
   },
   "devDependencies": {},
   "resolutions": {

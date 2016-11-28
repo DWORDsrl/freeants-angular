@@ -5,10 +5,13 @@
     <meta charset="utf-8" />
     <title>Things Console with FreeAnts Angular SDK</title>
     <!-- Base Libraries -->
+        <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/angular/angular.js"></script>
     <script src="bower_components/angular-translate/angular-translate.min.js"></script>
-    <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/signalr/jquery.signalR.min.js"></script>
+    <script src="bower_components/ngInfiniteScroll/build/ng-infinite-scroll.min.js"></script>
+    
+ 
 
     <!-- Must be the First -->    
     <script src="src/module.js"></script>
@@ -29,6 +32,9 @@
     <script src="src/thingUserRights.datacontext.js"></script>
     <script src="src/translationService.js"></script>
     <script src="src/user.datacontext.js"></script>
+
+    
+
 
     <!-- Layout like pinterest -->
     <style>
@@ -113,8 +119,11 @@
     
     <script>
         'use strict'
-
-        var app = angular.module('thingsAngular', ['freeants']);
+        
+        /* ng-infinite-scroll - v1.0.0 - 2013-02-23 */
+        // you might call this after your module initalization
+        angular.module('infinite-scroll').value('THROTTLE_MILLISECONDS', 500)
+        var app = angular.module('thingsAngular', ['freeants', 'infinite-scroll']);
 
         app.constant("path", {
             server: "http://titaggocoreportal.azurewebsites.net/",
@@ -282,12 +291,9 @@
 
             //AppsManager.prototype.mainThing = new ThingModel();
 
-            AppsManager.prototype.getMoreAppsServices = function getMoreAppsServices(app, cancel) {
-                return thingsManager.elapseThing(app, this.getServicesParams, cancel)
-            }
-            
+                       
             AppsManager.prototype.getMoreApps = function getMoreApps(cancel) {
-                
+              
                 var self = this;
 
                 var def = $q.defer();
@@ -298,7 +304,7 @@
 
                     // Try to get all things children
                     for (var i = 0; i < data.things.length; i++) {
-                        promises.push(self.getMoreAppsServices(data.things[i], cancel));
+                        //promises.push(self.getMoreAppsServices(data.things[i], cancel));
                     }
 
                     $q.all(promises)
@@ -327,11 +333,19 @@
             $scope.apps = appsManager.apps;
 
             appsManager.getMoreApps(abortHttpCalls).then(function() {                
-                appsManager.getMoreAppsServices($scope.apps[0], abortHttpCalls);
+                //appsManager.getMoreAppsServices($scope.apps[0], abortHttpCalls);
             });
-
+            $scope.disableAppScroll = false;
+            
             $scope.getMoreApps = function() {
-                appsManager.getMoreApps(abortHttpCalls);
+                if ($scope.disableAppScroll)
+                    return;
+ 
+                $scope.disableAppScroll = true;
+                
+                appsManager.getMoreApps(abortHttpCalls).then(function(data){
+                    $scope.disableAppScroll = false;
+                })
             }           
         }]);
 
@@ -462,7 +476,7 @@
 		// Bravo!
 	</div>
 
-    <div ng-controller="ThingsListController">
+    <div ng-controller="ThingsListController" infinite-scroll='getMoreApps()' infinite-scroll-disabled='disableAppScroll' infinite-scroll-use-document-bottom="true"> 
         <button ng-click="getMoreApps()">
             getMoreThings
         </button>
