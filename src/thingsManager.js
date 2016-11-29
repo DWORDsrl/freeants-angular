@@ -146,11 +146,36 @@
             thing.childrenSkip = 0;
         }
 
+        function deleteChildrenThings(thingId) {
+
+            return thingsDataContext.getChildrenIds(thingId)
+            .then(function (childrenIds) {
+
+                var def = $q.defer();
+
+                var childrenPromises = [];
+
+                for (var i = 0; i < childrenIds.length; i++) {
+                    childrenPromises.push(thingsDataContext.deleteThing(childrenIds[i]));
+                }
+
+                return $q.all(childrenPromises)
+                    .then(function (data) {
+                        def.resolve(data);
+                        return data;
+                    }, function (data) {
+                        def.reject(data);
+                        return data;
+                    });
+            });
+        }
+
         return {
             createThing: createThing,
             getThings: getThings,            
             elapseThing: elapseThing,
-            collapseThing: collapseThing
+            collapseThing: collapseThing,
+            deleteChildrenThings: deleteChildrenThings 
         }
     }]);
 	

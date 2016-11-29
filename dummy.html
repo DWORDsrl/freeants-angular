@@ -334,29 +334,6 @@
                 return this.mainApp.childrenTotalItems;
             }
 
-            AppsManager.prototype.deleteApp = function(appId) {
-
-                return thingDatacontext.getChildrenIds(appdId)
-                .then(function(childrenIds) {
-                        var def = $q.defer();
-
-                        var childrenPromises = [];
-
-                        for (var i = 0; i < childrenIds.length;i++) {
-                            childrenPromises.push(thingsDataContext.deleteThing(app.thing.children));
-                        }
-                        
-                        return $q.all(childrenPromises).then(function () {
-                            def.resolve();
-                        }, function (data) {
-                            def.reject(data);
-                        });
-                    })
-                .then( function(data) {
-                    return thingDatacontext.deleteThing(appId);
-                });
-            }
-
             return AppsManager;
 
         }]);
