@@ -13,13 +13,13 @@ gulp.task('clean', function () {
 // DebugOld
 gulp.task('debugOld', ['clean'], function () {
     return gulp.src(['src/module.js','src/*.js'])
-      .pipe(concat('angularfreeants.debug.js'))
+      .pipe(concat('angular-freeants.debug.js'))
       .pipe(gulp.dest('dist'));
 });
 // minifyOld
 gulp.task('minifyOld', ['clean'], function () {
     return gulp.src(['src/module.js', 'src/*.js'])
-      .pipe(concat('angularfreeants.js'))
+      .pipe(concat('angular-freeants.js'))
       .pipe(rename({ suffix: '.min' }))
       .pipe(uglify())
       .pipe(gulp.dest('dist'));

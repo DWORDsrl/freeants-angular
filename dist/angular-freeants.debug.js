@@ -1479,9 +1479,9 @@
             thing.childrenSkip = 0;
         }
 
-        function deleteChildrenThings(thingId) {
+        function deleteChildrenThings(parentThingId) {
 
-            return thingsDataContext.getChildrenIds(thingId)
+            return thingsDataContext.getChildrenIds(parentThingId)
             .then(function (childrenIds) {
 
                 var def = $q.defer();
