@@ -122,22 +122,9 @@
         
         /* ng-infinite-scroll - v1.0.0 - 2013-02-23 */
         // you might call this after your module initalization
-        angular.module('infinite-scroll').value('THROTTLE_MILLISECONDS', 500)
+        angular.module('infinite-scroll').value('THROTTLE_MILLISECONDS', 500);
+
         var app = angular.module('thingsAngular', ['freeants', 'infinite-scroll']);
-
-    </script>
-    
-    <!-- Can be copied to examples -->
-    <script>
-
-        'use strict'
-
-    </script>
-    
-    <!-- Can be copied to examples -->
-    <script>
-
-        'use strict'
 
         app.constant("path", {
             server: "http://titaggocoreportal.azurewebsites.net/",
@@ -153,6 +140,13 @@
 
         }]);
 
+    </script>
+        
+    <!-- Can be copied to examples -->
+    <script>
+
+        'use strict'
+        
         app.factory('mainNotifier', ['notifierConnector', 'accountManagerService', 'path', '$timeout',
             function (notifierConnector, accountManagerService, path, $timeout) {
 
@@ -265,8 +259,8 @@
 
                 var self = this;
 
-                this.mainThing = new ThingModel();
-                this.apps = this.mainThing.children;
+                this.mainApp = new ThingModel();
+                this.apps = this.mainApp.children;
 
                 this.getAppsParams = {			
                     //parentThingId: null,
@@ -291,7 +285,7 @@
                 this.onDeleteChildThingId = function onDeleteChildThingId(parentThingId, childThingId, kind) {
                 }
                 this.onUpdateThingValue = function onUpdateThingValue(thingId, value) {
-                    var result = $filter('filter')(this.mainThing.children, { id: thingId });
+                    var result = $filter('filter')(this.mainApp.children, { id: thingId });
                     if (result.length == 0)
                         return;
                     result[0].value = value;
@@ -308,20 +302,17 @@
                 });
             }
 
-            //AppsManager.prototype.mainThing = new ThingModel();
-
-                       
             AppsManager.prototype.getMoreApps = function getMoreApps(cancel) {
               
                 var self = this;
 
                 var def = $q.defer();
                                 
-                thingsManager.elapseThing(this.mainThing, this.getAppsParams, cancel)
+                thingsManager.elapseThing(this.mainApp, this.getAppsParams, cancel)
                 .then(function (data) {
-                    var promises = [];
-
                     // Try to get all things children
+                    var promises = [];
+                    
                     for (var i = 0; i < data.things.length; i++) {
                         //promises.push(self.getMoreAppsServices(data.things[i], cancel));
                     }
@@ -340,7 +331,7 @@
             }
 
             AppsManager.prototype.getAppsTotalItems = function() {
-                return this.mainThing.childrenTotalItems;
+                return this.mainApp.childrenTotalItems;
             }
 
             return AppsManager;
@@ -507,7 +498,7 @@
 
     <div ng-controller="ThingsListController" infinite-scroll='getMoreApps()' infinite-scroll-disabled='disableAppScroll' infinite-scroll-use-document-bottom="true"> 
         <button ng-click="getMoreApps()">
-            getMoreThings
+            getMoreApps
         </button>
 
         <div id="wrapper" >
