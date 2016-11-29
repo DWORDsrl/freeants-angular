@@ -137,7 +137,7 @@
             var req = $http({
                 method: 'GET',
                 headers: helpers.getSecurityHeaders(),
-                url: thingChildrenUrl(thingId)
+                url: thingChildrenUrl(parentThingId)
             }).then(function (response) {
                 return response.data;
             });

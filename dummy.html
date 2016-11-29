@@ -351,9 +351,6 @@
                         }, function (data) {
                             def.reject(data);
                         });
-                    },
-                    function(data) {
-                        def.reject(data);
                     })
                 .then( function(data) {
                     return thingDatacontext.deleteThing(appId);
