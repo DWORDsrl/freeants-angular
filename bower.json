@@ -1,6 +1,6 @@
 {
   "name": "freeants-angular",
-  "version": "1.0.22",
+  "version": "1.0.23",
   "authors": [
     "DWORD s.r.l."
   ],
@@ -19,11 +19,12 @@
     "angular": "^1.5.6",
     "angular-translate": "^2.8.0",
     "jquery": "^2.2.3",
-    "signalr": "^2.2.0",
-    "ngInfiniteScroll" : "1.0.0"
+    "signalr": "^2.2.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "ngInfiniteScroll" : "^1.0.0"
+  },
   "resolutions": {
-    "angular": "^1.5.6"
+    "angular": "^1.5.6"    
   }
 }

@@ -334,6 +334,32 @@
                 return this.mainApp.childrenTotalItems;
             }
 
+            AppsManager.prototype.deleteApp = function(appId) {
+
+                return thingDatacontext.getChildrenIds(appdId)
+                .then(function(childrenIds) {
+                        var def = $q.defer();
+
+                        var childrenPromises = [];
+
+                        for (var i = 0; i < childrenIds.length;i++) {
+                            childrenPromises.push(thingsDataContext.deleteThing(app.thing.children));
+                        }
+                        
+                        return $q.all(childrenPromises).then(function () {
+                            def.resolve();
+                        }, function (data) {
+                            def.reject(data);
+                        });
+                    },
+                    function(data) {
+                        def.reject(data);
+                    })
+                .then( function(data) {
+                    return thingDatacontext.deleteThing(appId);
+                });
+            }
+
             return AppsManager;
 
         }]);
@@ -496,12 +522,12 @@
 		// Bravo!
 	</div>
 
-    <div ng-controller="ThingsListController" infinite-scroll='getMoreApps()' infinite-scroll-disabled='disableAppScroll' infinite-scroll-use-document-bottom="true"> 
+    <div ng-controller="ThingsListController" > 
         <button ng-click="getMoreApps()">
             getMoreApps
         </button>
 
-        <div id="wrapper" >
+        <div id="wrapper" infinite-scroll='getMoreApps()' infinite-scroll-disabled='disableAppScroll' infinite-scroll-use-document-bottom="true">
             <div id="columns">    
                 <div class="pin"  ng-repeat="app in apps">
                     <span>{{app.id}}</span> - 

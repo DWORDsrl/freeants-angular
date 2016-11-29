@@ -2,7 +2,6 @@
     "use strict";
     angular.module("freeants", [])
 })();
-
 (function() {
     'use strict';
     
@@ -529,9 +528,7 @@
 (function () {
     'use strict';
 
-    angular.module('freeants')
-
-    .constant("thingClaims", {
+    angular.module('freeants').constant("thingClaims", {
     
         "ThingUserRoleAdministrator": 1,
         "ThingUserRoleUser": 2,
@@ -544,7 +541,7 @@
         "ThingUserVisibilityHidden": 2,
 
         "ThingDeletedStatusOk": 1,
-        "ThingDeletedStatusDeletede": 2,
+        "ThingDeletedStatusDeleted": 2,
 
         "ThingUserReadClaimsCanReadThingUserChangeClaims": 1,
         "ThingUserReadClaimsCanReadCreationDate": 2,
@@ -740,7 +737,6 @@
         }
     }]);
 }());
-
 (function () {
     'use strict';
     
@@ -790,7 +786,6 @@
     }
 }]);
 }());
-
 (function () {
     'use strict';
 
@@ -1004,7 +999,6 @@
     });
 
 }());
-
 (function() {
     'use strict';
     
@@ -1056,7 +1050,6 @@
     }
 }]);
 }());
-
 (function() {
     'use strict';
     
@@ -1103,7 +1096,6 @@
     }
 }]);
 }());
-
 (function() {
     'use strict';
     
@@ -1172,7 +1164,7 @@
             });
             return req;
         },
-        getThings1: function (parameter, defer) {
+        getThings1: function (parameter, timeout) {
             var urlRaw = thingsUrl() + "?" +
                     (!!parameter.parentThingId ? ("&$parentId=" + parameter.parentThingId) : "") +
                     (!!parameter.filter ? ("&$filter=" + parameter.filter) : "") +
@@ -1184,7 +1176,7 @@
             var req = $http({
                 method: 'GET',
                 headers: helpers.getSecurityHeaders(),
-                timeout: (defer) ? (defer.promise) : null,
+                timeout: (timeout) ? (timeout.promise) : null,
                 url: urlRaw
             }).then(function (response) {                                            
                 return {
@@ -1233,6 +1225,17 @@
                 method: 'DELETE',
                 headers: helpers.getSecurityHeaders(),
                 url: thingsUrl(thingId)
+            }).then(function (response) {
+                return response.data;
+            });
+            return req;
+        },
+
+        getChildrenIds: function (parentThingId){
+            var req = $http({
+                method: 'GET',
+                headers: helpers.getSecurityHeaders(),
+                url: thingChildrenUrl(thingId)
             }).then(function (response) {
                 return response.data;
             });
@@ -1328,7 +1331,6 @@
         return ThingModel;
     }]);
 }());
-
 (function () {
     'use strict';
 
@@ -1425,7 +1427,7 @@
             });
         }
 
-        function getThings(parameter, defer) {
+        function getThings(parameter, timeout) {
             function getSucceded(data) {
                 var things = [];
 
@@ -1439,7 +1441,7 @@
                     itemsRange: data.itemsRange
                 }
             }
-            return thingsDataContext.getThings1(parameter, defer)
+            return thingsDataContext.getThings1(parameter, timeout)
                 .then(getSucceded);
         }        
           
@@ -1471,7 +1473,8 @@
         }
 
         function collapseThing(thing, cancel) {
-            cancel.resolve();
+            if (cancel)
+                cancel.resolve();
             thing.children = [];
             thing.childrenSkip = 0;
         }
@@ -1485,7 +1488,6 @@
     }]);
 	
 }());
-
 (function () {
     'use strict';
     angular.module('freeants').factory('thingUserRightsDataContext', ['$q', '$http', 'helpers', 'path', function ($q, $http, helpers, path) {
@@ -1632,7 +1634,6 @@
     }
     }]);
 }());
-
 (function () {
     'use strict';
     angular.module('freeants').factory('userDataContext', ['$http', 'helpers', function ($http, helpers) {

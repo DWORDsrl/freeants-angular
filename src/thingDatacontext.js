@@ -133,6 +133,17 @@
             return req;
         },
 
+        getChildrenIds: function (parentThingId){
+            var req = $http({
+                method: 'GET',
+                headers: helpers.getSecurityHeaders(),
+                url: thingChildrenUrl(thingId)
+            }).then(function (response) {
+                return response.data;
+            });
+            return req;
+        },
+
         addChildToParent: function (parentThingId, childThingId) {
             var req = $http({
                 method: 'POST',
