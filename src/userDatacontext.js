@@ -1,12 +1,12 @@
 ﻿(function () {
     'use strict';
-    angular.module('freeants').factory('userDataContext', ['$http', 'helpers', function ($http, helpers) {
+    angular.module('freeants').factory('userDataContext', ['$http', 'helpers','path', function ($http, helpers,path) {
 
-    function usersUrl(id) { return GlobalPathApiUri + "/users/" + (id || ""); }
+    function usersUrl(id) { return path.api + "/users/" + (id || ""); }
 
     return {
 
-        getUsers : function (filter, orderBy, top, skip) {
+        getUsers : function (parameter) {
             var req = $http({
                 method: 'GET',
                 headers: helpers.getSecurityHeaders(),
