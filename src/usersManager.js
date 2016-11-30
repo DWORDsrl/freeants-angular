@@ -18,6 +18,19 @@
             };
         }
 
+        UsersManager.prototype.getUser = function getUser(userId) {
+            
+            var result = $filter('filter')(this.users, { id: userId });
+            if (result.length != 0) {
+                var def = $q.defer();
+                def.resolve(result[0]);
+
+                return def.promise;
+            }
+
+            return userDataContext.getUser(userId);
+        }
+
         UsersManager.prototype.getMoreUsers = function getMoreUsers(cancel) {
             var self = this;
 

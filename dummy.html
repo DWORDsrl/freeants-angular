@@ -369,6 +369,8 @@
 
             var usersManager = new UsersManager();
 
+            $scope.currentUser = null;
+            
             var abortHttpCalls = $q.defer();
             
             $scope.users = usersManager.users;
@@ -386,8 +388,13 @@
                 
                 usersManager.getMoreUsers(abortHttpCalls).then(function(data) {
                     $scope.disableUserScroll = false;
+
+                    usersManager.getUser("0afb3944-a2c3-4c3e-8252-17562a96f0ce")
+                    .then(function(user) {
+                        $scope.currentUser = user;
+                    });
                 })
-            }           
+            }
         }]);
         
 
@@ -528,11 +535,13 @@
         <button ng-click="getMoreUsers()">
             getMoreUsers
         </button>
-
+        <div>
+            <span>{{currentUser.name}}</span>
+        </div>
         <div id="wrapper" infinite-scroll='getMoreUsers()' infinite-scroll-disabled='disableAppScroll' infinite-scroll-use-document-bottom="true">
             <div id="columns">    
                 <div class="pin"  ng-repeat="user in users">
-                    <span>{{user.id}}</span> - 
+                    <span>{{user.id}}</span>
                     <span>{{user.name}}</span>
                 </div>
             </div>
