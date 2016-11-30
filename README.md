@@ -2,6 +2,10 @@
 
 Free Ants Angular SDK - Lab version
 
+1.0.26 - 29-11-2016 - Fix
+
+...
+
 1.0.23 - 29-11-2016 - Added getChildrenIds
 
 1.0.22 - 25-11-2016 - Update examples
