@@ -1,6 +1,6 @@
 ﻿(function () {
     'use strict';
-    angular.module('freeants').factory('userDataContext', ['$http', 'helpers','path', function ($http, helpers,path) {
+    angular.module('freeants').factory('userDataContext', ['$http', 'helpers','path', function ($http, helpers, path) {
 
     function usersUrl(id) { return path.api + "/users/" + (id || ""); }
 
@@ -10,12 +10,11 @@
             var req = $http({
                 method: 'GET',
                 headers: helpers.getSecurityHeaders(),
-                url: usersUrl() + "?&parentId=" +
-                    (parameter.id == null || parameter.id == undefined ? "" : parameter.id) +
-                    ((parameter.filter != null || parameter.filter != undefined) ? ("&$filter=" + parameter.filter) : "") +
-                    ((parameter.top != null || parameter.top != undefined) ? ("&$top=" + parameter.top) : "") +
-                    ((parameter.skip != null || parameter.skip != undefined) ? ("&$skip=" + parameter.skip) : "") +
-                    ((parameter.orderBy != null || parameter.orderBy != undefined) ? ("&$orderby=" + parameter.orderBy) : "")
+                url: usersUrl() + "?" +
+                    (!!parameter.filter ? ("&$filter=" + parameter.filter) : "") +
+                    (!!parameter.top ? ("&$top=" + parameter.top) : "") +
+                    (!!parameter.skip ? ("&$skip=" + parameter.skip) : "") +
+                    (!!parameter.orderBy ? ("&$orderby=" + parameter.orderBy) : "")
             }).then(function (response) {
                 return response.data;
             });
