@@ -2,9 +2,11 @@
 
 Free Ants Angular SDK - Lab version
 
-1.0.28 - 29-11-2016 - Fix UserManager
+1.0.29 - 29-11-2016 - Added UsersManager
 
-1.0.27 - 29-11-2016 - Fix UserManager
+1.0.28 - 29-11-2016 - Fix UserDataContext
+
+1.0.27 - 29-11-2016 - Fix UserDataContext
 
 1.0.26 - 29-11-2016 - Fix
 

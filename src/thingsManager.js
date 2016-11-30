@@ -117,16 +117,11 @@
             parameter.skip = thing.childrenSkip;
             parameter.parentThingId = thing.id;
 
-            thing.childrenSkip = thing.childrenSkip + parameter.top;
-            //  Fix range
-            if (thing.childrenSkip > thing.childrenTotalItems) {
-                thing.childrenSkip = thing.childrenTotalItems;
-            }                        
-            
             return getThings(parameter, cancel)
             .then(function (data) {
 
                 thing.childrenTotalItems = data.itemsRange.totalItems;
+                thing.childrenSkip = thing.childrenSkip + parameter.top;
                 //  Fix range
                 if (thing.childrenSkip > thing.childrenTotalItems) {
                     thing.childrenSkip = thing.childrenTotalItems;

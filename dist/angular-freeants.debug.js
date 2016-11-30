@@ -1450,16 +1450,11 @@
             parameter.skip = thing.childrenSkip;
             parameter.parentThingId = thing.id;
 
-            thing.childrenSkip = thing.childrenSkip + parameter.top;
-            //  Fix range
-            if (thing.childrenSkip > thing.childrenTotalItems) {
-                thing.childrenSkip = thing.childrenTotalItems;
-            }                        
-            
             return getThings(parameter, cancel)
             .then(function (data) {
 
                 thing.childrenTotalItems = data.itemsRange.totalItems;
+                thing.childrenSkip = thing.childrenSkip + parameter.top;
                 //  Fix range
                 if (thing.childrenSkip > thing.childrenTotalItems) {
                     thing.childrenSkip = thing.childrenTotalItems;
@@ -1667,17 +1662,21 @@
 
     return {
 
-        getUsers : function (parameter) {
+        getUsers : function (parameter, timeout) {
             var req = $http({
                 method: 'GET',
                 headers: helpers.getSecurityHeaders(),
+                timeout: (timeout) ? (timeout.promise) : null,
                 url: usersUrl() + "?" +
                     (!!parameter.filter ? ("&$filter=" + parameter.filter) : "") +
                     (!!parameter.top ? ("&$top=" + parameter.top) : "") +
                     (!!parameter.skip ? ("&$skip=" + parameter.skip) : "") +
                     (!!parameter.orderBy ? ("&$orderby=" + parameter.orderBy) : "")
             }).then(function (response) {
-                return response.data;
+                return {
+                    users: response.data,
+                    itemsRange: helpers.getRangeItemsFromResponse(response)
+                };
             });
             return req;
         },
@@ -1729,4 +1728,56 @@
         }
     }
 }]);
+}());
+
+(function () {
+    'use strict';
+
+    angular.module('freeants').factory('UsersManager', ['$q', '$filter', 'userDataContext', function ($q, $filter, userDataContext) {
+        
+        function UsersManager() {
+
+            this.skip = 0;
+            this.usersTotalItems = Number.MAX_SAFE_INTEGER;
+
+            this.users = [];
+
+            this.getUsersParams = {			
+                filter: "",
+                top: 5,
+                skip: this.skip,
+                orderBy: null,
+            };
+        }
+
+        UsersManager.prototype.getMoreUsers = function getMoreUsers(cancel) {
+            var self = this;
+
+            self.getUsersParams.skip = self.skip;
+
+            return userDataContext.getUsers(this.getUsersParams, cancel)
+            .then(function(data) {
+
+                self.usersTotalItems = data.itemsRange.totalItems;
+                self.skip += self.getUsersParams.top;
+                //  Fix range
+                if (self.skip > self.usersTotalItems) {
+                    self.skip = self.usersTotalItems;
+                }
+
+                for (var i = 0; i < data.users.length;i++)
+                    self.users.push(data.users[i]);
+
+                return data;
+            });              
+        }
+
+        UsersManager.prototype.getUsersTotalItems = function() {
+            return this.usersTotalItems;
+        }
+
+        return UsersManager;
+
+    }]);
+	
 }());

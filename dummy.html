@@ -16,22 +16,23 @@
      <!-- Must be the First -->    
     <script src="src/module.js"></script>
 
-	<script src="src/accountDatacontext.js"></script>
+	<script src="src/accountDataContext.js"></script>
     <script src="src/accountManager.js"></script>
     <script src="src/asyncLoader.js"></script>
     <script src="src/constants.js"></script>
     <script src="src/helpers.js"></script>
     <script src="src/localizator.js"></script>
-    <script src="src/loginDatacontext.js"></script>
+    <script src="src/loginDataContext.js"></script>
     <script src="src/notifiersConnector.js"></script>
-    <script src="src/pushNotificationsDatacontext.js"></script>
-    <script src="src/schedulerDatacontext.js"></script>
-    <script src="src/thingDatacontext.js"></script>
+    <script src="src/pushNotificationsDataContext.js"></script>
+    <script src="src/schedulerDataContext.js"></script>
+    <script src="src/thingDataContext.js"></script>
     <script src="src/ThingModel.js"></script>
     <script src="src/thingsManager.js"></script>
-    <script src="src/thingUserRightsDatacontext.js"></script>
+    <script src="src/thingUserRightsDataContext.js"></script>
     <script src="src/translationService.js"></script>
-    <script src="src/userDatacontext.js"></script>
+    <script src="src/userDataContext.js"></script>
+    <script src="src/usersManager.js"></script>
 
     <!-- Can be copied to examples -->    
 
@@ -337,6 +338,7 @@
             return AppsManager;
 
         }]);
+
         // Define the `ThingsListController` controller
         app.controller('ThingsListController', ['$q', '$scope', 'AppsManager', function ThingsListController($q, $scope, AppsManager) {
 
@@ -362,6 +364,32 @@
                 })
             }           
         }]);
+
+        app.controller('UsersListController', ['$q', '$scope', 'UsersManager', function ThingsListController($q, $scope, UsersManager) {
+
+            var usersManager = new UsersManager();
+
+            var abortHttpCalls = $q.defer();
+            
+            $scope.users = usersManager.users;
+            
+            $scope.disableAppScroll = false;
+            
+            $scope.getMoreUsers = function() {
+                if ($scope.disableUserScroll)
+                    return;
+
+                $scope.disableUserScroll = true;
+
+                if (usersManager.getUsersTotalItems() == $scope.users.length)
+                    return;
+                
+                usersManager.getMoreUsers(abortHttpCalls).then(function(data) {
+                    $scope.disableUserScroll = false;
+                })
+            }           
+        }]);
+        
 
     </script>
 
@@ -495,6 +523,21 @@
 	<div>
 		// Bravo!
 	</div>
+
+    <div ng-controller="UsersListController" > 
+        <button ng-click="getMoreUsers()">
+            getMoreUsers
+        </button>
+
+        <div id="wrapper" infinite-scroll='getMoreUsers()' infinite-scroll-disabled='disableAppScroll' infinite-scroll-use-document-bottom="true">
+            <div id="columns">    
+                <div class="pin"  ng-repeat="user in users">
+                    <span>{{user.id}}</span> - 
+                    <span>{{user.name}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div ng-controller="ThingsListController" > 
         <button ng-click="getMoreApps()">

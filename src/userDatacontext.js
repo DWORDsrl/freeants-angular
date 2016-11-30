@@ -6,17 +6,21 @@
 
     return {
 
-        getUsers : function (parameter) {
+        getUsers : function (parameter, timeout) {
             var req = $http({
                 method: 'GET',
                 headers: helpers.getSecurityHeaders(),
+                timeout: (timeout) ? (timeout.promise) : null,
                 url: usersUrl() + "?" +
                     (!!parameter.filter ? ("&$filter=" + parameter.filter) : "") +
                     (!!parameter.top ? ("&$top=" + parameter.top) : "") +
                     (!!parameter.skip ? ("&$skip=" + parameter.skip) : "") +
                     (!!parameter.orderBy ? ("&$orderby=" + parameter.orderBy) : "")
             }).then(function (response) {
-                return response.data;
+                return {
+                    users: response.data,
+                    itemsRange: helpers.getRangeItemsFromResponse(response)
+                };
             });
             return req;
         },
