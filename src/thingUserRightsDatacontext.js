@@ -13,16 +13,13 @@
             var req = $http({
                 method: 'GET',
                 headers: helpers.getSecurityHeaders(),
-                url: thingsUserRoleStatusUrl(parameter.thingId) + "?&parentId=" +
-                    (parameter.id == null || parameter.id == undefined ? "" : parameter.id) +
-                    ((parameter.filter != null || parameter.filter != undefined) ? ("&$filter=" + parameter.filter) : "") +
-                    ((parameter.top != null || parameter.top != undefined) ? ("&$top=" + parameter.top) : "") +
-                    ((parameter.skip != null || parameter.skip != undefined) ? ("&$skip=" + parameter.skip) : "") +
-                    ((parameter.orderBy != null || parameter.orderBy != undefined) ? ("&$orderby=" + parameter.orderBy) : "")
+                url: thingsUserRoleStatusUrl(parameter.thingId) + "?" +
+                    (!!parameter.filter ? ("&$filter=" + parameter.filter) : "") +
+                    (!!parameter.top ? ("&$top=" + parameter.top) : "") +
+                    (!!parameter.skip ? ("&$skip=" + parameter.skip) : "") +
+                    (!!parameter.orderBy ? ("&$orderby=" + parameter.orderBy) : "")
             }).then(function (response) {
                 return response.data;
-            }, function (response) {
-                return $q.reject(response);
             });
             return req;
         },
@@ -35,8 +32,6 @@
                 data: thingUserRights
             }).then(function (response) {
                 return response.data;
-            }, function (response) {
-                return $q.reject(response);
             });
             return req;
         },
@@ -49,8 +44,6 @@
                 data: thingUserRights
             }).then(function (response) {
                 return response.data;
-            }, function (response) {
-                return $q.reject(response);
             });
             return req;
         },
@@ -62,8 +55,6 @@
                 url: thingsUserRoleStatusUrl(thingId, userId)
             }).then(function (response) {
                 return response.data;
-            }, function (response) {
-                return $q.reject(response);
             });
             return req;
         }

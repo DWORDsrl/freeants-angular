@@ -22,7 +22,7 @@
         "ThingUserReadClaimsCanReadDescription": 8,
         "ThingUserReadClaimsCanReadKind": 16,
         "ThingUserReadClaimsCanReadValue": 32,
-        "ThingUserReadCanReadDeletedStatus": 64,
+        "ThingUserReadClaimsCanReadDeletedStatus": 64,
         "ThingUserReadClaimsCanReadThingUserRights": 128,
         "ThingUserReadClaimsCanReadThingUserRole": 256,
         "ThingUserReadClaimsCanReadThingUserStatus": 512,
