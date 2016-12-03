@@ -1305,13 +1305,13 @@
 
     angular.module('freeants').factory('ThingModel', [function () {
 		
-        function ThingModel(thingData) {
+        function ThingModel(thingRaw, children, skip, totalItems) {
             
-            this.childrenSkip = 0;
-            this.childrenTotalItems = Number.MAX_SAFE_INTEGER;
-            this.children = [];
+            this.childrenSkip = !!skip ? skip : 0;
+            this.childrenTotalItems = !!totalItems ? totalItems : Number.MAX_SAFE_INTEGER;
+            this.children = !!children ? children : [];
             
-            this.setData(thingData);
+            this.setData(thingRaw);
         };
 
         ThingModel.prototype = {
@@ -1420,11 +1420,47 @@
 
 	angular.module('freeants').factory('thingsManager', ['$q', 'thingsDataContext', 'ThingModel', function ($q, thingsDataContext, ThingModel) {
 
-        function createThing(thing) {
-            return thingsDataContext.createThing(thing)
+        function createThing(thingRaw) {
+            return thingsDataContext.createThing(thingRaw)
             .then(function (data) {
                 return new ThingModel(data);
             });
+        }
+
+        function deleteChildrenThings(parentThingId, recursive) {
+
+            return thingsDataContext.getChildrenIds(parentThingId)
+            .then(function (childrenIds) {
+
+                var def = $q.defer();
+
+                var childrenPromises = [];
+
+                for (var i = 0; i < childrenIds.length; i++) {
+                    childrenPromises.push(deleteThing(childrenIds[i], recursive));
+                }
+
+                return $q.all(childrenPromises)
+                    .then(function (data) {
+                        def.resolve(data);
+                        return data;
+                    }, function (data) {
+                        def.reject(data);
+                        return data;
+                    });
+            });
+        }
+
+        function deleteThing(thingId, recursive) {
+            
+            if (recursive) {
+              return deleteChildrenThings(thingId)
+              .then(function(data){
+                  return thingsDataContext.deleteThing(thingId);
+              });   
+            }
+
+            return thingsDataContext.deleteThing(thingId);
         }
 
         function getThings(parameter, timeout) {
@@ -1474,36 +1510,18 @@
             thing.childrenSkip = 0;
         }
 
-        function deleteChildrenThings(parentThingId) {
-
-            return thingsDataContext.getChildrenIds(parentThingId)
-            .then(function (childrenIds) {
-
-                var def = $q.defer();
-
-                var childrenPromises = [];
-
-                for (var i = 0; i < childrenIds.length; i++) {
-                    childrenPromises.push(thingsDataContext.deleteThing(childrenIds[i]));
-                }
-
-                return $q.all(childrenPromises)
-                    .then(function (data) {
-                        def.resolve(data);
-                        return data;
-                    }, function (data) {
-                        def.reject(data);
-                        return data;
-                    });
-            });
+        function addChildThing(thing, childThingRaw) {
+            thing.children.unshift(new ThingModel(childThingRaw));
         }
 
         return {
             createThing: createThing,
+            deleteChildrenThings: deleteChildrenThings,
+            deleteThing: deleteThing,
             getThings: getThings,            
             elapseThing: elapseThing,
             collapseThing: collapseThing,
-            deleteChildrenThings: deleteChildrenThings 
+            addChildThing: addChildThing             
         }
     }]);
 	

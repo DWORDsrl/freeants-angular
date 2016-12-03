@@ -7,7 +7,7 @@
     <title>Things Console with FreeAnts Angular SDK</title>
 
     <!-- Base Libraries -->
-        <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="bower_components/angular/angular.js"></script>
     <script src="bower_components/angular-translate/angular-translate.min.js"></script>
     <script src="bower_components/signalr/jquery.signalR.min.js"></script>
@@ -149,7 +149,7 @@
         'use strict'
         
         app.factory('mainNotifier', ['notifierConnector', 'accountManagerService', 'path', '$timeout',
-            function (notifierConnector, accountManagerService, path, $timeout) {
+        function (notifierConnector, accountManagerService, path, $timeout) {
 
             function connectionStatus(change) {
                 switch (change.newState) {
@@ -249,12 +249,13 @@
         }])
 
         app.run(['mainNotifier', 
-            function (mainNotifier) {
+        function (mainNotifier) {
 
-                mainNotifier.subscribe();
+            mainNotifier.subscribe();
         }]);
 
-        app.factory('AppsManager', ['$q', '$filter', 'thingsManager', 'ThingModel',  'notifierConnector', function ($q, $filter, thingsManager, ThingModel, notifierConnector) {
+        app.factory('AppsManager', ['$q', '$filter', 'thingsManager', 'ThingModel',  'notifierConnector', 
+        function ($q, $filter, thingsManager, ThingModel, notifierConnector) {
         
             function AppsManager() {
 
@@ -340,7 +341,8 @@
         }]);
 
         // Define the `ThingsListController` controller
-        app.controller('ThingsListController', ['$q', '$scope', 'AppsManager', function ThingsListController($q, $scope, AppsManager) {
+        app.controller('ThingsListController', ['$q', '$scope', 'AppsManager', 
+        function ThingsListController($q, $scope, AppsManager) {
 
             var appsManager = new AppsManager();
 
@@ -365,7 +367,8 @@
             }           
         }]);
 
-        app.controller('UsersListController', ['$q', '$scope', 'UsersManager', function ThingsListController($q, $scope, UsersManager) {
+        app.controller('UsersListController', ['$q', '$scope', 'UsersManager', 
+        function ThingsListController($q, $scope, UsersManager) {
 
             var usersManager = new UsersManager();
 
@@ -397,14 +400,14 @@
             }
         }]);
         
-
     </script>
 
     <!-- Dont copy to examples -->
     <script>
-            'use strict'
+        'use strict'
 
-            app.controller('PushNotificationCtrl', ['$rootScope', '$scope', 'pushNotificationsDataContext', function ThingsListController($rootScope, $scope, pushNotificationsDataContext) {
+        app.controller('PushNotificationCtrl', ['$rootScope', '$scope', 'pushNotificationsDataContext', 
+        function ThingsListController($rootScope, $scope, pushNotificationsDataContext) {
 
             $scope.checkboxLanguage = {
                 it: false,
@@ -488,7 +491,8 @@
             
         }]);
 
-        app.controller('SchedulerCtrl', ['$rootScope', '$scope', 'schedulerDataContext', function ThingsListController($rootScope, $scope, schedulerDataContext) {
+        app.controller('SchedulerCtrl', ['$rootScope', '$scope', 'schedulerDataContext', 
+        function ThingsListController($rootScope, $scope, schedulerDataContext) {
             
             $scope.modelScheduling = {};
             $scope.modelScheduling.tags = {
