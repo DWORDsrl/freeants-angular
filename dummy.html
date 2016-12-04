@@ -350,30 +350,23 @@
             
             $scope.apps = appsManager.apps;
             
-            $scope.disableAppScroll = false;
-            
+            $scope.disableAppScroll = false;            
             $scope.getMoreApps = function() {
                 if ($scope.disableAppScroll)
                     return;
 
                 $scope.disableAppScroll = true;
-
-                if (appsManager.getAppsTotalItems() == $scope.apps.length)
-                    return;
-                
                 appsManager.getMoreApps(abortHttpCalls).then(function(data) {
-                    $scope.disableAppScroll = false;
+                    $scope.disableAppScroll = (appsManager.getAppsTotalItems() == $scope.apps.length);
                 })
             }           
         }]);
 
         app.controller('UsersListController', ['$q', '$scope', 'UsersManager', 
-        function ThingsListController($q, $scope, UsersManager) {
+        function UsersListController($q, $scope, UsersManager) {
 
             var usersManager = new UsersManager();
 
-            $scope.currentUser = null;
-            
             var abortHttpCalls = $q.defer();
             
             $scope.users = usersManager.users;
@@ -385,18 +378,10 @@
                     return;
 
                 $scope.disableUserScroll = true;
-
-                if (usersManager.getUsersTotalItems() == $scope.users.length)
-                    return;
-                
-                usersManager.getMoreUsers(abortHttpCalls).then(function(data) {
-                    $scope.disableUserScroll = false;
-
-                    usersManager.getUser("0afb3944-a2c3-4c3e-8252-17562a96f0ce")
-                    .then(function(user) {
-                        $scope.currentUser = user;
-                    });
-                })
+                usersManager.getMoreUsers(abortHttpCalls)
+                .then(function(data) {
+                    $scope.disableUserScroll = (usersManager.getUsersTotalItems() == usersManager.getUsersItems());
+                });
             }
         }]);
         
@@ -407,7 +392,7 @@
         'use strict'
 
         app.controller('PushNotificationCtrl', ['$rootScope', '$scope', 'pushNotificationsDataContext', 
-        function ThingsListController($rootScope, $scope, pushNotificationsDataContext) {
+        function PushNotificationCtrl($rootScope, $scope, pushNotificationsDataContext) {
 
             $scope.checkboxLanguage = {
                 it: false,
@@ -492,7 +477,7 @@
         }]);
 
         app.controller('SchedulerCtrl', ['$rootScope', '$scope', 'schedulerDataContext', 
-        function ThingsListController($rootScope, $scope, schedulerDataContext) {
+        function SchedulerCtrl($rootScope, $scope, schedulerDataContext) {
             
             $scope.modelScheduling = {};
             $scope.modelScheduling.tags = {
@@ -539,14 +524,17 @@
         <button ng-click="getMoreUsers()">
             getMoreUsers
         </button>
-        <div>
-            <span>{{currentUser.name}}</span>
-        </div>
         <div id="wrapper" infinite-scroll='getMoreUsers()' infinite-scroll-disabled='disableAppScroll' infinite-scroll-use-document-bottom="true">
             <div id="columns">    
-                <div class="pin"  ng-repeat="user in users">
+                <div class="pin" ng-repeat="user in users">
                     <span>{{user.id}}</span>
+                    </br>
                     <span>{{user.name}}</span>
+                    <span>{{user.surname}}</span>
+                    </br>
+                    <span>{{user.username}}</span>
+                    </br>
+                    <span>{{user.masterApiKey}}</span>
                 </div>
             </div>
         </div>
@@ -625,14 +613,13 @@
         </code>
     </div>
 
-     <div ng-controller="SchedulerCtrl">
+    <div ng-controller="SchedulerCtrl">
         <h3>Test Scheduler</h3>
         <label>Enable
           <input type="checkbox" ng-model="modelScheduling.status" ng-change="convertPostData()">
         </label>
         <input type="text" ng-model="modelScheduling.thingId" placeholder="Scheduler ID">
-        <br>
-  
+        <br>  
           <p>When:</p>
             <select ng-model="modelScheduling.timeValue">
               <option value="1">1</option>
@@ -648,24 +635,23 @@
              <option value="Year">Year</option>
           </select>
            <input type="text" ng-model="modelScheduling.first" placeholder="Start at">
-        <label>How many time execute?
-            <select ng-model="modelScheduling.count">
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-            </select>   
-          </label>
-          <label>How many time retries if request fail?
-            <select ng-model="modelScheduling.retires">
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-            </select>   
-          </label>
+            <label>How many time execute?
+                <select ng-model="modelScheduling.count">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                </select>   
+            </label>
+            <label>How many time retries if request fail?
+                <select ng-model="modelScheduling.retires">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                </select>   
+            </label>
           <input type="text" ng-model="modelScheduling.tags.id" placeholder="tagId"><br>
-
           <button ng-click="schedule()">Schedule</button><br>
           <hr>
         <code>

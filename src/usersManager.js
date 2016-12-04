@@ -53,6 +53,10 @@
             });              
         }
 
+         UsersManager.prototype.getUsersItems = function() {
+            return this.users.length;
+        }
+
         UsersManager.prototype.getUsersTotalItems = function() {
             return this.usersTotalItems;
         }

@@ -94,6 +94,7 @@
             });
         }
 
+        // TODO: E' transazionale lato client
         function deleteChildrenThings(parentThingId, recursive) {
 
             return thingsDataContext.getChildrenIds(parentThingId)
@@ -118,6 +119,7 @@
             });
         }
 
+        // TODO: Se ricorsiva, è transazionale lato client
         function deleteThing(thingId, recursive) {
             
             if (recursive) {
