@@ -120,12 +120,12 @@
     <!-- Can be copied to examples -->
     <script>
         'use strict'
-        
+
+        var app = angular.module('thingsAngular', ['freeants', 'infinite-scroll']);
+
         /* ng-infinite-scroll - v1.0.0 - 2013-02-23 */
         // you might call this after your module initalization
         angular.module('infinite-scroll').value('THROTTLE_MILLISECONDS', 500);
-
-        var app = angular.module('thingsAngular', ['freeants', 'infinite-scroll']);
 
         app.constant("path", {
             server: "http://titaggocoreportal.azurewebsites.net/",
@@ -137,7 +137,7 @@
 
                 accountManagerProvider.setAppName("thingsAngular");
                 accountManagerProvider.setStorage(localStorage, "AccessTokenOrDWApiKey");
-                accountManagerProvider.setApiKey("6fce33cc-2e21-4669-9000-dc2b5bc9cc99");
+                accountManagerProvider.setApiKey("ef1dd5d4-82f4-4de6-85fd-20efe03943cd");
 
         }]);
 
@@ -254,28 +254,28 @@
             mainNotifier.subscribe();
         }]);
 
-        app.factory('AppsManager', ['$q', '$filter', 'thingsManager', 'ThingModel',  'notifierConnector', 
+        app.factory('BooksManager', ['$q', '$filter', 'thingsManager', 'ThingModel',  'notifierConnector', 
         function ($q, $filter, thingsManager, ThingModel, notifierConnector) {
         
-            function AppsManager() {
+            function BooksManager() {
 
                 var self = this;
 
                 this.mainApp = new ThingModel();
-                this.apps = this.mainApp.children;
+                this.books = this.mainApp.children;
 
                 this.getAppsParams = {			
                     //parentThingId: null,
-                    filter: "Kind eq 'B1996416-43C2-4193-938B-0275C27479AF'",
-                    //filter: "Kind eq '5F22D6AC-FAFA-4CDA-A460-1AF5E09A2D93'",
+                    //filter: "Kind eq 'B1996416-43C2-4193-938B-0275C27479AF'",
+                    filter: "Id eq '9788858637326'",
                     top: 5,
                     //skip: 0,
                     orderBy: null,
                     valueFilter: null
                 };
-                this.getServicesParams = {
+                this.getBookCommentsParams = {
                         parentThingId: null,
-                        filter: null,
+                        filter: "Kind eq '8EB24F3E-5D53-48AE-8214-A9177C873EDF'",                        
                         top: 3,
                         skip: 0,
                         orderBy: null,
@@ -304,7 +304,7 @@
                 });
             }
 
-            AppsManager.prototype.getMoreApps = function getMoreApps(cancel) {
+            BooksManager.prototype.getMoreBooks = function getMoreBooks(cancel) {
               
                 var self = this;
 
@@ -316,48 +316,50 @@
                     var promises = [];
                     
                     for (var i = 0; i < data.things.length; i++) {
-                        //promises.push(self.getMoreAppsServices(data.things[i], cancel));
+                        promises.push(thingsManager.elapseThing(data.things[i], self.getBookCommentsParams, cancel));
                     }
 
                     $q.all(promises)
-                    .then(function () {
-                        def.resolve();
+                    .then(function (data) {
+                        def.resolve(data);
+                        return data;
                     }, function (data) {
                         if (cancel)
                             cancel.resolve();
                         def.reject(data);
+                        return data;
                     });
                 });
 
                 return def.promise;
             }
 
-            AppsManager.prototype.getAppsTotalItems = function() {
+            BooksManager.prototype.getBooksTotalItems = function() {
                 return this.mainApp.childrenTotalItems;
             }
 
-            return AppsManager;
+            return BooksManager;
 
         }]);
 
-        // Define the `ThingsListController` controller
-        app.controller('ThingsListController', ['$q', '$scope', 'AppsManager', 
-        function ThingsListController($q, $scope, AppsManager) {
+        // Define the `BooksManagerController` controller
+        app.controller('BooksManagerController', ['$q', '$scope', 'BooksManager', 
+        function BooksManagerController($q, $scope, BooksManager) {
 
-            var appsManager = new AppsManager();
+            var BooksManager = new BooksManager();
 
             var abortHttpCalls = $q.defer();
             
-            $scope.apps = appsManager.apps;
+            $scope.books = BooksManager.books;
             
             $scope.disableAppScroll = false;            
-            $scope.getMoreApps = function() {
+            $scope.getMoreBooks = function() {
                 if ($scope.disableAppScroll)
                     return;
-
                 $scope.disableAppScroll = true;
-                appsManager.getMoreApps(abortHttpCalls).then(function(data) {
-                    $scope.disableAppScroll = (appsManager.getAppsTotalItems() == $scope.apps.length);
+                BooksManager.getMoreBooks(abortHttpCalls)
+                .then(function(data) {
+                    $scope.disableAppScroll = (BooksManager.getBooksTotalItems() == $scope.books.length);
                 })
             }           
         }]);
@@ -540,29 +542,28 @@
         </div>
     </div>
 
-    <div ng-controller="ThingsListController" > 
-        <button ng-click="getMoreApps()">
-            getMoreApps
+    <div ng-controller="BooksManagerController" > 
+        <button ng-click="getMoreBooks()">
+            getMoreBooks
         </button>
 
-        <div id="wrapper" infinite-scroll='getMoreApps()' infinite-scroll-disabled='disableAppScroll' infinite-scroll-use-document-bottom="true">
+        <div id="wrapper" infinite-scroll='getMoreBooks()' infinite-scroll-disabled='disableAppScroll' infinite-scroll-use-document-bottom="true">
             <div id="columns">    
-                <div class="pin"  ng-repeat="app in apps">
-                    <span>{{app.id}}</span> - 
-                    <span>{{app.name}}</span>
+                <div class="pin"  ng-repeat="book in books">
+                    <span>{{book.id}}</span> - 
+                    <span>{{book.name}}</span>
                     <!--
-                    <span>{{app.value}}</span>
+                    <span>{{book.value}}</span>
                     -->
 
-                    <img ng-src="{{app.value.image}}" />
+                    <img ng-src="{{book.value.image}}" />
 
-                    <!--
                     <ul>
-                        <li ng-repeat="child in app.children">
-                            <span>{{child.name}}</span>
+                        <li ng-repeat="comment in book.children">
+                            <span>{{comment.value.text}}</span>
                         </li>
                     </ul>
-                    -->
+
                 </div>
             </div>
         </div>
