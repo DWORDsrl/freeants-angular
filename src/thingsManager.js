@@ -94,7 +94,6 @@
             });
         }
 
-        // TODO: E' transazionale lato client
         function deleteChildrenThings(parentThingId, recursive) {
 
             return thingsDataContext.getChildrenIds(parentThingId)
@@ -119,7 +118,6 @@
             });
         }
 
-        // TODO: Se ricorsiva, è transazionale lato client
         function deleteThing(thingId, recursive) {
             
             if (recursive) {
@@ -148,7 +146,21 @@
             }
             return thingsDataContext.getThings1(parameter, timeout)
                 .then(getSucceded);
-        }        
+        }
+
+        function getThing(thingId) {
+            function getSucceded(data) {
+
+                var thing = null;
+
+                if (data) {
+                    thing = new ThingModel(data);
+                }
+                return thing;
+            }
+            return thingsDataContext.getThing(thingId)
+                .then(getSucceded);
+        }
           
         function elapseThing(thing, parameter, cancel) {
 
@@ -187,7 +199,8 @@
             createThing: createThing,
             deleteChildrenThings: deleteChildrenThings,
             deleteThing: deleteThing,
-            getThings: getThings,            
+            getThings: getThings,
+            getThing: getThing,
             elapseThing: elapseThing,
             collapseThing: collapseThing,
             addChildThing: addChildThing             

@@ -90,7 +90,14 @@
             this.storage.removeItem(this.appName + '_userId');
             this.userId = "";
         };
-
+        this.removeAccessTokenTime = function () {
+            this.storage.removeItem(this.appName + '_access_token_time');
+            this.access_token_time = "";
+        };
+        this.removeAccessTokenDate = function () {
+            this.storage.removeItem(this.appName + '_access_token_date');
+            this.access_token_date = "";
+        };
         //Export Function  
         this.$get = function () {
 
@@ -180,6 +187,14 @@
                 removeUserId: function () {
                     storage.removeItem(appName + '_userId');
                     this.userId = "";
+                },
+                removeAccessTokenTime: function () {
+                    storage.removeItem(appName + '_access_token_time');
+                    this.access_token_time = "";
+                },
+                removeAccessTokenDate: function () {
+                    storage.removeItem(appName + '_access_token_date');
+                    this.access_token_date = "";
                 }
             }
         };
@@ -352,6 +367,10 @@
                 accountManager.removePersistent();
                 accountManager.removeAccessToken();
                 accountManager.removeRefreshToken();
+                accountManager.removeAccessTokenTime();
+                accountManager.removeAccessTokenDate();
+
+
                 if (timeoutRefresh) {
                     clearTimeout(timeoutRefresh);
                 }
