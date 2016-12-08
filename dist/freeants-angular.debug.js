@@ -817,7 +817,7 @@
            
             return ApplicationThingsManager;
         }]);
-}())
+}());
 (function () {
     'use strict';
     angular.module('freeants').factory('asyncLoader', ['$q', '$timeout', 'translationService', function ($q, $timeout, translationService) {
