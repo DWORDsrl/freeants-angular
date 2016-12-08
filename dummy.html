@@ -29,6 +29,7 @@
     <script src="src/thingDataContext.js"></script>
     <script src="src/ThingModel.js"></script>
     <script src="src/thingsManager.js"></script>
+    <script src="src/ApplicationThingsManager.js"></script>
     <script src="src/thingUserRightsDataContext.js"></script>
     <script src="src/translationService.js"></script>
     <script src="src/userDataContext.js"></script>
@@ -147,7 +148,7 @@
     <script>
 
         'use strict'
-        
+
         app.factory('mainNotifier', ['notifierConnector', 'accountManagerService', 'path', '$timeout',
         function (notifierConnector, accountManagerService, path, $timeout) {
 
@@ -254,112 +255,57 @@
             mainNotifier.subscribe();
         }]);
 
-        app.factory('BooksManager', ['$q', '$filter', 'thingsManager', 'ThingModel',  'notifierConnector', 
-        function ($q, $filter, thingsManager, ThingModel, notifierConnector) {
+        app.factory("BookRightsAndClaims", ['thingClaims',
+        function (thingClaims) {
+            return {
+                PublicReadClaims: thingClaims.ThingUserChangeClaimsNoClaims,
+                PublicChangeClaims: thingClaims.ThingUserChangeClaimsNoClaims,
+                EveryoneReadClaims: thingClaims.ThingUserReadClaimsNoClaims,
+                EveryoneChangeClaims: thingClaims.ThingUserChangeClaimsNoClaims,
+                // Creator
+                CreatorUserReadClaims: thingClaims.ThingUserReadClaimsAllClaims,
+                //Anche lo User che lo ha costruito non può cambiare il Kind
+                CreatorUserChangeClaims: thingClaims.ThingUserChangeClaimsAllClaims & ~thingClaims.ThingUserChangeClaimsCanChangeKind,
+            }
+        }]);        
+
+        app.factory('BooksManager', ['ThingModel', 'BookRightsAndClaims', 'ApplicationThingsManager',
+        function (ThingModel, BookRightsAndClaims, ApplicationThingsManager) {
         
-            function BooksManager() {
+            function BooksManager(usersManager) {
 
-                var self = this;
+                var bookKind = "B1996416-43C2-4193-938B-0275C27479AF";
 
-                this.mainApp = new ThingModel();
-                this.books = this.mainApp.children;
+                var mainApp = new ThingModel({ kind: bookKind });
 
-                this.getAppsParams = {			
-                    //parentThingId: null,
-                    //filter: "Kind eq 'B1996416-43C2-4193-938B-0275C27479AF'",
-                    filter: "Id eq '9788858637326'",
-                    top: 5,
-                    //skip: 0,
-                    orderBy: null,
-                    valueFilter: null
-                };
-                this.getBookCommentsParams = {
-                        parentThingId: null,
-                        filter: "Kind eq '8EB24F3E-5D53-48AE-8214-A9177C873EDF'",                        
-                        top: 3,
-                        skip: 0,
-                        orderBy: null,
-                        valueFilter: null
-                    };
+                var applicationThingsManager = new ApplicationThingsManager(mainApp, bookKind, BookRightsAndClaims, usersManager);
 
-                this.onCreateThing = function onCreateThing(thing) {
-                }
-                this.onDeleteChildThingId = function onDeleteChildThingId(parentThingId, childThingId, kind) {
-                }
-                this.onUpdateThingValue = function onUpdateThingValue(thingId, value) {
-                    var result = $filter('filter')(this.mainApp.children, { id: thingId });
-                    if (result.length == 0)
-                        return;
-                    result[0].value = value;
-                }
-
-                notifierConnector.setHook('onCreateThing', function (thing) {
-                    self.onCreateThing(thing);
-                });
-                notifierConnector.setHook('onDeleteChildThingId', function (parentThingId, childThingId, kind) {
-                    self.onDeleteChildThingId(parentThingId, childThingId, kind);
-                });
-                notifierConnector.setHook('onUpdateThingValue', function (thingId, value) {
-                    self.onUpdateThingValue(thingId, value);
-                });
-            }
-
-            BooksManager.prototype.getMoreBooks = function getMoreBooks(cancel) {
-              
-                var self = this;
-
-                var def = $q.defer();
-                                
-                thingsManager.elapseThing(this.mainApp, this.getAppsParams, cancel)
-                .then(function (data) {
-                    // Try to get all things children
-                    var promises = [];
-                    
-                    for (var i = 0; i < data.things.length; i++) {
-                        promises.push(thingsManager.elapseThing(data.things[i], self.getBookCommentsParams, cancel));
-                    }
-
-                    $q.all(promises)
-                    .then(function (data) {
-                        def.resolve(data);
-                        return data;
-                    }, function (data) {
-                        if (cancel)
-                            cancel.resolve();
-                        def.reject(data);
-                        return data;
-                    });
-                });
-
-                return def.promise;
-            }
-
-            BooksManager.prototype.getBooksTotalItems = function() {
-                return this.mainApp.childrenTotalItems;
+                return applicationThingsManager;
             }
 
             return BooksManager;
-
         }]);
 
         // Define the `BooksManagerController` controller
-        app.controller('BooksManagerController', ['$q', '$scope', 'BooksManager', 
-        function BooksManagerController($q, $scope, BooksManager) {
+        app.controller('BooksManagerController', ['$q', '$scope', 'UsersManager', 'BooksManager', 
+        function BooksManagerController($q, $scope, UsersManager, BooksManager) {
 
-            var BooksManager = new BooksManager();
+            var usersManager = new UsersManager();
+
+            var BooksManager = new BooksManager(usersManager);
 
             var abortHttpCalls = $q.defer();
             
-            $scope.books = BooksManager.books;
+            $scope.books = BooksManager.things;
             
-            $scope.disableAppScroll = false;            
+            $scope.disableBooksScroll = false;            
             $scope.getMoreBooks = function() {
-                if ($scope.disableAppScroll)
+                if ($scope.disableBooksScroll)
                     return;
-                $scope.disableAppScroll = true;
-                BooksManager.getMoreBooks(abortHttpCalls)
+                $scope.disableBooksScroll = true;
+                BooksManager.getMoreThings(abortHttpCalls)
                 .then(function(data) {
-                    $scope.disableAppScroll = (BooksManager.getBooksTotalItems() == $scope.books.length);
+                    $scope.disableBooksScroll = (BooksManager.getThingsTotalItems() == $scope.books.length);
                 })
             }           
         }]);
@@ -373,7 +319,7 @@
             
             $scope.users = usersManager.users;
             
-            $scope.disableAppScroll = false;
+            $scope.disableBooksScroll = false;
             
             $scope.getMoreUsers = function() {
                 if ($scope.disableUserScroll)
@@ -526,7 +472,7 @@
         <button ng-click="getMoreUsers()">
             getMoreUsers
         </button>
-        <div id="wrapper" infinite-scroll='getMoreUsers()' infinite-scroll-disabled='disableAppScroll' infinite-scroll-use-document-bottom="true">
+        <div id="wrapper" infinite-scroll='getMoreUsers()' infinite-scroll-disabled='disableBooksScroll' infinite-scroll-use-document-bottom="true">
             <div id="columns">    
                 <div class="pin" ng-repeat="user in users">
                     <span>{{user.id}}</span>
@@ -547,7 +493,7 @@
             getMoreBooks
         </button>
 
-        <div id="wrapper" infinite-scroll='getMoreBooks()' infinite-scroll-disabled='disableAppScroll' infinite-scroll-use-document-bottom="true">
+        <div id="wrapper" infinite-scroll='getMoreBooks()' infinite-scroll-disabled='disableBooksScroll' infinite-scroll-use-document-bottom="true">
             <div id="columns">    
                 <div class="pin"  ng-repeat="book in books">
                     <span>{{book.id}}</span> - 
