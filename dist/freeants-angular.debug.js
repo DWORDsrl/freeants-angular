@@ -782,7 +782,7 @@
                 });
 
                 return def.promise;
-            }
+            }            
             ApplicationThingsManager.prototype.createThing = function (thing) {
 
                 //Forzo qualunque cosa venga passata
