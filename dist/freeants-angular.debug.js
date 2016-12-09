@@ -605,31 +605,31 @@
 
                 this.onCreateThing = function onCreateThing(thing) {
                     if (thing.kind == self.thingKind) {
-                        thingsManager.addChildThing(this.mainThing, thing);
+                        thingsManager.addChildThing(self.mainThing, thing);
                         return;
                     }
                 }
                 this.onUpdateThing = function onUpdateThing(thing) {
-                    var thingObj = this.searchThing(this.mainThing.children, thing.id);
+                    var thingObj = self.searchThing(self.mainThing.children, thing.id);
                     if (thingObj) {
                         var thingModel = new ThingModel(thing, thingObj.thing.children, thingObj.thing.childrenSkip, thingObj.thing.childrenTotalItems);
-                        this.mainThing.children[thingObj.thingIndex] = thingModel;
+                        self.mainThing.children[thingObj.thingIndex] = thingModel;
                         $timeout(null, 1);
                         return;
                     }
-                    var childThing = this.searchThingChild(this.mainThing.children, thing.id);
+                    var childThing = self.searchThingChild(self.mainThing.children, thing.id);
                     if (childThing) {
                         var childThingModel = new ThingModel(thing, childThing.child.children, childThing.child.childrenSkip, childThing.child.childrenTotalItems);
-                        this.mainThing.children[childThing.appIndex].children[childThing.childIndex] = childThingModel;
+                        self.mainThing.children[childThing.appIndex].children[childThing.childIndex] = childThingModel;
                         $timeout(null, 1);
                         return;
                     }
                 }
                 // TODO: Gestire la cancellazione di un Service?
                 this.onDeleteThing = function onDeleteThing(thingId) {
-                    var thing = this.searchThing(this.mainThing.children, thingId);
+                    var thing = self.searchThing(self.mainThing.children, thingId);
                     if (thing) {
-                        this.mainThing.children.splice(thing.thingIndex, 1);
+                        self.mainThing.children.splice(thing.thingIndex, 1);
                         return;
                     }
                 }
@@ -639,7 +639,7 @@
 
                 // TODO: Pensare a come evitare di fare una chiamata verso il server per ottenere la Thing aggiunta
                 this.onCreateChildThingId = function onCreateChildThingId(parentId, childId, kind) {
-                    var thing = this.searchThing(this.mainThing.children, parentId);
+                    var thing = self.searchThing(self.mainThing.children, parentId);
                     if (thing) {
                         thingsDataContext.getThing(childId)
                         .then(function (data) {
