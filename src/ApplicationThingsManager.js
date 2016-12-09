@@ -121,14 +121,14 @@
                     }
                 }
                 this.onDeleteChildThingId = function onDeleteChildThingId(parentId, childId, kind) {
-                    var childObj = this.searchThingChild(this.mainThing.children, childId, parentId);
+                    var childObj = self.searchThingChild(self.mainThing.children, childId, parentId);
                     if (childObj)
-                        this.mainThing.children[childObj.appIndex].children.splice(childObj.childIndex, 1);
+                        self.mainThing.children[childObj.appIndex].children.splice(childObj.childIndex, 1);
                 }
 
                 // TODO: Pensare a come evitare di fare una chiamata verso il server per ottenere lo User
                 this.onCreateThingUserRights = function onCreateThingUserRights(thingId, userRights) {                   
-                    var thing = this.searchThing(this.mainThing.children, thingId);
+                    var thing = self.searchThing(self.mainThing.children, thingId);
                     if (thing) {
                         usersManager.getUser(userRights.userId)
                         .then(function (user) {
@@ -137,7 +137,7 @@
                         return;
                     }
                     else {
-                        var childThing = this.searchThingChild(this.mainThing.children, thingId);
+                        var childThing = self.searchThingChild(self.mainThing.children, thingId);
                         if (childThing) {
                             usersManager.getUser(userRights.userId)
                                 .then(function (user) {
@@ -155,28 +155,27 @@
                     }
                 }
                 this.onUpdateThingUserRights = function onUpdateThingUserRights(thingId, userRights) {
-                    var dsdsdsd = 0;
                 }
                 this.onDeleteThingUserRights = function onDeleteThingUserRights(thingId, userId) {
                     var userInfos = accountManagerService.getUserInfo();
-                    var thing = this.searchThing(this.mainThing.children, thingId);
+                    var thing = self.searchThing(self.mainThing.children, thingId);
                     if (thing) {
                         if (userId == userInfos.userId) {
-                            this.mainThing.children.splice(thing.thingIndex, 1);
+                            self.mainThing.children.splice(thing.thingIndex, 1);
                         }
                         else {
-                            var user = this.searchThing(thing.thing.usersInfos, userId);
+                            var user = self.searchThing(thing.thing.usersInfos, userId);
                             if (user) {
-                                this.mainThing.children[thing.thingIndex].usersInfos.splice(user.thingIndex, 1);
+                                self.mainThing.children[thing.thingIndex].usersInfos.splice(user.thingIndex, 1);
                             }
                         }
                     }
                     else {
-                        var childThing = this.searchThingChild(this.mainThing.children, thingId);
+                        var childThing = self.searchThingChild(self.mainThing.children, thingId);
                         if (childThing) {
-                            var user = this.searchThing(childThing.child.usersInfos, userId);
+                            var user = self.searchThing(childThing.child.usersInfos, userId);
                             if (user) {
-                                this.mainThing.children[childThing.appIndex].children[childThing.childIndex].usersInfos.splice(user.thingIndex, 1);
+                                self.mainThing.children[childThing.appIndex].children[childThing.childIndex].usersInfos.splice(user.thingIndex, 1);
                             }
                         }
                     }
