@@ -86,12 +86,14 @@
                     if (thingObj) {
                         var thingModel = new ThingModel(thing, thingObj.thing.children, thingObj.thing.childrenSkip, thingObj.thing.childrenTotalItems);
                         this.mainThing.children[thingObj.thingIndex] = thingModel;
+                        $timeout(null, 1);
                         return;
                     }
                     var childThing = this.searchThingChild(this.mainThing.children, thing.id);
                     if (childThing) {
                         var childThingModel = new ThingModel(thing, childThing.child.children, childThing.child.childrenSkip, childThing.child.childrenTotalItems);
                         this.mainThing.children[childThing.appIndex].children[childThing.childIndex] = childThingModel;
+                        $timeout(null, 1);
                         return;
                     }
                 }
@@ -102,6 +104,9 @@
                         this.mainThing.children.splice(thing.thingIndex, 1);
                         return;
                     }
+                }
+
+                this.onUpdateThingValue = function onUpdateThingValue(thingId, value) {
                 }
 
                 // TODO: Pensare a come evitare di fare una chiamata verso il server per ottenere la Thing aggiunta
@@ -150,7 +155,7 @@
                     }
                 }
                 this.onUpdateThingUserRights = function onUpdateThingUserRights(thingId, userRights) {
-
+                    var dsdsdsd = 0;
                 }
                 this.onDeleteThingUserRights = function onDeleteThingUserRights(thingId, userId) {
                     var userInfos = accountManagerService.getUserInfo();
@@ -175,35 +180,30 @@
                             }
                         }
                     }
+                    $timeout(null, 1);
                 }
 
-                notifierConnector.setHook('onCreateThing', function (thing) {
-                    self.onCreateThing(thing);
-                    $timeout(null, 1);
-                });
-                notifierConnector.setHook('onUpdateThing', function (thing) {
-                    self.onUpdateThing(thing);
-                    $timeout(null, 1);
-                });
-                notifierConnector.setHook('onDeleteThing', function (thingId) {
-                    self.onDeleteThing(thingId);
-                });
-                notifierConnector.setHook('onCreateChildThingId', function (parentId, childId, kind) {
-                    self.onCreateChildThingId(parentId, childId, kind);
-                });
-                notifierConnector.setHook('onDeleteChildThingId', function (parentId, childId, kind) {
-                    self.onDeleteChildThingId(parentId, childId, kind);
-                });
-                notifierConnector.setHook('onCreateThingUserRights', function (thingId, userRights) {
-                    self.onCreateThingUserRights(thingId, userRights)
-                });
-                notifierConnector.setHook('onUpdateThingUserRights', function (thingId, userRights) {
-                    console.log(thingId, userRights);
-                });
-                notifierConnector.setHook('onDeleteThingUserRights', function (thingId, userId) {
-                    self.onDeleteThingUserRights(thingId, userId);
-                    $timeout(null, 1);
-                });
+                notifierConnector.setHook('onCreateThing', self.onCreateThing);
+                notifierConnector.setHook('onUpdateThing', self.onUpdateThing);
+                notifierConnector.setHook('onDeleteThing', self.onDeleteThing);
+                notifierConnector.setHook('onUpdateThingValue', self.onUpdateThingValue);
+                notifierConnector.setHook('onCreateChildThingId', self.onCreateChildThingId);
+                notifierConnector.setHook('onDeleteChildThingId', self.onDeleteChildThingId);
+                notifierConnector.setHook('onCreateThingUserRights',self.onCreateThingUserRights);
+                notifierConnector.setHook('onUpdateThingUserRights', self.onUpdateThingUserRights);
+                notifierConnector.setHook('onDeleteThingUserRights', self.onDeleteThingUserRights);
+            }
+
+            ApplicationThingsManager.prototype.dispose = function() {
+                notifierConnector.remHook('onDeleteThingUserRights', this.onUpdateThingUserRights);
+                notifierConnector.remHook('onUpdateThingUserRights', this.onUpdateThingUserRights);
+                notifierConnector.remHook('onCreateThingUserRights',this.onCreateThingUserRights);
+                notifierConnector.remHook('onDeleteChildThingId', this.onDeleteChildThingId);
+                notifierConnector.remHook('onCreateChildThingId', this.onCreateChildThingId);
+                notifierConnector.remHook('onUpdateThingValue', self.onUpdateThingValue);
+                notifierConnector.remHook('onDeleteThing', this.onDeleteThing);
+                notifierConnector.remHook('onUpdateThing', this.onUpdateThing);
+                notifierConnector.remHook('onCreateThing', this.onCreateThing);
             }
 
             // Children Things

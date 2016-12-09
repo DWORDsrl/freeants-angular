@@ -292,20 +292,21 @@
 
             var usersManager = new UsersManager();
 
-            var BooksManager = new BooksManager(usersManager);
+            var booksManager = new BooksManager(usersManager);
 
             var abortHttpCalls = $q.defer();
             
-            $scope.books = BooksManager.things;
+            $scope.books = booksManager.things;
             
             $scope.disableBooksScroll = false;            
             $scope.getMoreBooks = function() {
                 if ($scope.disableBooksScroll)
                     return;
                 $scope.disableBooksScroll = true;
-                BooksManager.getMoreThings(abortHttpCalls)
+                booksManager.getMoreThings(abortHttpCalls)
                 .then(function(data) {
-                    $scope.disableBooksScroll = (BooksManager.getThingsTotalItems() == $scope.books.length);
+                    $scope.disableBooksScroll = (booksManager.getThingsTotalItems() == $scope.books.length);
+                    booksManager.dispose();
                 })
             }           
         }]);

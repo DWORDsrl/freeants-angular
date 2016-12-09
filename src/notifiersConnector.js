@@ -204,8 +204,10 @@
 
             setHook: function (eventName, hook) {
                 myHub.on(eventName, hook);
+            },
+            remHook: function(eventName, hook) {
+                myHub.off(eventName, hook);
             }
-
         };
 
     });

@@ -2,6 +2,10 @@
 
 Free Ants Angular SDK - Lab version
 
+1.0.40 - 12-09-2016 - Fix
+
+...
+
 1.0.36 - 12-08-2016 - Added ApplicationThingsManager
 
 1.0.37 - 12-05-2016 - Fix some issue on account manager and thingsManager
