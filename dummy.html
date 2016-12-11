@@ -344,6 +344,63 @@
             }
         }]);
 
+        app.controller('SearchThingController', ['$q', '$scope', 'ThingModel', 'thingsManager', 
+        function SearchThingController($q, $scope, ThingModel, thingsManager) {
+
+            $scope.searchQuery = "";
+            $scope.mainThing = new ThingModel();
+            $scope.disableThingsScroll = false;
+            
+            var abortHttpCalls = $q.defer();
+            var getThingsParams = {
+                //parentThingId: null, ovverrided
+                filter: "contains(Name,'" + $scope.searchQuery + "') or contains(Id,'" + $scope.searchQuery + "') or contains(Kind,'" + $scope.searchQuery + "')",
+                top: 10,
+                //skip: 0, ovverrided
+                orderBy: null,
+                valueFilter: null
+            };
+
+            $scope.searchThing = function() {
+                
+                $scope.disableThingsScroll = true;                
+
+                thingsManager.collapseThing($scope.mainThing, abortHttpCalls);
+
+                if (!$scope.searchQuery)
+                    return;
+
+                abortHttpCalls = $q.defer();
+
+                getThingsParams.filter = "contains(Name,'" + $scope.searchQuery + "') or contains(Id,'" + $scope.searchQuery + "') or contains(Kind,'" + $scope.searchQuery + "')";
+
+                thingsManager.elapseThing($scope.mainThing, getThingsParams, abortHttpCalls)
+                .then(function() {
+                    $scope.disableThingsScroll = ($scope.mainThing.childrenTotalItems == $scope.mainThing.children.length);
+                }, function(data) {
+
+                });
+            }
+                                    
+            $scope.getMoreThings = function() {
+
+                if ($scope.disableThingsScroll)
+                    return;
+                $scope.disableThingsScroll = true;
+                thingsManager.elapseThing($scope.mainThing, getThingsParams, abortHttpCalls)
+                .then(function() {
+                    $scope.disableThingsScroll = ($scope.mainThing.childrenTotalItems == $scope.mainThing.children.length);
+                }, function(data) {
+
+                });
+            }
+
+            $scope.$watch('searchQuery', function (newSearchValue, oldValue) {
+                $scope.searchThing();
+            },true);
+
+        }]);
+
         app.factory("BookRightsAndClaims", ['thingClaims',
         function (thingClaims) {
             return {
@@ -394,8 +451,7 @@
                 $scope.disableBooksScroll = true;
                 booksManager.getMoreThings(abortHttpCalls)
                 .then(function(data) {
-                    $scope.disableBooksScroll = (booksManager.getThingsTotalItems() == $scope.books.length);
-                    booksManager.dispose();
+                    $scope.disableBooksScroll = (booksManager.getThingsTotalItems() == $scope.books.length);                    
                 })
             }           
         }]);
@@ -573,6 +629,24 @@
                     <span>{{user.username}}</span>
                     </br>
                     <span>{{user.masterApiKey}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div ng-if="loggedIn == true" ng-controller="SearchThingController" > 
+        <input type="text"     ng-model="searchQuery" placeholder="search" />
+        <button ng-click="searchThing()">
+            Search
+        </button>
+
+        <div id="wrapper" infinite-scroll='getMoreThings()' infinite-scroll-disabled='disableThingsScroll' infinite-scroll-use-document-bottom="true">
+            <div id="columns">    
+                <div class="pin" ng-repeat="thing in mainThing.children">
+                    <span>{{thing.id}}</span> - 
+                    <span>{{thing.name}}</span>
+                    <span>{{thing.kind}}</span>
+                    <span>{{thing.value}}</span>
                 </div>
             </div>
         </div>
