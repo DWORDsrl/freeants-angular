@@ -136,9 +136,9 @@
         app.config(['accountManagerProvider',
             function (accountManagerProvider) {
 
-                accountManagerProvider.setAppName("thingsAngular");
-                accountManagerProvider.setStorage(localStorage, "AccessTokenOrDWApiKey");
-                accountManagerProvider.setApiKey("ef1dd5d4-82f4-4de6-85fd-20efe03943cd");
+                accountManagerProvider.setAppName("freeants-angular-sample");
+                accountManagerProvider.setStorage(localStorage, "AccessTokenOrDWApiKey");   
+                accountManagerProvider.stored();//TODO: a che serve?             
 
         }]);
 
@@ -149,34 +149,34 @@
 
         'use strict'
 
-        app.factory('mainNotifier', ['notifierConnector', 'accountManagerService', 'path', '$timeout',
-        function (notifierConnector, accountManagerService, path, $timeout) {
+        app.factory('mainNotifier', ['$rootScope', 'notifierConnector', 'accountManagerService', 'path', '$timeout',
+        function ($rootScope, notifierConnector, accountManagerService, path, $timeout) {
 
             function connectionStatus(change) {
                 switch (change.newState) {
                     case notifierConnector.connected:
                         {
-                            console.log("SignalR connected");
+                            $rootScope.notifierConnectionStatus = notifierConnector.connected;
                             break;
                         }
                     case notifierConnector.connecting:
                         {
-                            console.log("SignalR connecting");
+                            $rootScope.notifierConnectionStatus = notifierConnector.connecting;
                             break;
                         }
                     case notifierConnector.reconnecting:
                         {
-                            console.log("SignalR reconnecting");
+                            $rootScope.notifierConnectionStatus = notifierConnector.reconnecting;
                             break;
                         }
                     case notifierConnector.disconnected:
                         {
-                            console.log("SignalR disconnected");
+                            $rootScope.notifierConnectionStatus = notifierConnector.disconnected;
                             break;
                         }
                     default:
                         {
-                            console.log("SignalR connection status not recognized");
+                            $rootScope.notifierConnectionStatus = notifierConnector.disconnected;
                             break;
                         }
                 }
@@ -189,10 +189,11 @@
             notifierConnector.init(connectionStatus, onReconnected);
 
             function subscribeSuccess() {
-                console.log('SignalR Subscribe Success');
+                $rootScope.lastMsg = "Logged in";
             }
             function subscribeFail() {
-                console.log('SignalR Subscribe Failed');
+
+                $rootScope.lastMsg = "SignalR Subscribe Failed";                
             }
 
             notifierConnector.setHook('onCreateThing', function (thing) {
@@ -238,7 +239,7 @@
 
             var extport = {
                 subscribe: function () {
-                    notifierConnector.subscribe(path.server + "signalr", "DWApiKey", accountManagerService.getApiKey, subscribeSuccess, subscribeFail);
+                    notifierConnector.subscribe(path.server + "signalr", "Bearer", accountManagerService.getAccessToken, subscribeSuccess, subscribeFail);
                 },
                 unsubscribe: function () {
                     notifierConnector.unsubscribe();
@@ -249,10 +250,98 @@
             return extport;
         }])
 
-        app.run(['mainNotifier', 
-        function (mainNotifier) {
+        app.run(['$rootScope', 'accountManagerService', 'mainNotifier', 
+        function ($rootScope, accountManagerService, mainNotifier) {
 
-            mainNotifier.subscribe();
+            $rootScope.lastMsg = "Ok";
+            $rootScope.loggedIn = false;
+            $rootScope.notifierConnectionStatus = mainNotifier.connectionStatus;
+
+            if (accountManagerService.checkAccessToken() == true) {
+                $rootScope.loggedIn = true;
+
+                mainNotifier.subscribe();
+            }
+
+        }]);
+
+        app.controller('LoginController', ['$rootScope', '$scope', 'accountManagerService', 'mainNotifier', 
+        function LoginController($rootScope, $scope, accountManagerService, mainNotifier) {
+
+            $scope.modelLogin = {
+                grant_type: "password",
+                username: "",
+                password: ""
+            }
+            
+            $scope.login = function() {
+                accountManagerService.login($scope.modelLogin, true)
+                .then(function (result) {
+                    if (result.status) {
+                        $rootScope.loggedIn = true;
+                        $rootScope.lastMsg = "Logged in";
+                        mainNotifier.subscribe();                        
+                    }
+                    else {
+                        $rootScope.lastMsg = result.data;
+                    }
+                },
+                function (data) {
+                    $rootScope.lastMsg = result.data;
+                });
+            }
+        }]);
+
+         app.controller('LoggedInUserInfosController', ['$rootScope', '$scope', 'accountDataContext', 
+        function LoggedInUserInfosController($rootScope, $scope, accountDataContext) {
+            $scope.userIfos = "";
+            accountDataContext.getUserInfo()
+            .then(function(data) {
+                $scope.userInfos = data;
+            }, function(data) {
+                $rootScope.lastMsg = data;
+            });
+        }]);
+
+        app.controller('LogoutController', ['$rootScope', '$scope', 'accountManagerService', 'mainNotifier', 
+        function LogoutController($rootScope, $scope, accountManagerService, mainNotifier) {
+            
+            $scope.logout = function() {
+                // TODO: Fix unsubscribe fail
+                mainNotifier.unsubscribe();
+
+                accountManagerService.logout()
+                .then(function (data) {
+                    $rootScope.loggedIn = false;
+                    $rootScope.lastMsg = "Ok";
+                    if (data.status == false) {
+                        $rootScope.lastMsg = data;
+                    }
+                })
+            }
+        }]);
+
+        app.controller('UsersListController', ['$q', '$scope', 'UsersManager', 
+        function UsersListController($q, $scope, UsersManager) {
+
+            var usersManager = new UsersManager();
+
+            var abortHttpCalls = $q.defer();
+            
+            $scope.users = usersManager.users;
+            
+            $scope.disableBooksScroll = false;
+            
+            $scope.getMoreUsers = function() {
+                if ($scope.disableUserScroll)
+                    return;
+
+                $scope.disableUserScroll = true;
+                usersManager.getMoreUsers(abortHttpCalls)
+                .then(function(data) {
+                    $scope.disableUserScroll = (usersManager.getUsersTotalItems() == usersManager.getUsersItems());
+                });
+            }
         }]);
 
         app.factory("BookRightsAndClaims", ['thingClaims',
@@ -310,30 +399,7 @@
                 })
             }           
         }]);
-
-        app.controller('UsersListController', ['$q', '$scope', 'UsersManager', 
-        function UsersListController($q, $scope, UsersManager) {
-
-            var usersManager = new UsersManager();
-
-            var abortHttpCalls = $q.defer();
-            
-            $scope.users = usersManager.users;
-            
-            $scope.disableBooksScroll = false;
-            
-            $scope.getMoreUsers = function() {
-                if ($scope.disableUserScroll)
-                    return;
-
-                $scope.disableUserScroll = true;
-                usersManager.getMoreUsers(abortHttpCalls)
-                .then(function(data) {
-                    $scope.disableUserScroll = (usersManager.getUsersTotalItems() == usersManager.getUsersItems());
-                });
-            }
-        }]);
-        
+                
     </script>
 
     <!-- Dont copy to examples -->
@@ -466,10 +532,33 @@
 
     <!-- Can be copied to examples -->    
 	<div>
-		// Bravo!
+		<b> Bravo! </b>
 	</div>
 
-    <div ng-controller="UsersListController" > 
+    <div>
+        <b> {{ lastMsg }} </b>
+        <b> {{ notifierConnectionStatus }} </b>
+    </div>
+
+    <div ng-if="loggedIn == false" ng-controller="LoginController">
+        <input type="text"     ng-model="modelLogin.username" placeholder="email" />
+        <input type="password" ng-model="modelLogin.password" placeholder="password" />
+        <button ng-click="login()">
+            login
+        </button>
+    </div>
+
+    <div ng-if="loggedIn == true" ng-controller="LoggedInUserInfosController">
+        <b> {{userInfos}} </b>
+    </div>
+
+    <div ng-if="loggedIn == true" ng-controller="LogoutController">
+        <button ng-click="logout()">
+            logout
+        </button>
+    </div>
+
+    <div ng-if="loggedIn == true" ng-controller="UsersListController" > 
         <button ng-click="getMoreUsers()">
             getMoreUsers
         </button>
@@ -489,7 +578,7 @@
         </div>
     </div>
 
-    <div ng-controller="BooksManagerController" > 
+    <div ng-if="loggedIn == true" ng-controller="BooksManagerController" > 
         <button ng-click="getMoreBooks()">
             getMoreBooks
         </button>
@@ -517,7 +606,7 @@
     </div>
 
     <!-- Dont copy to examples -->
-    <div ng-controller="PushNotificationCtrl">
+    <div ng-if="loggedIn == true" ng-controller="PushNotificationCtrl">
         <h3>Test send</h3>
         <input type="text" ng-model="hubId" placeholder="ThingHub ID">
         <br>
@@ -561,7 +650,7 @@
         </code>
     </div>
 
-    <div ng-controller="SchedulerCtrl">
+    <div ng-if="loggedIn == true" ng-controller="SchedulerCtrl">
         <h3>Test Scheduler</h3>
         <label>Enable
           <input type="checkbox" ng-model="modelScheduling.status" ng-change="convertPostData()">

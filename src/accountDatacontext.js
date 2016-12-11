@@ -13,7 +13,7 @@
     function confirmAccountByOnlyEmailUrl() { return accountUrl() + "/ConfirmAccountByOnlyEmail/" }
 
     return {
-
+        
       forgotPassword: function (email,culture) {
             var req = $http({
                 method: 'GET',
@@ -35,7 +35,6 @@
             });
             return req;
         },
-
         resetPassword: function (passModel) {
             var req = $http({
                 method: 'POST',
@@ -47,7 +46,6 @@
             });
             return req;
         },
-
         registerByOnlyEmail: function (email, culture) {
             var req = $http({
                 method: 'GET',
@@ -69,7 +67,6 @@
             });
             return req;
         },
-
         getUserInfo: function () {
             var req = $http({
                 method: 'GET',

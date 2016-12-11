@@ -17,7 +17,7 @@
     function confirmAccountByOnlyEmailUrl() { return accountUrl() + "/ConfirmAccountByOnlyEmail/" }
 
     return {
-
+        
       forgotPassword: function (email,culture) {
             var req = $http({
                 method: 'GET',
@@ -39,7 +39,6 @@
             });
             return req;
         },
-
         resetPassword: function (passModel) {
             var req = $http({
                 method: 'POST',
@@ -51,7 +50,6 @@
             });
             return req;
         },
-
         registerByOnlyEmail: function (email, culture) {
             var req = $http({
                 method: 'GET',
@@ -73,7 +71,6 @@
             });
             return req;
         },
-
         getUserInfo: function () {
             var req = $http({
                 method: 'GET',
@@ -315,8 +312,11 @@
                     data: data
                 };
 
-            }, function () {
-                return { status: false }
+            }, function (data) {
+                return { 
+                    status: false,
+                    data: data
+                 }
             })
         };
         var refresh = function (model) {
@@ -448,36 +448,42 @@
 
 
         };
+
+        function clearLocalData() {
+
+            accountManager.removeUserName();
+            accountManager.removeUserId();
+            accountManager.removePersistent();
+            accountManager.removeAccessToken();
+            accountManager.removeRefreshToken();
+            accountManager.removeAccessTokenTime();
+            accountManager.removeAccessTokenDate();
+
+            if (timeoutRefresh) {
+                clearTimeout(timeoutRefresh);
+            }
+
+            if (accountManager.gp_access_token)
+                accountManager.removeGoogleAccessToken();
+
+            if (accountManager.fb_access_token)
+                accountManager.removeFacebookAccessToken();
+        }
+
         var logout = function () {
             return loginDataContext.logout(path.server)
             .then(function () {
-                accountManager.removeUserName();
-                accountManager.removeUserId();
-                accountManager.removePersistent();
-                accountManager.removeAccessToken();
-                accountManager.removeRefreshToken();
-                accountManager.removeAccessTokenTime();
-                accountManager.removeAccessTokenDate();
-
-
-                if (timeoutRefresh) {
-                    clearTimeout(timeoutRefresh);
-                }
-
-
-                if (accountManager.gp_access_token)
-                    accountManager.removeGoogleAccessToken();
-
-                if (accountManager.fb_access_token)
-                    accountManager.removeFacebookAccessToken();
-
                 return {
                     status: true
                 };
 
-            }, function () {
-                return { status: false }
+            }, function (data) {
+                return { 
+                    status: false,
+                    data: data
+                }
             })
+            .finally(clearLocalData);
         };
         var forgotPassword = function (email, culture) {
             return accountDataContext.forgotPassword(email, culture);
