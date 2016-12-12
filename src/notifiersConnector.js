@@ -119,11 +119,8 @@
         return {
 
             connected: $.signalR.connectionState.connected,
-
             disconnected: $.signalR.connectionState.disconnected,
-
             connecting: $.signalR.connectionState.connecting,
-
             reconnecting: $.signalR.connectionState.reconnecting,
 
             init: function(stateChangedHook, reconnectedHook) {
@@ -192,7 +189,6 @@
                         subscribeFail();
                 });
             },
-
             unsubscribe: function () {
 
                 if (isStarted == false)
@@ -209,7 +205,5 @@
                 myHub.off(eventName, hook);
             }
         };
-
     });
-
 }());

@@ -815,6 +815,9 @@
             ApplicationThingsManager.prototype.deleteThing = function (thingId) {
                 return thingsManager.deleteThing(thingId, true);
             }
+            ApplicationThingsManager.prototype.shallowCopyThing = function (thing) {
+                return thingsManager.shallowCopyThing(thing);
+            }
 
             ApplicationThingsManager.prototype.removeUser = function (thingId, userId) {
                 return thingUserRightsDataContext.deleteThingUserRights(thingId, userId);
@@ -1223,11 +1226,8 @@
         return {
 
             connected: $.signalR.connectionState.connected,
-
             disconnected: $.signalR.connectionState.disconnected,
-
             connecting: $.signalR.connectionState.connecting,
-
             reconnecting: $.signalR.connectionState.reconnecting,
 
             init: function(stateChangedHook, reconnectedHook) {
@@ -1296,7 +1296,6 @@
                         subscribeFail();
                 });
             },
-
             unsubscribe: function () {
 
                 if (isStarted == false)
@@ -1313,9 +1312,7 @@
                 myHub.off(eventName, hook);
             }
         };
-
     });
-
 }());
 (function() {
     'use strict';
@@ -1812,6 +1809,18 @@
             return thingsDataContext.getThing(thingId)
                 .then(getSucceded);
         }
+
+        function shallowCopyThing(thing) {
+            var currentThing = null;
+            if (thing) {
+                currentThing = JSON.parse(JSON.stringify(thing));
+                if (thing.children)
+                    currentThing.children = thing.children;
+                if (thing.usersInfos)
+                    currentThing.usersInfos = thing.usersInfos;
+            }
+            return currentThing;
+        }
           
         function elapseThing(thing, parameter, cancel) {
 
@@ -1852,6 +1861,7 @@
             deleteThing: deleteThing,
             getThings: getThings,
             getThing: getThing,
+            shallowCopyThing: shallowCopyThing,
             elapseThing: elapseThing,
             collapseThing: collapseThing,
             addChildThing: addChildThing             

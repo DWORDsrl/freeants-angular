@@ -281,6 +281,9 @@
             ApplicationThingsManager.prototype.deleteThing = function (thingId) {
                 return thingsManager.deleteThing(thingId, true);
             }
+            ApplicationThingsManager.prototype.shallowCopyThing = function (thing) {
+                return thingsManager.shallowCopyThing(thing);
+            }
 
             ApplicationThingsManager.prototype.removeUser = function (thingId, userId) {
                 return thingUserRightsDataContext.deleteThingUserRights(thingId, userId);

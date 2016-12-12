@@ -161,6 +161,18 @@
             return thingsDataContext.getThing(thingId)
                 .then(getSucceded);
         }
+
+        function shallowCopyThing(thing) {
+            var currentThing = null;
+            if (thing) {
+                currentThing = JSON.parse(JSON.stringify(thing));
+                if (thing.children)
+                    currentThing.children = thing.children;
+                if (thing.usersInfos)
+                    currentThing.usersInfos = thing.usersInfos;
+            }
+            return currentThing;
+        }
           
         function elapseThing(thing, parameter, cancel) {
 
@@ -201,6 +213,7 @@
             deleteThing: deleteThing,
             getThings: getThings,
             getThing: getThing,
+            shallowCopyThing: shallowCopyThing,
             elapseThing: elapseThing,
             collapseThing: collapseThing,
             addChildThing: addChildThing             
