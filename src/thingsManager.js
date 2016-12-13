@@ -137,19 +137,7 @@
 
             return thingsDataContext.deleteThing(thingId);
         }        
-
-        function shallowCopyThing(thing) {
-            var currentThing = null;
-            if (thing) {
-                currentThing = JSON.parse(JSON.stringify(thing));
-                if (thing.children)
-                    currentThing.children = thing.children;
-                if (thing.usersInfos)
-                    currentThing.usersInfos = thing.usersInfos;
-            }
-            return currentThing;
-        }
-          
+                  
         function getThingChildren(thing, parameter, cancel) {
 
             parameter.skip = thing.childrenSkip;

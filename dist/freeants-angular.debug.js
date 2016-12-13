@@ -765,14 +765,20 @@
             ApplicationThingsManager.prototype.getMoreThingChildren = function (thing, cancel) {
                 return thingsManager.getThingChildren(thing, this.getChindrenThingsParams, cancel)
             }
-            ApplicationThingsManager.prototype.collapseThing = function (thing, cancel) {
-                return thingsManager.collapseThing(thing, cancel)
-            }
             ApplicationThingsManager.prototype.addChild = function (thingId, childId) {
                 return thingsDataContext.addChildToParent(thingId, childId);
             }
+            ApplicationThingsManager.prototype.collapseThing = function (thingId, cancel) {
+                var thing = null;
+                for(var i = 0;i < this.mainThing.children.length;i++)
+                    if (thingId == this.mainThing.children[i]) {
+                        thing = this.mainThing.children[i];
+                        break
+                    }
+                if (thing)
+                    thingsManager.collapseThing(thing, cancel)
+            }
 
-            // Things
             ApplicationThingsManager.prototype.setTopThings = function (top) {
                 this.getThingsParams.top = top;
             }
@@ -1802,19 +1808,7 @@
 
             return thingsDataContext.deleteThing(thingId);
         }        
-
-        function shallowCopyThing(thing) {
-            var currentThing = null;
-            if (thing) {
-                currentThing = JSON.parse(JSON.stringify(thing));
-                if (thing.children)
-                    currentThing.children = thing.children;
-                if (thing.usersInfos)
-                    currentThing.usersInfos = thing.usersInfos;
-            }
-            return currentThing;
-        }
-          
+                  
         function getThingChildren(thing, parameter, cancel) {
 
             parameter.skip = thing.childrenSkip;
