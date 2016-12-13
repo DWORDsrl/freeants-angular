@@ -203,6 +203,8 @@
                 notifierConnector.remHook('onDeleteThing', this.onDeleteThing);
                 notifierConnector.remHook('onUpdateThing', this.onUpdateThing);
                 notifierConnector.remHook('onCreateThing', this.onCreateThing);
+
+                this.mainThing.dispose();
             }
 
             // Children Things
