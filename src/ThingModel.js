@@ -23,15 +23,8 @@
                     this.value = {};
                 }
                 this.value = angular.fromJson(this.value);
-            },
-            dispose: function() {
-                this.children = [];
-                this.childrenSkip = 0;
-                this.childrenTotalItems = Number.MAX_SAFE_INTEGER;
             }
         };
-
-        
 
         return ThingModel;
     }]);

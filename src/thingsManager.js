@@ -199,7 +199,11 @@
         function collapseThing(thing, cancel) {
             if (cancel)
                 cancel.resolve();
-            thing.dispose();
+
+            // TODO: Spostare sul ThingModel
+            thing.children = [];
+            thing.childrenSkip = 0;
+            thing.childrenTotalItems = Number.MAX_SAFE_INTEGER;
         }
 
         function addChildThing(thing, childThingRaw) {

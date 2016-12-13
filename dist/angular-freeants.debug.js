@@ -1659,15 +1659,8 @@
                     this.value = {};
                 }
                 this.value = angular.fromJson(this.value);
-            },
-            dispose: function() {
-                this.children = [];
-                this.childrenSkip = 0;
-                this.childrenTotalItems = Number.MAX_SAFE_INTEGER;
             }
         };
-
-        
 
         return ThingModel;
     }]);
@@ -1873,7 +1866,11 @@
         function collapseThing(thing, cancel) {
             if (cancel)
                 cancel.resolve();
-            thing.dispose();
+
+            // TODO: Spostare sul ThingModel
+            thing.children = [];
+            thing.childrenSkip = 0;
+            thing.childrenTotalItems = Number.MAX_SAFE_INTEGER;
         }
 
         function addChildThing(thing, childThingRaw) {
