@@ -1648,8 +1648,7 @@
             this.setData(thingRaw);
         };
 
-        ThingModel.prototype = {
-            setData: function (thingData) {
+        ThingModel.prototype.setData = function (thingData) {
 
                 if (thingData) {
                     angular.extend(this, thingData);
@@ -1660,7 +1659,6 @@
                 }
                 this.value = angular.fromJson(this.value);
             }
-        };
 
         return ThingModel;
     }]);
