@@ -763,7 +763,7 @@
                 return thing.childrenTotalItems;
             }
             ApplicationThingsManager.prototype.getMoreThingChildren = function (thing, cancel) {
-                return thingsManager.getThingChildren(thing, this.getChindrenThingsParams, cancel)
+                return thingsManager.getMoreThingChildren(thing, this.getChindrenThingsParams, cancel)
             }
             ApplicationThingsManager.prototype.addChild = function (thingId, childId) {
                 return thingsDataContext.addChildToParent(thingId, childId);
@@ -791,7 +791,7 @@
 
                 var def = $q.defer();
 
-                thingsManager.getThingChildren(this.mainThing, this.getThingsParams, cancel)
+                thingsManager.getMoreThingChildren(this.mainThing, this.getThingsParams, cancel)
                 .then(function (data) {
                     var promises = [];
 
@@ -1809,7 +1809,7 @@
             return thingsDataContext.deleteThing(thingId);
         }        
                   
-        function getThingChildren(thing, parameter, cancel) {
+        function getMoreThingChildren(thing, parameter, cancel) {
 
             parameter.skip = thing.childrenSkip;
             parameter.parentThingId = thing.id;
@@ -1886,7 +1886,7 @@
             getThings: getThings,
             createThing: createThing,
             deleteThing: deleteThing,
-            getThingChildren: getThingChildren,
+            getMoreThingChildren: getMoreThingChildren,
             deleteThingChildren: deleteThingChildren,
             addThingChild: addThingChild,
             collapseThing: collapseThing,

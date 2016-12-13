@@ -138,7 +138,7 @@
             return thingsDataContext.deleteThing(thingId);
         }        
                   
-        function getThingChildren(thing, parameter, cancel) {
+        function getMoreThingChildren(thing, parameter, cancel) {
 
             parameter.skip = thing.childrenSkip;
             parameter.parentThingId = thing.id;
@@ -215,7 +215,7 @@
             getThings: getThings,
             createThing: createThing,
             deleteThing: deleteThing,
-            getThingChildren: getThingChildren,
+            getMoreThingChildren: getMoreThingChildren,
             deleteThingChildren: deleteThingChildren,
             addThingChild: addThingChild,
             collapseThing: collapseThing,

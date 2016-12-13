@@ -229,7 +229,7 @@
                 return thing.childrenTotalItems;
             }
             ApplicationThingsManager.prototype.getMoreThingChildren = function (thing, cancel) {
-                return thingsManager.getThingChildren(thing, this.getChindrenThingsParams, cancel)
+                return thingsManager.getMoreThingChildren(thing, this.getChindrenThingsParams, cancel)
             }
             ApplicationThingsManager.prototype.addChild = function (thingId, childId) {
                 return thingsDataContext.addChildToParent(thingId, childId);
@@ -257,7 +257,7 @@
 
                 var def = $q.defer();
 
-                thingsManager.getThingChildren(this.mainThing, this.getThingsParams, cancel)
+                thingsManager.getMoreThingChildren(this.mainThing, this.getThingsParams, cancel)
                 .then(function (data) {
                     var promises = [];
 

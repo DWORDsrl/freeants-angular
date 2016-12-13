@@ -374,7 +374,7 @@
 
                 getThingsParams.filter = "contains(Name,'" + $scope.searchQuery + "') or contains(Id,'" + $scope.searchQuery + "') or contains(Kind,'" + $scope.searchQuery + "')";
 
-                thingsManager.getThingChildren($scope.mainThing, getThingsParams, abortHttpCalls)
+                thingsManager.getMoreThingChildren($scope.mainThing, getThingsParams, abortHttpCalls)
                 .then(function() {
                     $scope.disableThingsScroll = ($scope.mainThing.childrenTotalItems == $scope.mainThing.children.length);
                 }, function(data) {
@@ -387,7 +387,7 @@
                 if ($scope.disableThingsScroll)
                     return;
                 $scope.disableThingsScroll = true;
-                thingsManager.getThingChildren($scope.mainThing, getThingsParams, abortHttpCalls)
+                thingsManager.getMoreThingChildren($scope.mainThing, getThingsParams, abortHttpCalls)
                 .then(function() {
                     $scope.disableThingsScroll = ($scope.mainThing.childrenTotalItems == $scope.mainThing.children.length);
                 }, function(data) {
