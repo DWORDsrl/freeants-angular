@@ -237,7 +237,7 @@
             ApplicationThingsManager.prototype.collapseThing = function (thingId, cancel) {
                 var thing = null;
                 for(var i = 0;i < this.mainThing.children.length;i++)
-                    if (thingId == this.mainThing.children[i]) {
+                    if (thingId == this.mainThing.children[i].id) {
                         thing = this.mainThing.children[i];
                         break
                     }
