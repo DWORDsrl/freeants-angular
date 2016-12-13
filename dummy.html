@@ -402,7 +402,7 @@
         }]);
 
         app.factory("BookRightsAndClaims", ['thingClaims',
-        function (thingClaims) {
+        function BookRightsAndClaims(thingClaims) {
             return {
                 PublicReadClaims: thingClaims.ThingUserChangeClaimsNoClaims,
                 PublicChangeClaims: thingClaims.ThingUserChangeClaimsNoClaims,

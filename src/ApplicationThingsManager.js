@@ -107,6 +107,19 @@
                 }
 
                 this.onUpdateThingValue = function onUpdateThingValue(thingId, value) {
+
+                    var thingObj = self.searchThing(self.mainThing.children, thingId);
+                    if (thingObj) {
+                        thingObj.thing.value = angular.fromJson(value);
+                        $timeout(null, 1);
+                        return;
+                    }
+                    var childThing = self.searchThingChild(self.mainThing.children, thingId);
+                    if (childThing) {
+                        childThing.child.value = angular.fromJson(value);
+                        $timeout(null, 1);
+                        return;
+                    }
                 }
 
                 // TODO: Pensare a come evitare di fare una chiamata verso il server per ottenere la Thing aggiunta
