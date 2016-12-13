@@ -194,17 +194,18 @@
             }
 
             ApplicationThingsManager.prototype.dispose = function() {
+                
                 notifierConnector.remHook('onDeleteThingUserRights', this.onUpdateThingUserRights);
                 notifierConnector.remHook('onUpdateThingUserRights', this.onUpdateThingUserRights);
                 notifierConnector.remHook('onCreateThingUserRights',this.onCreateThingUserRights);
                 notifierConnector.remHook('onDeleteChildThingId', this.onDeleteChildThingId);
                 notifierConnector.remHook('onCreateChildThingId', this.onCreateChildThingId);
-                notifierConnector.remHook('onUpdateThingValue', self.onUpdateThingValue);
+                notifierConnector.remHook('onUpdateThingValue', this.onUpdateThingValue);
                 notifierConnector.remHook('onDeleteThing', this.onDeleteThing);
                 notifierConnector.remHook('onUpdateThing', this.onUpdateThing);
                 notifierConnector.remHook('onCreateThing', this.onCreateThing);
 
-                this.mainThing.dispose();
+                //this.mainThing.dispose();
             }
 
             // Children Things
