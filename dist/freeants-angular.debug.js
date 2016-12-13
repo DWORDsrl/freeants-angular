@@ -611,7 +611,7 @@
 
                 this.onCreateThing = function onCreateThing(thing) {
                     if (thing.kind == self.thingKind) {
-                        thingsManager.addChildThing(self.mainThing, thing);
+                        thingsManager.addThingChild(self.mainThing, thing);
                         return;
                     }
                 }
@@ -695,7 +695,7 @@
                                 thingsManager.getThing(thingId).then(function (data) {
                                     var thing = data;
                                     if (thing && thing.kind == self.thingKind) {
-                                        thingsManager.addChildThing(self.mainThing, thing);
+                                        thingsManager.addThingChild(self.mainThing, thing);
                                     }
                                 });
                         }
@@ -763,7 +763,7 @@
                 return thing.childrenTotalItems;
             }
             ApplicationThingsManager.prototype.getMoreThingChildren = function (thing, cancel) {
-                return thingsManager.elapseThing(thing, this.getChindrenThingsParams, cancel)
+                return thingsManager.getThingChildren(thing, this.getChindrenThingsParams, cancel)
             }
             ApplicationThingsManager.prototype.collapseThing = function (thing, cancel) {
                 return thingsManager.collapseThing(thing, cancel)
@@ -785,7 +785,7 @@
 
                 var def = $q.defer();
 
-                thingsManager.elapseThing(this.mainThing, this.getThingsParams, cancel)
+                thingsManager.getThingChildren(this.mainThing, this.getThingsParams, cancel)
                 .then(function (data) {
                     var promises = [];
 
@@ -1754,47 +1754,18 @@
 
 	angular.module('freeants').factory('thingsManager', ['$q', 'thingsDataContext', 'ThingModel', function ($q, thingsDataContext, ThingModel) {
 
-        function createThing(thingRaw) {
-            return thingsDataContext.createThing(thingRaw)
-            .then(function (data) {
-                return new ThingModel(data);
-            });
-        }
+        function getThing(thingId) {
+            function getSucceded(data) {
 
-        function deleteChildrenThings(parentThingId, recursive) {
+                var thing = null;
 
-            return thingsDataContext.getChildrenIds(parentThingId)
-            .then(function (childrenIds) {
-
-                var def = $q.defer();
-
-                var childrenPromises = [];
-
-                for (var i = 0; i < childrenIds.length; i++) {
-                    childrenPromises.push(deleteThing(childrenIds[i], recursive));
+                if (data) {
+                    thing = new ThingModel(data);
                 }
-
-                return $q.all(childrenPromises)
-                    .then(function (data) {
-                        def.resolve(data);
-                        return data;
-                    }, function (data) {
-                        def.reject(data);
-                        return data;
-                    });
-            });
-        }
-
-        function deleteThing(thingId, recursive) {
-            
-            if (recursive) {
-              return deleteChildrenThings(thingId)
-              .then(function(data){
-                  return thingsDataContext.deleteThing(thingId);
-              });   
+                return thing;
             }
-
-            return thingsDataContext.deleteThing(thingId);
+            return thingsDataContext.getThing(thingId)
+                .then(getSucceded);
         }
 
         function getThings(parameter, timeout) {
@@ -1814,20 +1785,25 @@
             return thingsDataContext.getThings1(parameter, timeout)
                 .then(getSucceded);
         }
+        
+        function createThing(thingRaw) {
+            return thingsDataContext.createThing(thingRaw)
+            .then(function (data) {
+                return new ThingModel(data);
+            });
+        }        
 
-        function getThing(thingId) {
-            function getSucceded(data) {
-
-                var thing = null;
-
-                if (data) {
-                    thing = new ThingModel(data);
-                }
-                return thing;
+        function deleteThing(thingId, recursive) {
+            
+            if (recursive) {
+              return deleteThingChildren(thingId)
+              .then(function(data){
+                  return thingsDataContext.deleteThing(thingId);
+              });   
             }
-            return thingsDataContext.getThing(thingId)
-                .then(getSucceded);
-        }
+
+            return thingsDataContext.deleteThing(thingId);
+        }        
 
         function shallowCopyThing(thing) {
             var currentThing = null;
@@ -1841,7 +1817,7 @@
             return currentThing;
         }
           
-        function elapseThing(thing, parameter, cancel) {
+        function getThingChildren(thing, parameter, cancel) {
 
             parameter.skip = thing.childrenSkip;
             parameter.parentThingId = thing.id;
@@ -1863,30 +1839,66 @@
             });
         }
 
-        function collapseThing(thing, cancel) {
-            if (cancel)
-                cancel.resolve();
+        function deleteThingChildren(parentThingId, recursive) {
 
-            // TODO: Spostare sul ThingModel
-            thing.children = [];
-            thing.childrenSkip = 0;
-            thing.childrenTotalItems = Number.MAX_SAFE_INTEGER;
-        }
+            return thingsDataContext.getChildrenIds(parentThingId)
+            .then(function (childrenIds) {
 
-        function addChildThing(thing, childThingRaw) {
+                var def = $q.defer();
+
+                var childrenPromises = [];
+
+                for (var i = 0; i < childrenIds.length; i++) {
+                    childrenPromises.push(deleteThing(childrenIds[i], recursive));
+                }
+
+                return $q.all(childrenPromises)
+                    .then(function (data) {
+                        def.resolve(data);
+                        return data;
+                    }, function (data) {
+                        def.reject(data);
+                        return data;
+                    });
+            });
+        }        
+
+        function addThingChild(thing, childThingRaw) {
             thing.children.unshift(new ThingModel(childThingRaw));
         }
 
+        function collapseThing(thing, cancel) {
+            if (cancel)
+                cancel.resolve();
+            
+            thing.children = [];
+            thing.childrenSkip = 0;
+            // INFO: Non viene resettato per sapere quanti potenzialmente children ci sono
+            // thing.childrenTotalItems = Number.MAX_SAFE_INTEGER;
+        }
+
+        function shallowCopyThing(thing) {
+            var currentThing = null;
+            if (thing) {
+                currentThing = JSON.parse(JSON.stringify(thing));
+                if (thing.children)
+                    currentThing.children = thing.children;
+                if (thing.usersInfos)
+                    currentThing.usersInfos = thing.usersInfos;
+            }
+            return currentThing;
+        }
+
         return {
-            createThing: createThing,
-            deleteChildrenThings: deleteChildrenThings,
-            deleteThing: deleteThing,
-            getThings: getThings,
             getThing: getThing,
-            shallowCopyThing: shallowCopyThing,
-            elapseThing: elapseThing,
+            getThings: getThings,
+            createThing: createThing,
+            deleteThing: deleteThing,
+            getThingChildren: getThingChildren,
+            deleteThingChildren: deleteThingChildren,
+            addThingChild: addThingChild,
             collapseThing: collapseThing,
-            addChildThing: addChildThing             
+            shallowCopyThing: shallowCopyThing             
         }
     }]);
 	

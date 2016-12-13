@@ -275,7 +275,7 @@
             //AppsManager.prototype.mainThing = new ThingModel();
 
             AppsManager.prototype.getMoreAppsServices = function getMoreAppsServices(app, cancel) {
-                return thingsManager.elapseThing(app, this.getServicesParams, cancel)
+                return thingsManager.getThingChildren(app, this.getServicesParams, cancel)
             }
             
             AppsManager.prototype.getMoreApps = function getMoreApps(cancel) {
@@ -284,7 +284,7 @@
 
                 var def = $q.defer();
                                 
-                thingsManager.elapseThing(this.mainThing, this.getAppsParams, cancel)
+                thingsManager.getThingChildren(this.mainThing, this.getAppsParams, cancel)
                 .then(function (data) {
                     var promises = [];
 

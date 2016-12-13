@@ -77,7 +77,7 @@
 
                 this.onCreateThing = function onCreateThing(thing) {
                     if (thing.kind == self.thingKind) {
-                        thingsManager.addChildThing(self.mainThing, thing);
+                        thingsManager.addThingChild(self.mainThing, thing);
                         return;
                     }
                 }
@@ -161,7 +161,7 @@
                                 thingsManager.getThing(thingId).then(function (data) {
                                     var thing = data;
                                     if (thing && thing.kind == self.thingKind) {
-                                        thingsManager.addChildThing(self.mainThing, thing);
+                                        thingsManager.addThingChild(self.mainThing, thing);
                                     }
                                 });
                         }
@@ -229,7 +229,7 @@
                 return thing.childrenTotalItems;
             }
             ApplicationThingsManager.prototype.getMoreThingChildren = function (thing, cancel) {
-                return thingsManager.elapseThing(thing, this.getChindrenThingsParams, cancel)
+                return thingsManager.getThingChildren(thing, this.getChindrenThingsParams, cancel)
             }
             ApplicationThingsManager.prototype.collapseThing = function (thing, cancel) {
                 return thingsManager.collapseThing(thing, cancel)
@@ -251,7 +251,7 @@
 
                 var def = $q.defer();
 
-                thingsManager.elapseThing(this.mainThing, this.getThingsParams, cancel)
+                thingsManager.getThingChildren(this.mainThing, this.getThingsParams, cancel)
                 .then(function (data) {
                     var promises = [];
 
