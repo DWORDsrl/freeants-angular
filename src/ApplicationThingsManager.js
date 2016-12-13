@@ -231,6 +231,9 @@
             ApplicationThingsManager.prototype.getMoreThingChildren = function (thing, cancel) {
                 return thingsManager.elapseThing(thing, this.getChindrenThingsParams, cancel)
             }
+            ApplicationThingsManager.prototype.collapseThing = function (thing, cancel) {
+                return thingsManager.collapseThing(thing, cancel)
+            }
             ApplicationThingsManager.prototype.addChild = function (thingId, childId) {
                 return thingsDataContext.addChildToParent(thingId, childId);
             }

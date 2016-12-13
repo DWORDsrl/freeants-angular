@@ -199,8 +199,7 @@
         function collapseThing(thing, cancel) {
             if (cancel)
                 cancel.resolve();
-            thing.children = [];
-            thing.childrenSkip = 0;
+            thing.dispose();
         }
 
         function addChildThing(thing, childThingRaw) {
