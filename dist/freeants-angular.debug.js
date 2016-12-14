@@ -767,6 +767,11 @@
                 return thingsDataContext.addChildToParent(thingId, childId);
             }
             ApplicationThingsManager.prototype.collapseThing = function (thingId, cancel) {
+                if (this.mainThing.id == thingId) {
+                    thingsManager.collapseThing(this.mainThing, cancel)
+                    return;
+                }
+
                 var thing = null;
                 for(var i = 0;i < this.mainThing.children.length;i++)
                     if (thingId == this.mainThing.children[i].id) {
