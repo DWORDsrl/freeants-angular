@@ -191,23 +191,11 @@
         function collapseThing(thing, cancel) {
             if (cancel)
                 cancel.resolve();
-            
-            thing.children = [];
-            thing.childrenSkip = 0;
-            // INFO: Non viene resettato per sapere quanti potenzialmente children ci sono
-            // thing.childrenTotalItems = Number.MAX_SAFE_INTEGER;
+            thing.collapse();
         }
 
         function shallowCopyThing(thing) {
-            var currentThing = null;
-            if (thing) {
-                currentThing = JSON.parse(JSON.stringify(thing));
-                if (thing.children)
-                    currentThing.children = thing.children;
-                if (thing.usersInfos)
-                    currentThing.usersInfos = thing.usersInfos;
-            }
-            return currentThing;
+            return thing.shallowCopyThing();
         }
 
         return {
