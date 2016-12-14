@@ -195,7 +195,7 @@
         }
 
         function shallowCopyThing(thing) {
-            return thing.shallowCopyThing();
+            return thing.shallowCopy();
         }
 
         return {
