@@ -85,7 +85,8 @@
         return ThingsManager
     }]);
 
-	angular.module('freeants').factory('thingsManager', ['$q', 'thingsDataContext', 'ThingModel', function ($q, thingsDataContext, ThingModel) {
+	angular.module('freeants').factory('thingsManager', ['$q', 'thingsDataContext', 'ThingModel', 
+    function ($q, thingsDataContext, ThingModel) {
 
         function getThing(thingId) {
             function getSucceded(data) {

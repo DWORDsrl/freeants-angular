@@ -2,6 +2,10 @@
 
 Free Ants Angular SDK - Lab version
 
+1.0.63 - 12-20-2016 - Added imagesDatacontext
+
+...
+
 1.0.45 - 12-11-2016 - Added shallowCopyThing
 
 1.0.44 - 12-11-2016 - Fix

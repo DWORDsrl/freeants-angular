@@ -1042,6 +1042,40 @@
 }());
 (function () {
     'use strict';
+    angular.module('freeants').factory('imagesDatacontext', ['$http', 'helpers','path', function ($http, helpers, path) {
+
+    function imagesRawUrl(id) { return path.api + "/imagesRaw/" + (id || ""); }
+
+    return {
+
+        createImageRaw : function (imageData) {
+            var req = $http({
+                method: 'POST',
+                headers: helpers.getSecurityHeaders(),
+                url: imagesRawUrl(),
+                data: '"' + imageData + '"'
+            }).then(function (response) {
+                return response.data;
+            });
+            return req;
+        },
+
+        deleteImageRaw: function (fileName) {
+            var req = $http({
+                method: 'DELETE',
+                headers: helpers.getSecurityHeaders(),
+                url: imagesRawUrl(fileName)
+            }).then(function (response) {
+                return response.data;
+            });
+            return req;
+        }
+    }
+}]);
+}());
+
+(function () {
+    'use strict';
 
     angular.module('freeants').factory('localizator', ['$translate',  function ($translate) {
         var localStorageLabel = "Language";
@@ -1406,48 +1440,48 @@
 (function() {
     'use strict';
     
-    angular.module('freeants').factory('schedulerDataContext', ['$http', 'helpers', 'path', function ($http, helpers, path) {
-
-      //End points
-    function SchedulerUrl() {
-        return path.api + "/Scheduler";
-    }
-    return {
-        schedule: function (schedulerObject) {
-            var req = $http({
-                method: 'POST',
-                headers: helpers.getSecurityHeaders(),
-                url: SchedulerUrl(),
-                data: schedulerObject
-            }).then(function (response) {
-                return response.data;
-            });
-            return req;
-        },
-        update: function (schedulerObject, schedulerId) {
-            var req = $http({
-                method: 'PUT',
-                headers: helpers.getSecurityHeaders(),
-                url: SchedulerUrl() + "/" + schedulerId,
-                data: schedulerObject
-            }).then(function (response) {
-                return response.data;
-            });
-            return req;
-        },
-         delete: function (thingId, schedulerId) {
-            var req = $http({
-                method: 'POST',
-                headers: helpers.getSecurityHeaders(),
-                url: SchedulerUrl() + "/" + schedulerId,
-                data: {"thingId": thingId}
-            }).then(function (response) {
-                return response.data;
-            });
-            return req;
+    angular.module('freeants').factory('schedulerDataContext', ['$http', 'helpers', 'path', 
+    function ($http, helpers, path) {
+        //End points
+        function SchedulerUrl() {
+            return path.api + "/Scheduler";
         }
-    }
-}]);
+        return {
+            schedule: function (schedulerObject) {
+                var req = $http({
+                    method: 'POST',
+                    headers: helpers.getSecurityHeaders(),
+                    url: SchedulerUrl(),
+                    data: schedulerObject
+                }).then(function (response) {
+                    return response.data;
+                });
+                return req;
+            },
+            update: function (schedulerObject, schedulerId) {
+                var req = $http({
+                    method: 'PUT',
+                    headers: helpers.getSecurityHeaders(),
+                    url: SchedulerUrl() + "/" + schedulerId,
+                    data: schedulerObject
+                }).then(function (response) {
+                    return response.data;
+                });
+                return req;
+            },
+            delete: function (thingId, schedulerId) {
+                var req = $http({
+                    method: 'POST',
+                    headers: helpers.getSecurityHeaders(),
+                    url: SchedulerUrl() + "/" + schedulerId,
+                    data: {"thingId": thingId}
+                }).then(function (response) {
+                    return response.data;
+                });
+                return req;
+            }
+        }
+    }]);
 }());
 (function() {
     'use strict';
@@ -1784,7 +1818,8 @@
         return ThingsManager
     }]);
 
-	angular.module('freeants').factory('thingsManager', ['$q', 'thingsDataContext', 'ThingModel', function ($q, thingsDataContext, ThingModel) {
+	angular.module('freeants').factory('thingsManager', ['$q', 'thingsDataContext', 'ThingModel', 
+    function ($q, thingsDataContext, ThingModel) {
 
         function getThing(thingId) {
             function getSucceded(data) {
