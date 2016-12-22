@@ -285,8 +285,8 @@
             }
         };
     })
-    .service('accountManagerService', ['loginDataContext','accountDataContext', 'path', 'accountManager', '$http', 
-        function (loginDataContext,accountDataContext, path, accountManager, $http) {
+    .service('accountManagerService', ['loginDataContext','accountDataContext', 'path', 'accountManager', '$http', '$q', 
+        function (loginDataContext,accountDataContext, path, accountManager, $http, $q) {
         var refreshModel = {
                 grant_type: "refresh_token",
                 refresh_token: ""
@@ -360,48 +360,49 @@
                 return false;
         };
         var loginFB = function (token) {
+            
+            var def = $q.defer();
             var req = {
                 method: 'POST',
                 url: path.api + '/Account/FacebookLogin',
                 data: JSON.stringify(token),
                 contentType: 'application/json; charset=utf-8',
-                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': '*/*' },
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': '*/*' }
             }
 
-            return $http(req)
-            .then(function (data) {
+            $http(req)
+            .then(function(data){
 
                 var responseData = data.data;
                 var access_token = responseData.access_token;
 
                 if (responseData.has_registered) {
-                    var req = {
+
+                    var reqUserInfo = {
                         method: 'GET',
                         url: path.api + '/Account/UserInfo',
                         contentType: 'application/json; charset=utf-8',
-                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': '*/*', "Authorization": "Bearer " + access_token },
+                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': '*/*', "Authorization": "Bearer " + access_token }
                     };
-                    $http(req).then(function (data) {
+
+                    $http(reqUserInfo)
+                    .then(function (data) {
                         accountManager.setUserId(responseData.userId);
                         accountManager.setUserName(responseData.userName);
+                        def.resolve(data);
                     }, function (data) {
-                        return { status: false }
+                        def.reject(data);
                     })
                 }
 
                 accountManager.setAccessToken(access_token);
                 accountManager.setFacebookAccessToken(token);
                 accountManager.setPersistent(true);
-
-                return {
-                    status: true,
-                    data: data
-                };
-
-            }, function () {
-                return { status: false }
+                
+            }, function (data){
+               def.reject(data);
             })
-
+            return def.promise;
         }
         var loginGP = function (token) {
             var req = {
