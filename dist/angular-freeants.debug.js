@@ -528,7 +528,13 @@
             loginFB: loginFB,
             loginGP: loginGP,
             logout: logout,
-            forgotPassword: forgotPassword
+            forgotPassword: forgotPassword,
+            setExtraTokenFB : function(token) {
+                accountManager.setFacebookAccessToken(token);
+            },
+            setExtraTokenGP : function(token) {
+                accountManager.setGoogleAccessToken(token);
+            }
         }
     }]);
 }());
