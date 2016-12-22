@@ -130,7 +130,7 @@
         function deleteThing(thingId, recursive) {
             
             if (recursive) {
-              return deleteThingChildren(thingId)
+              return deleteThingChildren(thingId, recursive)
               .then(function(data){
                   return thingsDataContext.deleteThing(thingId);
               });   

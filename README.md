@@ -2,6 +2,8 @@
 
 Free Ants Angular SDK - Lab version
 
+1.0.64 - 12-22-2016 - Fix delete recursive
+
 1.0.63 - 12-20-2016 - Added imagesDatacontext
 
 ...
