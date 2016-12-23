@@ -24,7 +24,7 @@
                     //skip: 0,
                     orderBy: null,
                     valueFilter: null
-                };
+                }
                 this.getChindrenThingsParams = {
                     parentThingId: null,
                     filter: "",
@@ -32,7 +32,7 @@
                     skip: 0,
                     orderBy: null,
                     valueFilter: null
-                };
+                }
 
                 // TODO: Spostare su thingsManager
                 this.searchThing = function searchThing(things, thingId) {

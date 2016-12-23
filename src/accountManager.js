@@ -17,11 +17,11 @@
         //LocalFunction
         this.setAppName = function (appName) {
             this.appName = appName;
-        };
+        }
         this.setStorage = function (storage, key) {
             this.storage = storage;
             this.key = key;
-        };
+        }
         this.stored = function () {
             if (
                 (this.storage.getItem(this.appName + '_' + this.key) != null) &&
@@ -47,29 +47,29 @@
                 console.log("no-pass");
                 return false;
 
-        };
+        }
         this.setAccessToken = function (value) {
             this.apiKey = "";
             this.storage.setItem(this.appName + '_' + this.key, value);
             this.access_token = value;
-        };
+        }
         this.setRefreshToken = function (value) {
             this.storage.setItem(this.appName + '_refresh_token', value);
             this.refresh_token = value;
-        };
+        }
         this.setGoogleAccessToken = function (value) {
             this.storage.setItem(this.appName + '_gp_access_token', value);
             this.gp_access_token = value;
-        };
+        }
         this.setFacebookAccessToken = function (value) {
             this.storage.setItem(this.appName + '_fb_access_token', value);
             this.fb_access_token = value;
-        };
+        }
         this.setApiKey = function (value) {
             this.access_token = "";
             this.storage.setItem(this.appName + '_' + this.key, value);
             this.apiKey = value;
-        };
+        }
         this.setPersistent = function (value) {
             this.storage.setItem(this.appName + '_remember', value);
             this.persistent = value;
@@ -77,27 +77,27 @@
         this.removeAccessToken = function () {
             this.storage.removeItem(this.appName + '_' + this.key);
             this.access_token = "";
-        };
+        }
         this.removePersistent = function () {
             this.storage.removeItem(this.appName + '_remember');
             this.persistent = "";
-        };
+        }
         this.removeUserName = function () {
             this.storage.removeItem(this.appName + '_userName');
             this.userName = "";
-        };
+        }
         this.removeUserId = function () {
             this.storage.removeItem(this.appName + '_userId');
             this.userId = "";
-        };
+        }
         this.removeAccessTokenTime = function () {
             this.storage.removeItem(this.appName + '_access_token_time');
             this.access_token_time = "";
-        };
+        }
         this.removeAccessTokenDate = function () {
             this.storage.removeItem(this.appName + '_access_token_date');
             this.access_token_date = "";
-        };
+        }
         //Export Function  
         this.$get = function () {
 
@@ -197,7 +197,7 @@
                     this.access_token_date = "";
                 }
             }
-        };
+        }
     })
     .service('accountManagerService', ['loginDataContext','accountDataContext', 'path', 'accountManager', '$http', '$q', 
         function (loginDataContext,accountDataContext, path, accountManager, $http, $q) {
@@ -232,7 +232,7 @@
                     data: data
                  }
             })
-        };
+        }
         var refresh = function (model) {
             return loginDataContext.refresh(path.server, model)
             .then(function (data) {
@@ -259,7 +259,7 @@
 
                 return { status: false }
             })
-        };
+        }
         var checkAccessToken = function(){
             var now = new Date();
             var now_utc = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
@@ -272,7 +272,7 @@
             }
             else
                 return false;
-        };
+        }
         var loginFB = function (token) {
             
             var def = $q.defer();
@@ -362,8 +362,7 @@
             })
 
 
-        };
-
+        }
         function clearLocalData() {
 
             accountManager.removeUserName();
@@ -384,7 +383,6 @@
             if (accountManager.fb_access_token)
                 accountManager.removeFacebookAccessToken();
         }
-
         var logout = function () {
             return loginDataContext.logout(path.server)
             .then(function () {
@@ -399,7 +397,7 @@
                 }
             })
             .finally(clearLocalData);
-        };
+        }
         var forgotPassword = function (email, culture) {
             return accountDataContext.forgotPassword(email, culture);
         }
