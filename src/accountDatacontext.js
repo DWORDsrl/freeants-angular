@@ -4,6 +4,9 @@
     angular.module('freeants').factory('accountDataContext', ['$http', 'helpers', 'path', function ($http, helpers, path) {
 
     // routes
+    var loginUrl = "Token";
+    var logoutUrl = "api/Account/Logout";
+
     function accountUrl() { return path.api + "/Account"; }
     function getUserInfoUrl() { return accountUrl() + "/UserInfo"; }
     function forgotPasswordUrl(email,culture) { return accountUrl() + "/ForgotPassword/" + email + "/" +culture }
@@ -13,12 +16,47 @@
     function confirmAccountByOnlyEmailUrl() { return accountUrl() + "/ConfirmAccountByOnlyEmail/" }
 
     return {
-        
-      forgotPassword: function (email,culture) {
+        login : function (url, data) {
+            var req = $http({
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                url: url + loginUrl,
+                data: $.param(data)
+            }).then(function (response) {
+                return response.data;
+            });
+            return req;
+        },
+        logout: function (url) {
+            var req = $http({
+                method: 'POST',
+                headers: helpers.getSecurityHeaders(),
+                url: url + logoutUrl
+            }).then(function (response) {
+                return response.data;
+            });
+            return req;
+        },
+        refresh: function (url, data) {
+            var req = $http({
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                url: url + loginUrl,
+                data: $.param(data)
+            }).then(function (response) {
+                return response.data;
+            });
+            return req;
+        },
+        forgotPassword: function (email, culture) {
             var req = $http({
                 method: 'GET',
                 headers: helpers.getSecurityHeaders(),
-                url: forgotPasswordUrl(email,culture)
+                url: forgotPasswordUrl(email, culture)
             }).then(function (response) {
                 return response.data;
             });

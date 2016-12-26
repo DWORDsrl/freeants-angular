@@ -312,7 +312,7 @@
             ApplicationThingsManager.prototype.shallowCopyThing = function (thing) {
                 return thingsManager.shallowCopyThing(thing);
             }
-            ApplicationThingsManager.prototype.updateThingFromCopy = function (thing,thingChild) {
+            ApplicationThingsManager.prototype.updateThingFromCopy = function (thing, thingChild) {
                 var app = this.searchThing(this.things, thing.id);
                 this.things[app.thingIndex].childrenSkip = thing.childrenSkip;
                 this.things[app.thingIndex].childrenTotalItems = thing.childrenTotalItems;
