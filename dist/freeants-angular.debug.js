@@ -297,6 +297,12 @@
                 getAccessTokenTime: function(){
                     return access_token_time;
                 },
+                getFBAccessToken: function() {
+                    return fb_access_token;
+                },
+                getGPAccessToken: function(){
+                    return gp_access_token;
+                },
                 getApiKey: function() {
                     return apiKey;
                 },
