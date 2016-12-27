@@ -346,7 +346,8 @@
                         }
                         else
                         {
-                            //def.resolve({responseData, status: false});
+                            var dummy = {responseData, status: false}
+                            def.resolve(dummy);
                         }
                         
                         //accountManager.setFacebookAccessToken(token);
