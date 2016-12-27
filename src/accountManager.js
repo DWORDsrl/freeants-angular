@@ -394,7 +394,6 @@
                             })
                         }
                         else {
-                            def.resolve({responseData, status: false});
                         }
 
                         accountManager.setAccessToken(access_token);
