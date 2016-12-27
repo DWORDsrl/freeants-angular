@@ -346,7 +346,7 @@
                         }
                         else
                         {
-                            var dummy = {responseData, status: false}
+                            var dummy = {responseData: responseData, status: false}
                             def.resolve(dummy);
                         }
                         
