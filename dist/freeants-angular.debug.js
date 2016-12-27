@@ -537,41 +537,7 @@
                 }
             }
         }
-    ]);
-    /*
-    .service('accountManagerService', ['accountDataContext', 'path', 'accountManager', '$http', '$q', 
-        function (accountDataContext, path, accountManager, $http, $q) {
-        
-        return {
-            getExtraTokens: function(){
-                return {
-                    fb_access_token: accountManager.fb_access_token,
-                    gp_access_token: accountManager.gp_access_token,
-                };
-            },
-            getExtraInfo: function(){
-                return {
-                    persistent: accountManager.persistent,
-                    storage: accountManager.storage
-                };
-            },
-            login: login,
-            refresh: refresh,
-            checkAccessToken: checkAccessToken,
-            loginFB: loginFB,
-            loginGP: loginGP,
-            logout: logout,
-            forgotPassword: forgotPassword,
-            setExtraTokenFB : function(token) {
-                accountManager.setFacebookAccessToken(token);
-            },
-            setExtraTokenGP : function(token) {
-                accountManager.setGoogleAccessToken(token);
-            }
-        }
-    }]);
-    */
-
+    ]);    
 }());
 (function () {
 
