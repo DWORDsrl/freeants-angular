@@ -295,7 +295,8 @@
                 forgotPassword:function(email, culture) {
                     return accountDataContext.forgotPassword(email, culture);
                 },
-                // TODO: E' sempre resa persistente
+                // INFO: E' sempre resa persistente
+                // TODO: Gestire il timer del refreshToken
                 loginFB: function (token) {
                     
                     var def = $q.defer();
@@ -325,8 +326,17 @@
 
                             $http(reqUserInfo)
                             .then(function (data) {
+                                accountManager.setPersistent(true);
+                                
+                                accountManager.setAccessToken(responseData.access_token);
+                                /*
+                                accountManager.setRefreshToken(responseData.refresh_token);
+                                accountManager.setAccessTokenTime(responseData.expires_in);
+                                accountManager.setAccessTokenDate(responseData['.expires']);
+                                */
                                 accountManager.setUserId(responseData.userId);
                                 accountManager.setUserName(responseData.userName);
+
                                 def.resolve(data);
                                 return data;
                             }, function (data) {
@@ -334,21 +344,23 @@
                                 return data;
                             })
                         }
-
-                        accountManager.setAccessToken(access_token);
-                        accountManager.setFacebookAccessToken(token);
-                        accountManager.setPersistent(true);
+                        else
+                        {
+                            def.resolve({responseData, status: false});
+                        }
+                        
+                        //accountManager.setFacebookAccessToken(token);
 
                         return data;
                         
-                    }, function (data){
-                    def.reject(data);
-
-                    return data;
+                    }, function (data) {
+                        def.reject(data);
+                        return data;
                     });
                     return def.promise;
                 },
-                // TODO: E' sempre resa persistente
+                // INFO: E' sempre resa persistente
+                // TODO: Gestire il timer del refreshToken
                 loginGP: function (token) {
                     var req = {
                         method: 'POST',
@@ -380,6 +392,9 @@
                                     status: false 
                                 }
                             })
+                        }
+                        else {
+                            def.resolve({responseData, status: false});
                         }
 
                         accountManager.setAccessToken(access_token);
