@@ -393,8 +393,6 @@
                                 }
                             })
                         }
-                        else {
-                        }
 
                         accountManager.setAccessToken(access_token);
                         accountManager.setFacebookAccessToken(token);
