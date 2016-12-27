@@ -2,6 +2,8 @@
 
 Free Ants Angular SDK - Lab version
 
+1.0.70 - 12-27-2016 - Fix login
+
 1.0.69 - 12-26-2016 - Fix login
 
 1.0.68 - 12-22-2016 - Fix FB support

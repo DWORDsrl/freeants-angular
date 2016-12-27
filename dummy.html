@@ -134,11 +134,10 @@
         });
 
         app.config(['accountManagerProvider',
-            function (accountManagerProvider) {
+        function (accountManagerProvider) {
 
-                accountManagerProvider.setAppName("freeants-angular-sample");
-                accountManagerProvider.setStorage(localStorage, "AccessTokenOrDWApiKey");   
-                accountManagerProvider.stored();//TODO: a che serve?             
+            accountManagerProvider.setAppName("freeants-angular-sample", "AccessTokenOrDWApiKey");
+            accountManagerProvider.readLoginData();           
 
         }]);
 
@@ -149,8 +148,8 @@
 
         'use strict'
 
-        app.factory('mainNotifier', ['$rootScope', 'notifierConnector', 'accountManagerService', 'path', '$timeout',
-        function ($rootScope, notifierConnector, accountManagerService, path, $timeout) {
+        app.factory('mainNotifier', ['$rootScope', 'notifierConnector', 'accountManager', 'path', '$timeout',
+        function ($rootScope, notifierConnector, accountManager, path, $timeout) {
 
             function connectionStatus(change) {
                 switch (change.newState) {
@@ -239,7 +238,7 @@
 
             var extport = {
                 subscribe: function () {
-                    notifierConnector.subscribe(path.server + "signalr", "Bearer", accountManagerService.getAccessToken, subscribeSuccess, subscribeFail);
+                    notifierConnector.subscribe(path.server + "signalr", "Bearer", accountManager.getAccessToken, subscribeSuccess, subscribeFail);
                 },
                 unsubscribe: function () {
                     notifierConnector.unsubscribe();
@@ -250,14 +249,14 @@
             return extport;
         }])
 
-        app.run(['$rootScope', 'accountManagerService', 'mainNotifier', 
-        function ($rootScope, accountManagerService, mainNotifier) {
+        app.run(['$rootScope', 'accountManager', 'mainNotifier', 
+        function ($rootScope, accountManager, mainNotifier) {
 
             $rootScope.lastMsg = "Ok";
             $rootScope.loggedIn = false;
             $rootScope.notifierConnectionStatus = mainNotifier.connectionStatus;
 
-            if (accountManagerService.checkAccessToken() == true) {
+            if (accountManager.checkAccessToken() == true) {
                 $rootScope.loggedIn = true;
 
                 mainNotifier.subscribe();

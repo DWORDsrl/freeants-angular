@@ -4,21 +4,18 @@
     angular.module('freeants').factory('helpers', ['accountManager', function (accountManager) {
 
         return {
-
             getSecurityHeaders: function () {
-                var accessToken = accountManager.access_token;
+                var accessToken = accountManager.getAccessToken();
                 if (accessToken) {
                     return { "Authorization": "Bearer " + accessToken };
                 }
-
-                var apiKey = accountManager.apiKey;
+                var apiKey = accountManager.getApiKey();
                 if (apiKey) {
                     return { "DWApiKey": apiKey };
                 }
 
                 return {};
             },
-
             collect: function () {
                 var ret = {};
                 var len = arguments.length;
@@ -31,7 +28,6 @@
                 }
                 return ret;
             },
-
             getTotalItemsFromResponse: function (response) {
                 var str = response.headers("Content-Range");
                 if (str != undefined && str != null) {
@@ -69,7 +65,6 @@
                     totalItems: totalItems
                 }
             },
-
             generateUUID: function () {
                 var d = new Date().getTime();
                 var uuid = 'xxxxxxxx-xxxx-xxxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
@@ -79,7 +74,6 @@
                 });
                 return uuid;
             },
-
             getQueryStrParamByName: function getQueryStrParamByName(name, url) {
                 if (!url) url = window.location.href;
                 name = name.replace(/[\[\]]/g, "\\$&");
