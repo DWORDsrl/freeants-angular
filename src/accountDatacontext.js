@@ -1,13 +1,13 @@
 ﻿(function() {
     'use strict';
     
-    angular.module('freeants').factory('accountDataContext', ['$http', 'helpers', 'path', function ($http, helpers, path) {
+    angular.module('freeants').factory('accountDataContext', ['$http', 'helpers', 'path', 
+    function ($http, helpers, path) {
 
     // routes
-    var loginUrl = "Token";
-    var logoutUrl = "api/Account/Logout";
-
+    function loginUrl() {return path.server + "Token"}
     function accountUrl() { return path.api + "/Account"; }
+    function logoutUrl() {return accountUrl() + "/Logout";}
     function getUserInfoUrl() { return accountUrl() + "/UserInfo"; }
     function forgotPasswordUrl(email,culture) { return accountUrl() + "/ForgotPassword/" + email + "/" +culture }
     function resetPasswordUrl() { return accountUrl() + "/ResetPassword"; }
@@ -16,43 +16,43 @@
     function confirmAccountByOnlyEmailUrl() { return accountUrl() + "/ConfirmAccountByOnlyEmail/" }
 
     return {
-        login : function (url, data) {
+        login : function(data) {
             var req = $http({
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                url: url + loginUrl,
+                url: loginUrl(),
                 data: $.param(data)
             }).then(function (response) {
                 return response.data;
             });
             return req;
         },
-        logout: function (url) {
+        logout: function() {
             var req = $http({
                 method: 'POST',
                 headers: helpers.getSecurityHeaders(),
-                url: url + logoutUrl
+                url: logoutUrl()
             }).then(function (response) {
                 return response.data;
             });
             return req;
         },
-        refresh: function (url, data) {
+        refresh: function(data) {
             var req = $http({
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                url: url + loginUrl,
+                url: loginUrl(),
                 data: $.param(data)
             }).then(function (response) {
                 return response.data;
             });
             return req;
         },
-        forgotPassword: function (email, culture) {
+        forgotPassword: function(email, culture) {
             var req = $http({
                 method: 'GET',
                 headers: helpers.getSecurityHeaders(),
@@ -62,7 +62,7 @@
             });
             return req;
         },
-        changePassword: function (passModel) {
+        changePassword: function(passModel) {
             var req = $http({
                 method: 'POST',
                 headers: helpers.getSecurityHeaders(),
@@ -73,7 +73,7 @@
             });
             return req;
         },
-        resetPassword: function (passModel) {
+        resetPassword: function(passModel) {
             var req = $http({
                 method: 'POST',
                 headers: helpers.getSecurityHeaders(),
@@ -84,7 +84,7 @@
             });
             return req;
         },
-        registerByOnlyEmail: function (email, culture) {
+        registerByOnlyEmail: function(email, culture) {
             var req = $http({
                 method: 'GET',
                 headers: helpers.getSecurityHeaders(),
@@ -94,7 +94,7 @@
             });
             return req;
         },
-        confirmAccountByOnlyEmail: function (confirmModel) {
+        confirmAccountByOnlyEmail: function(confirmModel) {
             var req = $http({
                 method: 'POST',
                 headers: helpers.getSecurityHeaders(),
@@ -105,7 +105,7 @@
             });
             return req;
         },
-        getUserInfo: function () {
+        getUserInfo: function() {
             var req = $http({
                 method: 'GET',
                 headers: helpers.getSecurityHeaders(),

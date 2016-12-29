@@ -249,14 +249,14 @@
             return extport;
         }])
 
-        app.run(['$rootScope', 'accountManager', 'mainNotifier', 
-        function ($rootScope, accountManager, mainNotifier) {
+        app.run(['$rootScope', 'accountManagerService', 'mainNotifier', 
+        function ($rootScope, accountManagerService, mainNotifier) {
 
             $rootScope.lastMsg = "Ok";
             $rootScope.loggedIn = false;
             $rootScope.notifierConnectionStatus = mainNotifier.connectionStatus;
 
-            if (accountManager.checkAccessToken() == true) {
+            if (accountManagerService.checkAccessToken() == true) {
                 $rootScope.loggedIn = true;
 
                 mainNotifier.subscribe();
@@ -493,7 +493,6 @@
                 
                 if(indexFound !=undefined)
                    $scope.localMessages.splice(indexFound, 1);     
-
                 else 
                     $scope.localMessages.push({title: "", message: "", culture: value});     
             };
@@ -504,7 +503,7 @@
                 
                 var indexFound;
                
-                for(var i=0; i < $scope.platforms.length; i++){
+                for(var i=0; i < $scope.platforms.length; i++) {
                     if($scope.platforms[i] == value)
                         indexFound = i;
                 }
@@ -513,7 +512,6 @@
                    $scope.platforms.splice(indexFound, 1);     
                 else 
                     $scope.platforms.push(value);     
-                    
             };
             
             //Send Push Notification
@@ -543,7 +541,6 @@
                     extraInfo: $scope.extraInfo
                 };              
             }
-            
         }]);
 
         app.controller('SchedulerCtrl', ['$rootScope', '$scope', 'schedulerDataContext', 
@@ -575,9 +572,7 @@
                 }, function(error){
                     console.log(error);
                 })
-                
             }
-            
         }]);
 
     </script>
@@ -634,7 +629,7 @@
     </div>
 
     <div ng-if="loggedIn == true" ng-controller="SearchThingController" > 
-        <input type="text"     ng-model="searchQuery" placeholder="search" />
+        <input type="text" ng-model="searchQuery" placeholder="search" />
         <button ng-click="searchThing()">
             Search
         </button>

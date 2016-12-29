@@ -5,13 +5,13 @@
 (function() {
     'use strict';
     
-    angular.module('freeants').factory('accountDataContext', ['$http', 'helpers', 'path', function ($http, helpers, path) {
+    angular.module('freeants').factory('accountDataContext', ['$http', 'helpers', 'path', 
+    function ($http, helpers, path) {
 
     // routes
-    var loginUrl = "Token";
-    var logoutUrl = "api/Account/Logout";
-
+    function loginUrl() {return path.server + "Token"}
     function accountUrl() { return path.api + "/Account"; }
+    function logoutUrl() {return accountUrl() + "/Logout";}
     function getUserInfoUrl() { return accountUrl() + "/UserInfo"; }
     function forgotPasswordUrl(email,culture) { return accountUrl() + "/ForgotPassword/" + email + "/" +culture }
     function resetPasswordUrl() { return accountUrl() + "/ResetPassword"; }
@@ -20,43 +20,43 @@
     function confirmAccountByOnlyEmailUrl() { return accountUrl() + "/ConfirmAccountByOnlyEmail/" }
 
     return {
-        login : function (url, data) {
+        login : function(data) {
             var req = $http({
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                url: url + loginUrl,
+                url: loginUrl(),
                 data: $.param(data)
             }).then(function (response) {
                 return response.data;
             });
             return req;
         },
-        logout: function (url) {
+        logout: function() {
             var req = $http({
                 method: 'POST',
                 headers: helpers.getSecurityHeaders(),
-                url: url + logoutUrl
+                url: logoutUrl()
             }).then(function (response) {
                 return response.data;
             });
             return req;
         },
-        refresh: function (url, data) {
+        refresh: function(data) {
             var req = $http({
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                url: url + loginUrl,
+                url: loginUrl(),
                 data: $.param(data)
             }).then(function (response) {
                 return response.data;
             });
             return req;
         },
-        forgotPassword: function (email, culture) {
+        forgotPassword: function(email, culture) {
             var req = $http({
                 method: 'GET',
                 headers: helpers.getSecurityHeaders(),
@@ -66,7 +66,7 @@
             });
             return req;
         },
-        changePassword: function (passModel) {
+        changePassword: function(passModel) {
             var req = $http({
                 method: 'POST',
                 headers: helpers.getSecurityHeaders(),
@@ -77,7 +77,7 @@
             });
             return req;
         },
-        resetPassword: function (passModel) {
+        resetPassword: function(passModel) {
             var req = $http({
                 method: 'POST',
                 headers: helpers.getSecurityHeaders(),
@@ -88,7 +88,7 @@
             });
             return req;
         },
-        registerByOnlyEmail: function (email, culture) {
+        registerByOnlyEmail: function(email, culture) {
             var req = $http({
                 method: 'GET',
                 headers: helpers.getSecurityHeaders(),
@@ -98,7 +98,7 @@
             });
             return req;
         },
-        confirmAccountByOnlyEmail: function (confirmModel) {
+        confirmAccountByOnlyEmail: function(confirmModel) {
             var req = $http({
                 method: 'POST',
                 headers: helpers.getSecurityHeaders(),
@@ -109,7 +109,7 @@
             });
             return req;
         },
-        getUserInfo: function () {
+        getUserInfo: function() {
             var req = $http({
                 method: 'GET',
                 headers: helpers.getSecurityHeaders(),
@@ -138,6 +138,7 @@
         var access_token = "";
         var access_token_time = "";
         var access_token_date = "";
+
         var refresh_token = "";
 
         var userId = "";
@@ -259,7 +260,7 @@
                     sessionStorage.setItem(appName+ '_access_token_time',value);
                     if (persistent)
                         localStorage.setItem(appName+ '_access_token_time',value);
-                    access_token_time = value*1000;
+                    access_token_time = value;
                 },
                 setAccessTokenDate: function(value) {
                     sessionStorage.setItem(appName + '_access_token_date', value);
@@ -294,6 +295,12 @@
                 getAccessToken: function() {
                     return access_token;
                 },
+                getRefreshToken: function() {
+                    return refresh_token;
+                },
+                getAccessTokenDate: function(){
+                    return access_token_date;
+                },
                 getAccessTokenTime: function(){
                     return access_token_time;
                 },
@@ -308,20 +315,9 @@
                 },
                 getUserInfo: function() {
                     return {
-                        userName: accountManager.userName,
-                        userId: accountManager.userId
+                        userName: userName,
+                        userId: userId
                     };
-                },
-                checkAccessToken: function() {
-                    var now = new Date();
-                    var now_utc = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
-                    if (access_token) {
-                        if (Date.parse(access_token_date) <= (Date.parse(now_utc))) {
-                            return false;
-                        }
-                        return true;
-                    }
-                    return false;
                 }
             }
         }];
@@ -329,41 +325,47 @@
     .factory('accountManagerService', ['accountDataContext', 'path', 'accountManager', '$http', '$q', 
         function (accountDataContext, path, accountManager, $http, $q) {
 
-            var timeoutRefresh = null;
+            var refreshTokenTimeout = null;
 
+            var resetRefreshTimeout = function() {
+                if (refreshTokenTimeout) {
+                    clearTimeout(refreshTokenTimeout);
+                    refreshTokenTimeout = null;
+                }                
+            }
+            var startRefreshTimeout = function(timeout) {
+
+                return;// TODO: Questo metodo del del timer non sembra funzionare
+
+                resetRefreshTimeout();
+
+                var to = timeout ? timeout : accountManager.getAccessTokenTime() * 1000;
+                refreshTokenTimeout = setTimeout(function () {
+                    var refreshModel = {
+                        grant_type: "refresh_token",
+                        refresh_token: accountManager.getRefreshToken()
+                    }   
+                    refresh(refreshModel);
+                }, to);
+            }
             var reset = function() {
-                if (timeoutRefresh) {
-                    clearTimeout(timeoutRefresh);
-                    timeoutRefresh = null;
-                }
+                resetRefreshTimeout();
                 accountManager.resetStorages();
             }
             var refresh = function(model) {
-                return accountDataContext.refresh(path.server, model)
+                return accountDataContext.refresh(model)
                 .then(function (data) {
                     accountManager.setAccessToken(data.access_token);
                     accountManager.setRefreshToken(data.refresh_token);
                     accountManager.setAccessTokenTime(data.expires_in);
-                    timeoutRefresh = setTimeout(function () {
-                        var refreshModel = {
-                            grant_type: "refresh_token",
-                            refresh_token: refresh_token
-                        } 
-                        refresh(refreshModel);
-                    }, accountManager.access_token_time);
+                    // TODO: Perchè non si preleva data['.expires'] come avviene nel login?
+                    startRefreshTimeout();
                     return {
                         status: true,
                         data: data
                     };
                 }, function (data) {
-                    timeoutRefresh = setTimeout(function () {
-                        var refreshModel = {
-                            grant_type: "refresh_token",
-                            refresh_token: refresh_token
-                        } 
-                        refresh(refreshModel);
-                    }, 30000);
-
+                    startRefreshTimeout(30000);
                     return { 
                         data: data,
                         status: false 
@@ -372,15 +374,33 @@
             }
 
             return {
+                checkAccessToken: function() {
+                    var now = new Date();
+                    var now_utc = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
+                    if (accountManager.getAccessToken()) {
+                        if (Date.parse(accountManager.getAccessTokenDate()) <= (Date.parse(now_utc))) {
+                            reset();
+                            return false;
+                        }
+                        // TODO: Qui dovrebbe essere avviato il timer del refresh token, ma access_token_time è quello di quando si è fatto il login e quindi non ha più senso utilizzarlo
+                        // TODo: Potrebbe essere scaduto anche il refresh_token
+                        return true;
+                    }
+                    reset();
+                    return false;
+                },
                 login: function(model, persistent) {
-                    return accountDataContext.login(path.server, model)
+
+                    reset();
+
+                    return accountDataContext.login(model)
                     .then(function (data) {
-                        
-                        reset();
 
+                        // TODO: Sarebbe bello unificare questi metodi
                         // Deve essere chiamata per prima
-                        accountManager.setPersistent(persistent);
-
+                        // Se il parametro persistent non è passato si lascia il valore per come era
+                        if (persistent)
+                            accountManager.setPersistent(persistent);
                         accountManager.setUserId(data.userId);
                         accountManager.setUserName(data.userName);
                         accountManager.setAccessToken(data.access_token);
@@ -388,13 +408,7 @@
                         accountManager.setAccessTokenTime(data.expires_in);
                         accountManager.setAccessTokenDate(data['.expires']);
                 
-                        timeoutRefresh = setTimeout(function () {
-                            var refreshModel = {
-                                grant_type: "refresh_token",
-                                refresh_token: refresh_token
-                            }   
-                            refresh(refreshModel);
-                        }, accountManager.getAccessTokenTime());
+                        startRefreshTimeout();
 
                         return {
                             status: true,
@@ -408,7 +422,7 @@
                     });
                 },
                 logout: function() {
-                    return accountDataContext.logout(path.server)
+                    return accountDataContext.logout()
                     .then(function (data) {
                         return {
                             data: data,
@@ -426,7 +440,7 @@
                     return accountDataContext.forgotPassword(email, culture);
                 },
                 // INFO: E' sempre resa persistente
-                // TODO: Gestire il timer del refreshToken
+                // TODO: Gestire il timer del refreshToken quando comunque funzionerà
                 loginFB: function (token) {
                     
                     var def = $q.defer();
@@ -491,7 +505,7 @@
                     return def.promise;
                 },
                 // INFO: E' sempre resa persistente
-                // TODO: Gestire il timer del refreshToken
+                // TODO: Gestire il timer del refreshToken quando comunque funzionerà
                 loginGP: function (token) {
                     var req = {
                         method: 'POST',
