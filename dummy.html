@@ -33,11 +33,17 @@
     <script src="src/translationService.js"></script>
     <script src="src/userDataContext.js"></script>
     <script src="src/usersManager.js"></script>
-    <script src="src/imagesDatacontext.js"></script>
+    <script src="src/imagesRawDatacontext.js"></script>
 
-    <!-- Can be copied to examples -->    
+    textarea {
+        height: 100%;
+        width: 100%;
+        -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+        -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+        box-sizing: border-box;         /* Opera/IE 8+ */
+    }
 
-    <!-- Layout like pinterest -->
+    <!-- Layout like pinterest 1 -->
     <style>
 
         body {
@@ -93,7 +99,7 @@
         .pin p {
             font: 12px/18px Arial, sans-serif;
             color: #333;
-            margin: 0;
+            margin: 0;            
         }
 
         @media (min-width: 960px) {
@@ -106,9 +112,9 @@
 
         @media (min-width: 1100px) {
             #columns {
-                -webkit-column-count: 5;
-                -moz-column-count: 5;
-                column-count: 5;
+                -webkit-column-count:4;
+                -moz-column-count: 4;
+                column-count: 4;
             }
         }
 
@@ -118,7 +124,75 @@
 
     </style>
 
-    <!-- Can be copied to examples -->
+    <!-- Layout like pinterest 1 -->
+    <style>
+
+        .wrapper {
+            width: 95%;
+            margin: 3em auto;
+        }
+
+        .masonry {
+            margin: 1.5em 0;
+            padding: 0;
+            -moz-column-gap: 1.5em;
+            -webkit-column-gap: 1.5em;
+            column-gap: 1.5em;
+            font-size: .85em;
+        }
+
+        .item {
+            display: inline-block;
+            background: #fff;
+            padding: 1em;
+            margin: 0 0 1.5em;
+            width: 100%;
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            -webkit-box-sizing: border-box;
+            box-shadow: 2px 2px 4px 0 #ccc;
+        }
+
+        @media only screen and (min-width: 400px) {
+            .masonry {
+                -moz-column-count: 2;
+                -webkit-column-count: 2;
+                column-count: 2;
+            }
+        }
+
+        @media only screen and (min-width: 700px) {
+            .masonry {
+                -moz-column-count: 3;
+                -webkit-column-count: 3;
+                column-count: 3;
+            }
+        }
+
+        @media only screen and (min-width: 900px) {
+            .masonry {
+                -moz-column-count: 4;
+                -webkit-column-count: 4;
+                column-count: 4;
+            }
+        }
+
+        @media only screen and (min-width: 1100px) {
+            .masonry {
+                -moz-column-count: 2;
+                -webkit-column-count: 2;
+                column-count: 2;
+            }
+        }
+
+        @media only screen and (min-width: 1280px) {
+            .wrapper {
+                width: 1260px;
+            }
+        }
+
+    </style>
+
     <script>
         'use strict'
 
@@ -143,7 +217,6 @@
 
     </script>
         
-    <!-- Can be copied to examples -->
     <script>
 
         'use strict'
@@ -451,13 +524,12 @@
                 booksManager.getMoreThings(abortHttpCalls)
                 .then(function(data) {
                     $scope.disableBooksScroll = (booksManager.getThingsTotalItems() == $scope.books.length);                    
-                })
+                });
             }           
         }]);
                 
     </script>
 
-    <!-- Dont copy to examples -->
     <script>
         'use strict'
 
@@ -477,8 +549,8 @@
             $scope.image = "";
             $scope.extraInfo = "";
             
-            //ThingId Azure PushNotificationHUB
-            $scope.hubId = "8a7bc59a-aa97-409e-9fc9-c07760f17963";
+            //ThingId Azure PushNotificationHub
+            $scope.hubId = "1735b2e9-c8d2-463a-a3ae-750e92561a7c";
             
             //Local Messages
             $scope.localMessages = [];
@@ -491,7 +563,7 @@
                         indexFound = i;
                 }
                 
-                if(indexFound !=undefined)
+                if(indexFound != undefined)
                    $scope.localMessages.splice(indexFound, 1);     
                 else 
                     $scope.localMessages.push({title: "", message: "", culture: value});     
@@ -508,7 +580,7 @@
                         indexFound = i;
                 }
                 
-                if(indexFound !=undefined)
+                if(indexFound != undefined)
                    $scope.platforms.splice(indexFound, 1);     
                 else 
                     $scope.platforms.push(value);     
@@ -580,7 +652,6 @@
 </head>
 <body>
 
-    <!-- Can be copied to examples -->    
 	<div>
 		<b> Bravo! </b>
 	</div>
@@ -634,18 +705,22 @@
             Search
         </button>
 
-        <div id="wrapper" infinite-scroll='getMoreThings()' infinite-scroll-disabled='disableThingsScroll' infinite-scroll-use-document-bottom="true">
-            <div id="columns">    
-                <div class="pin" ng-repeat="thing in mainThing.children">
-                    <span>{{thing.id}}</span> - 
-                    <span>{{thing.name}}</span>
-                    <span>{{thing.kind}}</span>
-                    <span>{{thing.value}}</span>
+        <div class="wrapper">
+            <div id="masonry" class="masonry" infinite-scroll='getMoreThings()' infinite-scroll-disabled='disableThingsScroll' infinite-scroll-use-document-bottom="true">
+                <div class="item" ng-repeat="thing in mainThing.children">
+                    <p>{{thing.id}}</p>
+                    <strong>{{thing.name}}</strong>
+                    <p>{{thing.kind}}</p>
+
+                    <img ng-if="thing.value.image" style="max-height:50%; max-width:50%;" ng-src="{{thing.value.image}}" />
+
+                    <textarea rows="5" >{{thing.value}}</textarea>
                 </div>
             </div>
         </div>
     </div>
 
+    <!--
     <div ng-if="loggedIn == true" ng-controller="BooksManagerController" > 
         <button ng-click="getMoreBooks()">
             getMoreBooks
@@ -653,7 +728,7 @@
 
         <div id="wrapper" infinite-scroll='getMoreBooks()' infinite-scroll-disabled='disableBooksScroll' infinite-scroll-use-document-bottom="true">
             <div id="columns">    
-                <div class="pin"  ng-repeat="book in books">
+                <div class="pin" ng-repeat="book in books">
                     <span>{{book.id}}</span> - 
                     <span>{{book.name}}</span>
                     <!--
@@ -672,8 +747,8 @@
             </div>
         </div>
     </div>
+    -->
 
-    <!-- Dont copy to examples -->
     <div ng-if="loggedIn == true" ng-controller="PushNotificationCtrl">
         <h3>Test send</h3>
         <input type="text" ng-model="hubId" placeholder="ThingHub ID">
@@ -704,7 +779,7 @@
         </div>
         <br>
           <input type="text" ng-model="image" placeholder="Image URL">
-          <input type="text" ng-model="extraInfo" placeholder="EtraInfo URL parameters"><br>
+          <input type="text" ng-model="extraInfo" placeholder="ExtraInfo URL parameters"><br>
 
         <button ng-click="SendPushNotification()">Send</button><br>
         <button ng-click="SavePushNotification()">Save</button><br>

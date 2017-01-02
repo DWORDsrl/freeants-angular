@@ -32,10 +32,10 @@
             },
             delete: function (thingId, schedulerId) {
                 var req = $http({
-                    method: 'POST',
+                    method: 'DELETE',
                     headers: helpers.getSecurityHeaders(),
-                    url: SchedulerUrl() + "/" + schedulerId,
-                    data: {"thingId": thingId}
+                    url: SchedulerUrl() + "/" + thingId + "/" + schedulerId,
+                    data: null
                 }).then(function (response) {
                     return response.data;
                 });

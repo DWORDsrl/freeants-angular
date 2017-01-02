@@ -88,6 +88,63 @@
 	angular.module('freeants').factory('thingsManager', ['$q', 'thingsDataContext', 'ThingModel', 
     function ($q, thingsDataContext, ThingModel) {
 
+        function getMoreThingChildren(thing, parameter, cancel) {
+
+            parameter.skip = thing.childrenSkip;
+            parameter.parentThingId = thing.id;
+
+            return getThings(parameter, cancel)
+            .then(function (data) {
+
+                thing.childrenTotalItems = data.itemsRange.totalItems;
+                thing.childrenSkip = thing.childrenSkip + parameter.top;
+                //  Fix range
+                if (thing.childrenSkip > thing.childrenTotalItems) {
+                    thing.childrenSkip = thing.childrenTotalItems;
+                }
+
+                for (var i = 0; i < data.things.length;i++)
+                    thing.children.push(data.things[i]);
+
+                return data;
+            });
+        }
+
+        //TODO: def non serve a niente
+        function deleteThingChildren(parentThingId, recursive) {
+
+            return thingsDataContext.getChildrenIds(parentThingId)
+            .then(function (childrenIds) {
+
+                var def = $q.defer();
+
+                var childrenPromises = [];
+
+                for (var i = 0; i < childrenIds.length; i++) {
+                    childrenPromises.push(deleteThing(childrenIds[i], recursive));
+                }
+
+                return $q.all(childrenPromises)
+                    .then(function (data) {
+                        def.resolve(data);
+                        return data;
+                    }, function (data) {
+                        def.reject(data);
+                        return data;
+                    });
+            });
+        }        
+
+        function addThingChild(thing, childThingRaw) {
+            thing.children.unshift(new ThingModel(childThingRaw));
+        }
+
+        function collapseThing(thing, cancel) {
+            if (cancel)
+                cancel.resolve();
+            thing.collapse();
+        }
+
         function getThing(thingId) {
             function getSucceded(data) {
 
@@ -138,62 +195,6 @@
 
             return thingsDataContext.deleteThing(thingId);
         }        
-                  
-        function getMoreThingChildren(thing, parameter, cancel) {
-
-            parameter.skip = thing.childrenSkip;
-            parameter.parentThingId = thing.id;
-
-            return getThings(parameter, cancel)
-            .then(function (data) {
-
-                thing.childrenTotalItems = data.itemsRange.totalItems;
-                thing.childrenSkip = thing.childrenSkip + parameter.top;
-                //  Fix range
-                if (thing.childrenSkip > thing.childrenTotalItems) {
-                    thing.childrenSkip = thing.childrenTotalItems;
-                }
-
-                for (var i = 0; i < data.things.length;i++)
-                    thing.children.push(data.things[i]);
-
-                return data;
-            });
-        }
-
-        function deleteThingChildren(parentThingId, recursive) {
-
-            return thingsDataContext.getChildrenIds(parentThingId)
-            .then(function (childrenIds) {
-
-                var def = $q.defer();
-
-                var childrenPromises = [];
-
-                for (var i = 0; i < childrenIds.length; i++) {
-                    childrenPromises.push(deleteThing(childrenIds[i], recursive));
-                }
-
-                return $q.all(childrenPromises)
-                    .then(function (data) {
-                        def.resolve(data);
-                        return data;
-                    }, function (data) {
-                        def.reject(data);
-                        return data;
-                    });
-            });
-        }        
-
-        function addThingChild(thing, childThingRaw) {
-            thing.children.unshift(new ThingModel(childThingRaw));
-        }
-
-        function collapseThing(thing, cancel) {
-            if (cancel)
-                cancel.resolve();
-            thing.collapse();
-        }
 
         function shallowCopyThing(thing) {
             return thing.shallowCopy();
