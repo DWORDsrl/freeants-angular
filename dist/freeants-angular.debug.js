@@ -478,8 +478,8 @@
                                 accountManager.setAccessTokenTime(responseData.expires_in);
                                 accountManager.setAccessTokenDate(responseData['.expires']);
                                 */
-                                accountManager.setUserId(responseData.userId);
-                                accountManager.setUserName(responseData.userName);
+                                accountManager.setUserId(data.userId);
+                                accountManager.setUserName(data.userName);
                                 accountManager.setFacebookAccessToken(token);
 
 
@@ -507,6 +507,8 @@
                 // INFO: E' sempre resa persistente
                 // TODO: Gestire il timer del refreshToken quando comunque funzionerà
                 loginGP: function (token) {
+
+                    var def = $q.defer();
                     
                     var req = {
                         method: 'POST',
@@ -541,10 +543,9 @@
                                 accountManager.setAccessTokenTime(responseData.expires_in);
                                 accountManager.setAccessTokenDate(responseData['.expires']);
                                 */
-                                accountManager.setUserId(responseData.userId);
-                                accountManager.setUserName(responseData.userName);
+                                accountManager.setUserId(data.userId);
+                                accountManager.setUserName(data.userName);
                                 accountManager.setGoogleAccessToken(token);
-
 
                                 def.resolve(data);
                                 return data;
