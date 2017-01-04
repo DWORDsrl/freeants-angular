@@ -480,6 +480,8 @@
                                 */
                                 accountManager.setUserId(responseData.userId);
                                 accountManager.setUserName(responseData.userName);
+                                accountManager.setFacebookAccessToken(token);
+
 
                                 def.resolve(data);
                                 return data;
@@ -494,8 +496,6 @@
                             def.resolve(dummy);
                         }
                         
-                        //accountManager.setFacebookAccessToken(token);
-
                         return data;
                         
                     }, function (data) {
@@ -507,6 +507,7 @@
                 // INFO: E' sempre resa persistente
                 // TODO: Gestire il timer del refreshToken quando comunque funzionerà
                 loginGP: function (token) {
+                    
                     var req = {
                         method: 'POST',
                         url: path.api + '/Account/GoogleLogin',
@@ -514,46 +515,57 @@
                         contentType: 'application/json; charset=utf-8',
                         headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': '*/*' },
                     };
-                    return $http(req).then(function (data) {
+                    
+                    $http(req)
+                    .then(function(data) {
 
                         var responseData = data.data;
                         var access_token = responseData.access_token;
 
                         if (responseData.has_registered) {
-                            var req = {
+
+                            var reqUserInfo = {
                                 method: 'GET',
                                 url: path.api + '/Account/UserInfo',
                                 contentType: 'application/json; charset=utf-8',
-                                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': '*/*', "Authorization": "Bearer " + access_token },
-                            }
-                            $http(req).then(function (data) {
+                                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': '*/*', "Authorization": "Bearer " + access_token }
+                            };
 
+                            $http(reqUserInfo)
+                            .then(function (data) {
+                                accountManager.setPersistent(true);
+                                
+                                accountManager.setAccessToken(responseData.access_token);
+                                /*
+                                accountManager.setRefreshToken(responseData.refresh_token);
+                                accountManager.setAccessTokenTime(responseData.expires_in);
+                                accountManager.setAccessTokenDate(responseData['.expires']);
+                                */
                                 accountManager.setUserId(responseData.userId);
                                 accountManager.setUserName(responseData.userName);
+                                accountManager.setGoogleAccessToken(token);
 
+
+                                def.resolve(data);
+                                return data;
                             }, function (data) {
-                                return { 
-                                    data: data,
-                                    status: false 
-                                }
+                                def.reject(data);
+                                return data;
                             })
                         }
-
-                        accountManager.setAccessToken(access_token);
-                        accountManager.setFacebookAccessToken(token);
-                        accountManager.setPersistent(true);
-
-                        return {
-                            status: true,
-                            data: data
-                        };
-
-                    }, function (data) {
-                        return { 
-                            data: data,
-                            status: false 
+                        else
+                        {
+                            var dummy = {responseData: responseData, status: false}
+                            def.resolve(dummy);
                         }
+                        
+                        return data;
+                        
+                    }, function (data) {
+                        def.reject(data);
+                        return data;
                     });
+                    return def.promise;
                 }
             }
         }
