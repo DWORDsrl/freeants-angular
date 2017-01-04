@@ -354,8 +354,8 @@
                                 accountManager.setAccessTokenTime(responseData.expires_in);
                                 accountManager.setAccessTokenDate(responseData['.expires']);
                                 */
-                                accountManager.setUserId(data.userId);
-                                accountManager.setUserName(data.userName);
+                                accountManager.setUserId(data.data.userId);
+                                accountManager.setUserName(data.data.userName);
                                 accountManager.setFacebookAccessToken(token);
 
 
@@ -419,8 +419,8 @@
                                 accountManager.setAccessTokenTime(responseData.expires_in);
                                 accountManager.setAccessTokenDate(responseData['.expires']);
                                 */
-                                accountManager.setUserId(data.userId);
-                                accountManager.setUserName(data.userName);
+                                accountManager.setUserId(data.data.userId);
+                                accountManager.setUserName(data.data.userName);
                                 accountManager.setGoogleAccessToken(token);
 
                                 def.resolve(data);
