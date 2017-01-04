@@ -218,7 +218,7 @@
             gp_access_token = sessionStorage.getItem(appName + '_gp_access_token');
             fb_access_token = sessionStorage.getItem(appName + '_fb_access_token');
             
-            if (localStorage.getItem(appName + '_remember') == "false")
+            if (!localStorage.getItem(appName + '_remember'))
                 return;
 
             access_token = localStorage.getItem(appName + '_' + key);
