@@ -358,7 +358,6 @@
                                 accountManager.setUserName(data.data.userName);
                                 accountManager.setFacebookAccessToken(token);
 
-
                                 def.resolve(data);
                                 return data;
                             }, function (data) {

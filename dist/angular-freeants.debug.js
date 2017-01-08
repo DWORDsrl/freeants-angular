@@ -482,7 +482,6 @@
                                 accountManager.setUserName(data.data.userName);
                                 accountManager.setFacebookAccessToken(token);
 
-
                                 def.resolve(data);
                                 return data;
                             }, function (data) {
@@ -1480,6 +1479,7 @@
     function thingsUrl(id) { return path.api + "/things/" + (id || ""); }
     function thingsValueUrl(id) { return path.api + "/things/" + id + "/value" }
     function thingsPositionUrl() { return path.api + "/things/position" }
+    function thingsPositionsUrl() { return path.api + "/things/positions" }
     function thingDeleteChild(parentThingId, childThingId) { return path.api + "/things/" + parentThingId + "/childrenIds/" + childThingId }
 
     //TODO: Ma funziona? E' stata mai provata?
@@ -1664,6 +1664,17 @@
                 headers: helpers.getSecurityHeaders(),
                 url: thingsPositionUrl(),
                 data: JSON.stringify({ "parentId": parentThingId, "childId": childThingId, "pos": position })
+            }).then(function (response) {
+                return response.data;
+            });
+            return req;
+        },
+        putThingsPositions: function (positions) {
+            var req = $http({
+                method: 'PUT',
+                headers: helpers.getSecurityHeaders(),
+                url: thingsPositionsUrl(),
+                data: positions
             }).then(function (response) {
                 return response.data;
             });
