@@ -43,6 +43,7 @@
                     for (var i = 0; i < supportedLanguages.length; i++) {
                         if (language == supportedLanguages[i].code) {
                             lang = language;
+                            localStorage.setItem(localStorageLabel, lang);
                             break;
                         }
                     }
