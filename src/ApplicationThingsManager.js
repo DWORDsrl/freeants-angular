@@ -122,6 +122,23 @@
                 }
             }
 
+            this.onUpdateThingPosition = function onUpdateThingPosition(position) {
+
+                if (mainThing.id && (mainThing.id != position.parentId))
+                    return;
+
+                if (!mainThing.id && position.parentId)
+                    return;
+
+                for(var i = 0; i < self.mainThing.children.length; i++) {
+                    var thing = self.mainThing.children[i];
+                    if (thing.id == position.childId) {
+                        self.mainThing.children[position.pos] = thing;
+                        return;
+                    }
+                }
+            }
+
             // TODO: Pensare a come evitare di fare una chiamata verso il server per ottenere la Thing aggiunta
             this.onCreateChildThingId = function onCreateChildThingId(parentId, childId, kind) {
                 var thing = self.searchThing(self.mainThing.children, parentId);
@@ -199,6 +216,7 @@
             notifierConnector.setHook('onUpdateThing', self.onUpdateThing);
             notifierConnector.setHook('onDeleteThing', self.onDeleteThing);
             notifierConnector.setHook('onUpdateThingValue', self.onUpdateThingValue);
+            notifierConnector.setHook('onUpdateThingPosition', self.onUpdateThingPosition);
             notifierConnector.setHook('onCreateChildThingId', self.onCreateChildThingId);
             notifierConnector.setHook('onDeleteChildThingId', self.onDeleteChildThingId);
             notifierConnector.setHook('onCreateThingUserRights',self.onCreateThingUserRights);
