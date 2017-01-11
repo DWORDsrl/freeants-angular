@@ -133,7 +133,9 @@
                 for(var i = 0; i < self.mainThing.children.length; i++) {
                     var thing = self.mainThing.children[i];
                     if (thing.id == position.childId) {
+                        var oldThing = self.mainThing.children[position.pos];
                         self.mainThing.children[position.pos] = thing;
+                        self.mainThing.children[i] = oldThing;
                         return;
                     }
                 }
