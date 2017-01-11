@@ -2047,11 +2047,11 @@
             $translate.use(lang);
         },
         setLanguages: function (data) {
-            languages = angular.extend(languages, data);
+            angular.merge(languages, data);
         },
         initialize: function (obj) {
-            languages = angular.extend(languages, obj);
-        },
+            angular.merge(languages, obj);
+         },
         getLanguages: function (data) {
             return languages;
         },
@@ -2081,6 +2081,7 @@
     }
     }]);
 }());
+
 (function () {
     'use strict';
     angular.module('freeants').factory('userDataContext', ['$http', 'helpers','path', function ($http, helpers, path) {

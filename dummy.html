@@ -207,8 +207,12 @@
         app.constant("path", {
             //server: "http://localhost:40592/",
             //api: "http://localhost:40592/api"
+
             server: "http://titaggocoreportal.azurewebsites.net/",
             api: "http://titaggocoreportal.azurewebsites.net/api"
+
+            //server: "http://titaggocoreportal-slot1.azurewebsites.net/",
+            //api: "http://titaggocoreportal-slot1.azurewebsites.net/api"
         });
 
         app.config(['accountManagerProvider',
@@ -426,7 +430,7 @@
 
                 });
             }
-
+           
             $scope.up = function(index) {
 
                 if (index == 0)

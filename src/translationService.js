@@ -38,11 +38,11 @@
             $translate.use(lang);
         },
         setLanguages: function (data) {
-            languages = angular.extend(languages, data);
+            angular.merge(languages, data);
         },
         initialize: function (obj) {
-            languages = angular.extend(languages, obj);
-        },
+            angular.merge(languages, obj);
+         },
         getLanguages: function (data) {
             return languages;
         },
