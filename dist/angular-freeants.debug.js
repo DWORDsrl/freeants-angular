@@ -577,8 +577,8 @@
 
     var app = angular.module('freeants');
 
-    app.factory('ApplicationThingsManager', ['$timeout', '$q', 'thingsDataContext', 'thingUserRightsDataContext', 'notifierConnector', 'thingClaims', 'thingsManager', 'ThingModel', 'accountManagerService',
-    function ($timeout, $q, thingsDataContext, thingUserRightsDataContext, notifierConnector, thingClaims, thingsManager, ThingModel, accountManagerService) {
+    app.factory('ApplicationThingsManager', ['$timeout', '$q', 'thingsDataContext', 'thingUserRightsDataContext', 'notifierConnector', 'thingClaims', 'thingsManager', 'ThingModel', 'accountManager',
+    function ($timeout, $q, thingsDataContext, thingUserRightsDataContext, notifierConnector, thingClaims, thingsManager, ThingModel, accountManager) {
         function ApplicationThingsManager(mainThing, thingKind, rightsAndClaims, usersManager) {
 
             var self = this;
@@ -743,7 +743,7 @@
             this.onUpdateThingUserRights = function onUpdateThingUserRights(thingId, userRights) {
             }
             this.onDeleteThingUserRights = function onDeleteThingUserRights(thingId, userId) {
-                var userInfos = accountManagerService.getUserInfo();
+                var userInfos = accountManager.getUserInfo();
                 var thing = self.searchThing(self.mainThing.children, thingId);
                 if (thing) {
                     if (userId == userInfos.userId) {
