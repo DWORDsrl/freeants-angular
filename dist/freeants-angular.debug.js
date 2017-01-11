@@ -709,6 +709,7 @@
                         var oldThing = self.mainThing.children[position.pos];
                         self.mainThing.children[position.pos] = thing;
                         self.mainThing.children[i] = oldThing;
+                        $timeout(null, 1);
                         return;
                     }
                 }
