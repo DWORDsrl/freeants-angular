@@ -995,7 +995,10 @@
         ThingUserReadClaimsCanReadEveryoneReadClaims: 8192,
         ThingUserReadClaimsCanReadEveryoneChangeClaims: 16384,
 
-        ThingUserReadClaimsAllClaims: ThingUserReadClaimsCanReadThingUserChangeClaims |
+        ThingUserReadClaimsNoClaims: 0x0,
+        ThingUserReadClaimsAllClaims: 32767,
+        /*
+            ThingUserReadClaimsCanReadThingUserChangeClaims |
             ThingUserReadClaimsCanReadCreationDate | ThingUserReadClaimsCanReadName |
             ThingUserReadClaimsCanReadDescription | ThingUserReadClaimsCanReadKind |
             ThingUserReadClaimsCanReadValue | ThingUserReadClaimsCanReadDeletedStatus |
@@ -1003,6 +1006,7 @@
             ThingUserReadClaimsCanReadThingUserStatus | ThingUserReadClaimsCanReadThingUserReadClaims |
             ThingUserReadClaimsCanReadPublicReadClaims | ThingUserReadClaimsCanReadPublicChangeClaims |
             ThingUserReadClaimsCanReadEveryoneReadClaims | ThingUserReadClaimsCanReadEveryoneChangeClaims,
+        */
 
         ThingUserChangeClaimsCanDeleteThing: 1,
         ThingUserChangeClaimsCanChangeName: 2,
@@ -1023,10 +1027,11 @@
         ThingUserChangeClaimsCanAddChildrenThing: 65536,
         ThingUserChangeClaimsCanRemoveChildrenThing: 131072,
 
-        ThingUserReadClaimsNoClaims: 0x0,
         ThingUserChangeClaimsNoClaims: 0x0,
 
-        ThingUserChangeClaimsAllClaims: ThingUserChangeClaimsCanDeleteThing |
+        ThingUserChangeClaimsAllClaims: 262143,
+            /*
+            ThingUserChangeClaimsCanDeleteThing |
             ThingUserChangeClaimsCanChangeName | ThingUserChangeClaimsCanChangeDescription |
             ThingUserChangeClaimsCanChangeKind | ThingUserChangeClaimsCanChangeValue |
             ThingUserChangeClaimsCanChangeDeletedStatus | ThingUserChangeClaimsCanAddThingUserRights |
@@ -1036,6 +1041,7 @@
             ThingUserChangeClaimsCanChangePublicChangeClaims | ThingUserChangeClaimsCanChangeEveryoneReadClaims |
             ThingUserChangeClaimsCanChangeEveryoneChangeClaims | 
             ThingUserChangeClaimsCanAddChildrenThing | ThingUserChangeClaimsCanRemoveChildrenThing
+            */
 });
 }());
 (function () {
@@ -2061,7 +2067,7 @@
 
         return {
             getThing: getThing,
-            getThings: getThings,
+            getThings: getThings,//INFO: Evitare di usare. Meglio usare getMoreThingChildren
             createThing: createThing,
             deleteThing: deleteThing,
             getMoreThingChildren: getMoreThingChildren,

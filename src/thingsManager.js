@@ -274,7 +274,7 @@
 
         return {
             getThing: getThing,
-            getThings: getThings,
+            getThings: getThings,//INFO: Evitare di usare. Meglio usare getMoreThingChildren
             createThing: createThing,
             deleteThing: deleteThing,
             getMoreThingChildren: getMoreThingChildren,
