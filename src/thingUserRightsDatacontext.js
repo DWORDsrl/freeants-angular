@@ -30,7 +30,8 @@
                 headers: helpers.getSecurityHeaders(),
                 url: thingsUserRoleStatusUrl(thingId),
                 data: thingUserRights
-            }).then(function (response) {
+            })
+            .then(function (response) {
                 return response.data;
             });
             return req;
@@ -53,7 +54,8 @@
                 method: 'DELETE',
                 headers: helpers.getSecurityHeaders(),
                 url: thingsUserRoleStatusUrl(thingId, userId)
-            }).then(function (response) {
+            })
+            .then(function (response) {
                 return response.data;
             });
             return req;

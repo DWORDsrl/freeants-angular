@@ -85,8 +85,8 @@
         return ThingsManager
     }]);
 
-	angular.module('freeants').factory('thingsManager', ['$q', 'thingsDataContext', 'ThingModel', 
-    function ($q, thingsDataContext, ThingModel) {
+	angular.module('freeants').factory('thingsManager', ['$q', 'thingsDataContext', 'thingUserRightsDataContext', 'ThingModel', 
+    function ($q, thingsDataContext, thingUserRightsDataContext, ThingModel) {
 
         function getMoreThingChildren(thing, parameter, cancel) {
 
@@ -110,13 +110,10 @@
             });
         }
 
-        //TODO: def non serve a niente
         function deleteThingChildren(parentThingId, recursive) {
 
             return thingsDataContext.getChildrenIds(parentThingId)
             .then(function (childrenIds) {
-
-                var def = $q.defer();
 
                 var childrenPromises = [];
 
@@ -124,14 +121,7 @@
                     childrenPromises.push(deleteThing(childrenIds[i], recursive));
                 }
 
-                return $q.all(childrenPromises)
-                    .then(function (data) {
-                        def.resolve(data);
-                        return data;
-                    }, function (data) {
-                        def.reject(data);
-                        return data;
-                    });
+                return $q.all(childrenPromises);
             });
         }        
 
@@ -200,6 +190,88 @@
             return thing.shallowCopy();
         }
 
+        function addUser(thingId, thingUserRights, recursive) {
+
+            if (recursive) {
+                return thingsDataContext.getChildrenIds(thingId)
+                .then(function (childrenIds) {
+
+                    var childrenPromises = [];
+
+                    for (var i = 0; i < childrenIds.length; i++) {
+                        childrenPromises.push(addUser(childrenIds[i], thingUserRights, recursive));
+                    }
+
+                    return $q.all(childrenPromises);
+                })
+                .then(function(data) {
+                    return thingUserRightsDataContext.createThingUserRights(thingId, thingUserRights)
+                });
+            }
+            return thingUserRightsDataContext.createThingUserRights(thingId, thingUserRights)
+        }
+
+        function updateUser(thingId, userId, thingUserRights, recursive) {
+
+            if (recursive) {
+                return thingsDataContext.getChildrenIds(thingId)
+                .then(function (childrenIds) {
+
+                    var childrenPromises = [];
+
+                    for (var i = 0; i < childrenIds.length; i++) {
+                        childrenPromises.push(updateUser(childrenIds[i], userId, thingUserRights, recursive));
+                    }
+
+                    return $q.all(childrenPromises);
+                })
+                .then(function(data) {
+                    return thingUserRightsDataContext.updateThingUserRights(thingId, thingUserRights)
+                });
+            }
+            return thingUserRightsDataContext.updateThingUserRights(thingId, thingUserRights)
+        }
+
+        function removeUser(thingId, userId, recursive) {
+
+            function deleteThingUserRights(thingId, userId) {
+                var def = $q.defer();
+
+                thingUserRightsDataContext.deleteThingUserRights(thingId, userId)
+                .then(function(data) {
+                    def.resolve(data);
+                    return data;
+                }, function(data) {
+                    // Se non trovo lo User considero risolta la promise
+                    if (data.status == 404/*Not Found*/)
+                        def.resolve(data);
+                    else
+                        def.reject(data);
+                    return data;
+                });
+
+                return def.promise;
+            }
+
+            if (recursive) {
+                return thingsDataContext.getChildrenIds(thingId)
+                .then(function (childrenIds) {
+
+                    var childrenPromises = [];
+
+                    for (var i = 0; i < childrenIds.length; i++) {
+                        childrenPromises.push(removeUser(childrenIds[i], userId, recursive));
+                    }
+
+                    return $q.all(childrenPromises);
+                })
+                .then(function(data) {
+                    return deleteThingUserRights(thingId, userId);
+                });
+            }
+            return deleteThingUserRights(thingId, userId);
+        }
+
         return {
             getThing: getThing,
             getThings: getThings,
@@ -209,7 +281,10 @@
             deleteThingChildren: deleteThingChildren,
             addThingChild: addThingChild,
             collapseThing: collapseThing,
-            shallowCopyThing: shallowCopyThing             
+            shallowCopyThing: shallowCopyThing,
+            addUser : addUser,
+            updateUser : updateUser,
+            removeUser : removeUser
         }
     }]);
 	

@@ -577,8 +577,8 @@
 
     var app = angular.module('freeants');
 
-    app.factory('ApplicationThingsManager', ['$timeout', '$q', 'thingsDataContext', 'thingUserRightsDataContext', 'notifierConnector', 'thingClaims', 'thingsManager', 'ThingModel', 'accountManager',
-    function ($timeout, $q, thingsDataContext, thingUserRightsDataContext, notifierConnector, thingClaims, thingsManager, ThingModel, accountManager) {
+    app.factory('ApplicationThingsManager', ['$timeout', '$q', 'thingsDataContext', 'notifierConnector', 'thingClaims', 'thingsManager', 'ThingModel', 'accountManager',
+    function ($timeout, $q, thingsDataContext, notifierConnector, thingClaims, thingsManager, ThingModel, accountManager) {
         function ApplicationThingsManager(mainThing, thingKind, rightsAndClaims, usersManager) {
 
             var self = this;
@@ -651,6 +651,7 @@
             this.onCreateThing = function onCreateThing(thing) {
                 if (thing.kind == self.thingKind) {
                     thingsManager.addThingChild(self.mainThing, thing);
+                    $timeout(null, 1);
                     return;
                 }
             }
@@ -675,6 +676,7 @@
                 var thing = self.searchThing(self.mainThing.children, thingId);
                 if (thing) {
                     self.mainThing.children.splice(thing.thingIndex, 1);
+                    $timeout(null, 1);
                     return;
                 }
             }
@@ -706,7 +708,9 @@
                 for(var i = 0; i < self.mainThing.children.length; i++) {
                     var thing = self.mainThing.children[i];
                     if (thing.id == position.childId) {
-                        var oldThing = self.mainThing.children[position.pos];
+                        var oldThing = null;
+                        if (position.pos < self.mainThing.children.length)
+                            oldThing = self.mainThing.children[position.pos];
                         self.mainThing.children[position.pos] = thing;
                         self.mainThing.children[i] = oldThing;
                         $timeout(null, 1);
@@ -722,14 +726,17 @@
                     thingsDataContext.getThing(childId)
                     .then(function (data) {
                         thing.thing.children.push(new ThingModel(data));
+                        $timeout(null, 1);
                     });
                     return;
                 }
             }
             this.onDeleteChildThingId = function onDeleteChildThingId(parentId, childId, kind) {
                 var childObj = self.searchThingChild(self.mainThing.children, childId, parentId);
-                if (childObj)
+                if (childObj) {
                     self.mainThing.children[childObj.appIndex].children.splice(childObj.childIndex, 1);
+                    $timeout(null, 1);
+                }
             }
 
             // TODO: Pensare a come evitare di fare una chiamata verso il server per ottenere lo User
@@ -740,23 +747,27 @@
                     .then(function (user) {
                         thing.thing.usersInfos.unshift(user);
                     });
+                    $timeout(null, 1);
                     return;
                 }
                 else {
                     var childThing = self.searchThingChild(self.mainThing.children, thingId);
                     if (childThing) {
                         usersManager.getUser(userRights.userId)
-                            .then(function (user) {
-                                childThing.child.usersInfos.unshift(user);
-                            });
+                        .then(function (user) {
+                            childThing.child.usersInfos.unshift(user);                            
+                        });
+                        $timeout(null, 1);
                     }
                     else {
-                            thingsManager.getThing(thingId).then(function (data) {
-                                var thing = data;
-                                if (thing && thing.kind == self.thingKind) {
-                                    thingsManager.addThingChild(self.mainThing, thing);
-                                }
-                            });
+                        thingsManager.getThing(thingId)
+                        .then(function (data) {
+                            var thing = data;
+                            if (thing && thing.kind == self.thingKind) {
+                                thingsManager.addThingChild(self.mainThing, thing);
+                            }
+                            $timeout(null, 1);
+                        });
                     }
                 }
             }
@@ -906,19 +917,26 @@
         ApplicationThingsManager.prototype.shallowCopyThing = function (thing) {
             return thingsManager.shallowCopyThing(thing);
         }
-        ApplicationThingsManager.prototype.updateThingFromCopy = function (thing, thingChild) {
-            var app = this.searchThing(this.things, thing.id);
-            this.things[app.thingIndex].childrenSkip = thing.childrenSkip;
-            this.things[app.thingIndex].childrenTotalItems = thing.childrenTotalItems;
-            if (thingChild) {
-                var service = this.searchThing(this.things[app.thingIndex].children, thingChild.id);
-                this.things[app.thingIndex].children[service.thingIndex].childrenSkip = thingChild.childrenSkip;
-                this.things[app.thingIndex].children[service.thingIndex].childrenTotalItems = thingChild.childrenTotalItems;
-            }
-        }
+        // TODO: Credo possa essere eliminata
+        // ApplicationThingsManager.prototype.updateThingFromCopy = function (thing, thingChild) {
+        //     var app = this.searchThing(this.things, thing.id);
+        //     this.things[app.thingIndex].childrenSkip = thing.childrenSkip;
+        //     this.things[app.thingIndex].childrenTotalItems = thing.childrenTotalItems;
+        //     if (thingChild) {
+        //         var service = this.searchThing(this.things[app.thingIndex].children, thingChild.id);
+        //         this.things[app.thingIndex].children[service.thingIndex].childrenSkip = thingChild.childrenSkip;
+        //         this.things[app.thingIndex].children[service.thingIndex].childrenTotalItems = thingChild.childrenTotalItems;
+        //     }
+        // }
 
-        ApplicationThingsManager.prototype.removeUser = function (thingId, userId) {
-            return thingUserRightsDataContext.deleteThingUserRights(thingId, userId);
+        ApplicationThingsManager.prototype.addUser = function (thingId, thingUserRights, recursive) {
+            return thingsManager.addUser(thingId, thingUserRights, recursive);
+        }
+        ApplicationThingsManager.prototype.updateUser = function (thingId, userId, thingUserRights, recursive) {
+            return thingsManager.updateUser(thingId, userId, thingUserRights, recursive);
+        }
+        ApplicationThingsManager.prototype.removeUser = function (thingId, userId, recursive) {
+            return thingsManager.removeUser(thingId, userId, recursive);
         }
         
         return ApplicationThingsManager;
@@ -947,59 +965,77 @@
 
     angular.module('freeants').constant("thingClaims", {
     
-        "ThingUserRoleAdministrator": 1,
-        "ThingUserRoleUser": 2,
-        "ThingUserRoleSuperAdministrator": 4,
+        ThingUserRoleAdministrator: 1,
+        ThingUserRoleUser: 2,
+        ThingUserRoleSuperAdministrator: 4,// TODO: forse non serve
 
-        "ThingUserStatusOk": 1,
-        "ThingUserStatusWaitForAuth": 2,
+        ThingUserStatusOk: 1,
+        ThingUserStatusWaitForAuth: 2,
 
-        "ThingUserVisibilityVisible": 1,
-        "ThingUserVisibilityHidden": 2,
+        ThingUserVisibilityVisible: 1,
+        ThingUserVisibilityHidden: 2,
 
-        "ThingDeletedStatusOk": 1,
-        "ThingDeletedStatusDeleted": 2,
+        ThingDeletedStatusOk: 1,
+        ThingDeletedStatusDeleted: 2,
 
-        "ThingUserReadClaimsCanReadThingUserChangeClaims": 1,
-        "ThingUserReadClaimsCanReadCreationDate": 2,
-        "ThingUserReadClaimsCanReadName": 4,
-        "ThingUserReadClaimsCanReadDescription": 8,
-        "ThingUserReadClaimsCanReadKind": 16,
-        "ThingUserReadClaimsCanReadValue": 32,
-        "ThingUserReadClaimsCanReadDeletedStatus": 64,
-        "ThingUserReadClaimsCanReadThingUserRights": 128,
-        "ThingUserReadClaimsCanReadThingUserRole": 256,
-        "ThingUserReadClaimsCanReadThingUserStatus": 512,
-        "ThingUserReadClaimsCanReadThingUserReadClaims": 1024,
-        "ThingUserReadClaimsCanReadPublicReadClaims": 2048,
-        "ThingUserReadClaimsCanReadPublicChangeClaims": 4096,
-        "ThingUserReadClaimsCanReadEveryoneReadClaims": 8192,
-        "ThingUserReadClaimsCanReadEveryoneChangeClaims": 16384,
+        ThingUserReadClaimsCanReadThingUserChangeClaims: 1,
+        ThingUserReadClaimsCanReadCreationDate: 2,
+        ThingUserReadClaimsCanReadName: 4,
+        ThingUserReadClaimsCanReadDescription: 8,
+        ThingUserReadClaimsCanReadKind: 16,
+        ThingUserReadClaimsCanReadValue: 32,
+        ThingUserReadClaimsCanReadDeletedStatus: 64,
+        ThingUserReadClaimsCanReadThingUserRights: 128,
+        ThingUserReadClaimsCanReadThingUserRole: 256,
+        ThingUserReadClaimsCanReadThingUserStatus: 512,
+        ThingUserReadClaimsCanReadThingUserReadClaims: 1024,
+        //ThingUserReadClaimsCanReadThingUserChangeClaims: 1,
+        ThingUserReadClaimsCanReadPublicReadClaims: 2048,
+        ThingUserReadClaimsCanReadPublicChangeClaims: 4096,
+        ThingUserReadClaimsCanReadEveryoneReadClaims: 8192,
+        ThingUserReadClaimsCanReadEveryoneChangeClaims: 16384,
 
-        "ThingUserChangeClaimsCanDeleteThing": 1,
-        "ThingUserChangeClaimsCanChangeName": 2,
-        "ThingUserChangeClaimsCanChangeDescription": 4,
-        "ThingUserChangeClaimsCanChangeKind": 8,
-        "ThingUserChangeClaimsCanChangeValue": 16,
-        "ThingUserChangeClaimsCanChangeDeletedStatus": 32,
-        "ThingUserChangeClaimsCanAddThingUserRights": 64,
-        "ThingUserChangeClaimsCanDeleteThingUserRights": 128,
-        "ThingUserChangeClaimsCanChangeThingUserRole": 256,
-        "ThingUserChangeClaimsCanChangeThingUserStatus": 512,
-        "ThingUserChangeClaimsCanChangeThingUserReadClaims": 1024,
-        "ThingUserChangeClaimsCanChangeThingUserChangeClaims": 2048,
-        "ThingUserChangeClaimsCanChangePublicReadClaims": 4096,
-        "ThingUserChangeClaimsCanChangePublicChangeClaims": 8192,
-        "ThingUserChangeClaimsCanChangeEveryoneReadClaims": 16384,
-        "ThingUserChangeClaimsCanChangeEveryoneChangeClaims": 32768,
-        "ThingUserChangeClaimsCanAddChildrenThing": 65536,
-        "ThingUserChangeClaimsCanRemoveChildrenThing": 131072,
+        ThingUserReadClaimsAllClaims: ThingUserReadClaimsCanReadThingUserChangeClaims |
+            ThingUserReadClaimsCanReadCreationDate | ThingUserReadClaimsCanReadName |
+            ThingUserReadClaimsCanReadDescription | ThingUserReadClaimsCanReadKind |
+            ThingUserReadClaimsCanReadValue | ThingUserReadClaimsCanReadDeletedStatus |
+            ThingUserReadClaimsCanReadThingUserRights | ThingUserReadClaimsCanReadThingUserRole |
+            ThingUserReadClaimsCanReadThingUserStatus | ThingUserReadClaimsCanReadThingUserReadClaims |
+            ThingUserReadClaimsCanReadPublicReadClaims | ThingUserReadClaimsCanReadPublicChangeClaims |
+            ThingUserReadClaimsCanReadEveryoneReadClaims | ThingUserReadClaimsCanReadEveryoneChangeClaims,
 
-        "ThingUserReadClaimsNoClaims": 0x0,
-        "ThingUserChangeClaimsNoClaims": 0x0,
+        ThingUserChangeClaimsCanDeleteThing: 1,
+        ThingUserChangeClaimsCanChangeName: 2,
+        ThingUserChangeClaimsCanChangeDescription: 4,
+        ThingUserChangeClaimsCanChangeKind: 8,
+        ThingUserChangeClaimsCanChangeValue: 16,
+        ThingUserChangeClaimsCanChangeDeletedStatus: 32,
+        ThingUserChangeClaimsCanAddThingUserRights: 64,
+        ThingUserChangeClaimsCanDeleteThingUserRights: 128,
+        ThingUserChangeClaimsCanChangeThingUserRole: 256,
+        ThingUserChangeClaimsCanChangeThingUserStatus: 512,
+        ThingUserChangeClaimsCanChangeThingUserReadClaims: 1024,
+        ThingUserChangeClaimsCanChangeThingUserChangeClaims: 2048,
+        ThingUserChangeClaimsCanChangePublicReadClaims: 4096,
+        ThingUserChangeClaimsCanChangePublicChangeClaims: 8192,
+        ThingUserChangeClaimsCanChangeEveryoneReadClaims: 16384,
+        ThingUserChangeClaimsCanChangeEveryoneChangeClaims: 32768,
+        ThingUserChangeClaimsCanAddChildrenThing: 65536,
+        ThingUserChangeClaimsCanRemoveChildrenThing: 131072,
 
-        "ThingUserReadClaimsAllClaims": 0x7FFFFFFF,
-        "ThingUserChangeClaimsAllClaims": 0x7FFFFFFF
+        ThingUserReadClaimsNoClaims: 0x0,
+        ThingUserChangeClaimsNoClaims: 0x0,
+
+        ThingUserChangeClaimsAllClaims: ThingUserChangeClaimsCanDeleteThing |
+            ThingUserChangeClaimsCanChangeName | ThingUserChangeClaimsCanChangeDescription |
+            ThingUserChangeClaimsCanChangeKind | ThingUserChangeClaimsCanChangeValue |
+            ThingUserChangeClaimsCanChangeDeletedStatus | ThingUserChangeClaimsCanAddThingUserRights |
+            ThingUserChangeClaimsCanDeleteThingUserRights | ThingUserChangeClaimsCanChangeThingUserRole |
+            ThingUserChangeClaimsCanChangeThingUserStatus | ThingUserChangeClaimsCanChangeThingUserReadClaims |
+            ThingUserChangeClaimsCanChangeThingUserChangeClaims | ThingUserChangeClaimsCanChangePublicReadClaims |
+            ThingUserChangeClaimsCanChangePublicChangeClaims | ThingUserChangeClaimsCanChangeEveryoneReadClaims |
+            ThingUserChangeClaimsCanChangeEveryoneChangeClaims | 
+            ThingUserChangeClaimsCanAddChildrenThing | ThingUserChangeClaimsCanRemoveChildrenThing
 });
 }());
 (function () {
@@ -1836,8 +1872,8 @@
         return ThingsManager
     }]);
 
-	angular.module('freeants').factory('thingsManager', ['$q', 'thingsDataContext', 'ThingModel', 
-    function ($q, thingsDataContext, ThingModel) {
+	angular.module('freeants').factory('thingsManager', ['$q', 'thingsDataContext', 'thingUserRightsDataContext', 'ThingModel', 
+    function ($q, thingsDataContext, thingUserRightsDataContext, ThingModel) {
 
         function getMoreThingChildren(thing, parameter, cancel) {
 
@@ -1861,13 +1897,10 @@
             });
         }
 
-        //TODO: def non serve a niente
         function deleteThingChildren(parentThingId, recursive) {
 
             return thingsDataContext.getChildrenIds(parentThingId)
             .then(function (childrenIds) {
-
-                var def = $q.defer();
 
                 var childrenPromises = [];
 
@@ -1875,14 +1908,7 @@
                     childrenPromises.push(deleteThing(childrenIds[i], recursive));
                 }
 
-                return $q.all(childrenPromises)
-                    .then(function (data) {
-                        def.resolve(data);
-                        return data;
-                    }, function (data) {
-                        def.reject(data);
-                        return data;
-                    });
+                return $q.all(childrenPromises);
             });
         }        
 
@@ -1951,6 +1977,88 @@
             return thing.shallowCopy();
         }
 
+        function addUser(thingId, thingUserRights, recursive) {
+
+            if (recursive) {
+                return thingsDataContext.getChildrenIds(thingId)
+                .then(function (childrenIds) {
+
+                    var childrenPromises = [];
+
+                    for (var i = 0; i < childrenIds.length; i++) {
+                        childrenPromises.push(addUser(childrenIds[i], thingUserRights, recursive));
+                    }
+
+                    return $q.all(childrenPromises);
+                })
+                .then(function(data) {
+                    return thingUserRightsDataContext.createThingUserRights(thingId, thingUserRights)
+                });
+            }
+            return thingUserRightsDataContext.createThingUserRights(thingId, thingUserRights)
+        }
+
+        function updateUser(thingId, userId, thingUserRights, recursive) {
+
+            if (recursive) {
+                return thingsDataContext.getChildrenIds(thingId)
+                .then(function (childrenIds) {
+
+                    var childrenPromises = [];
+
+                    for (var i = 0; i < childrenIds.length; i++) {
+                        childrenPromises.push(updateUser(childrenIds[i], userId, thingUserRights, recursive));
+                    }
+
+                    return $q.all(childrenPromises);
+                })
+                .then(function(data) {
+                    return thingUserRightsDataContext.updateThingUserRights(thingId, thingUserRights)
+                });
+            }
+            return thingUserRightsDataContext.updateThingUserRights(thingId, thingUserRights)
+        }
+
+        function removeUser(thingId, userId, recursive) {
+
+            function deleteThingUserRights(thingId, userId) {
+                var def = $q.defer();
+
+                thingUserRightsDataContext.deleteThingUserRights(thingId, userId)
+                .then(function(data) {
+                    def.resolve(data);
+                    return data;
+                }, function(data) {
+                    // Se non trovo lo User considero risolta la promise
+                    if (data.status == 404/*Not Found*/)
+                        def.resolve(data);
+                    else
+                        def.reject(data);
+                    return data;
+                });
+
+                return def.promise;
+            }
+
+            if (recursive) {
+                return thingsDataContext.getChildrenIds(thingId)
+                .then(function (childrenIds) {
+
+                    var childrenPromises = [];
+
+                    for (var i = 0; i < childrenIds.length; i++) {
+                        childrenPromises.push(removeUser(childrenIds[i], userId, recursive));
+                    }
+
+                    return $q.all(childrenPromises);
+                })
+                .then(function(data) {
+                    return deleteThingUserRights(thingId, userId);
+                });
+            }
+            return deleteThingUserRights(thingId, userId);
+        }
+
         return {
             getThing: getThing,
             getThings: getThings,
@@ -1960,7 +2068,10 @@
             deleteThingChildren: deleteThingChildren,
             addThingChild: addThingChild,
             collapseThing: collapseThing,
-            shallowCopyThing: shallowCopyThing             
+            shallowCopyThing: shallowCopyThing,
+            addUser : addUser,
+            updateUser : updateUser,
+            removeUser : removeUser
         }
     }]);
 	
@@ -1997,7 +2108,8 @@
                 headers: helpers.getSecurityHeaders(),
                 url: thingsUserRoleStatusUrl(thingId),
                 data: thingUserRights
-            }).then(function (response) {
+            })
+            .then(function (response) {
                 return response.data;
             });
             return req;
@@ -2020,7 +2132,8 @@
                 method: 'DELETE',
                 headers: helpers.getSecurityHeaders(),
                 url: thingsUserRoleStatusUrl(thingId, userId)
-            }).then(function (response) {
+            })
+            .then(function (response) {
                 return response.data;
             });
             return req;
