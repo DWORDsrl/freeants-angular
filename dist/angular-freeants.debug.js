@@ -109,6 +109,7 @@
             });
             return req;
         },
+        //INFO: Deprecata o di non chiaro utilizzo
         getUserInfo: function() {
             var req = $http({
                 method: 'GET',
