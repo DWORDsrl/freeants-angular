@@ -680,8 +680,6 @@
             this.onUpdateThing = function onUpdateThing(thing) {
                 var thingObj = self.searchThing(self.mainThing.children, thing.id);
                 if (thingObj) {
-                    //var thingModel = new ThingModel(thing, thingObj.thing.children, thingObj.thing.childrenSkip, thingObj.thing.childrenTotalItems);                    
-                    //self.mainThing.children[thingObj.thingIndex] = thingModel;
 
                     thingObj.thing.setData(thing);
 
@@ -690,9 +688,9 @@
                 }
                 var childThing = self.searchThingChild(self.mainThing.children, thing.id);
                 if (childThing) {
-                    //var childThingModel = new ThingModel(thing, childThing.child.children, childThing.child.childrenSkip, childThing.child.childrenTotalItems);
-                    //self.mainThing.children[childThing.appIndex].children[childThing.childIndex] = childThingModel;
+                    
                     self.mainThing.children[childThing.appIndex].children[childThing.childIndex].setData(thing);
+
                     $timeout(null, 1);
                     return;
                 }
@@ -1797,20 +1795,30 @@
 
     angular.module('freeants').factory('ThingModel', [function () {
 		
-        function ThingModel(thingRaw, children, skip, totalItems) {
+        function ThingModel(thingRaw) {
             
-            this.childrenSkip = !!skip ? skip : 0;
-            this.childrenTotalItems = !!totalItems ? totalItems : Number.MAX_SAFE_INTEGER;
-            this.children = !!children ? children : [];
+            this.childrenSkip = 0;
+            this.childrenTotalItems =Number.MAX_SAFE_INTEGER;
+            this.children = [];
+            this.usersInfos = [];
             
             this.setData(thingRaw);
         }
 
         ThingModel.prototype.setData = function (thingData) {
 
+                var usersInfos = this.usersInfos;
+
                 if (thingData) {
                     angular.extend(this, thingData);
                 }
+
+                this.usersInfos = usersInfos;
+                while(this.usersInfos.length > 0) {
+                    this.usersInfos.pop();
+                }
+                for(var i = 0; i < thingData.usersInfos.length; i++)
+                    this.usersInfos.push(thingData.usersInfos[i]);
 
                 if (this.value == null || this.value == "") {
                     this.value = {};

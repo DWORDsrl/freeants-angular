@@ -3,20 +3,30 @@
 
     angular.module('freeants').factory('ThingModel', [function () {
 		
-        function ThingModel(thingRaw, children, skip, totalItems) {
+        function ThingModel(thingRaw) {
             
-            this.childrenSkip = !!skip ? skip : 0;
-            this.childrenTotalItems = !!totalItems ? totalItems : Number.MAX_SAFE_INTEGER;
-            this.children = !!children ? children : [];
+            this.childrenSkip = 0;
+            this.childrenTotalItems =Number.MAX_SAFE_INTEGER;
+            this.children = [];
+            this.usersInfos = [];
             
             this.setData(thingRaw);
         }
 
         ThingModel.prototype.setData = function (thingData) {
 
+                var usersInfos = this.usersInfos;
+
                 if (thingData) {
                     angular.extend(this, thingData);
                 }
+
+                this.usersInfos = usersInfos;
+                while(this.usersInfos.length > 0) {
+                    this.usersInfos.pop();
+                }
+                for(var i = 0; i < thingData.usersInfos.length; i++)
+                    this.usersInfos.push(thingData.usersInfos[i]);
 
                 if (this.value == null || this.value == "") {
                     this.value = {};
