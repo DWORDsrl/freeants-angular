@@ -2,4 +2,4 @@
 
 Free Ants Angular SDK - Lab version
 
-Current version 1.0.95
+Current version 1.0.96

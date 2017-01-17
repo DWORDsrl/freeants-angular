@@ -85,15 +85,19 @@
             this.onUpdateThing = function onUpdateThing(thing) {
                 var thingObj = self.searchThing(self.mainThing.children, thing.id);
                 if (thingObj) {
-                    var thingModel = new ThingModel(thing, thingObj.thing.children, thingObj.thing.childrenSkip, thingObj.thing.childrenTotalItems);
-                    self.mainThing.children[thingObj.thingIndex] = thingModel;
+                    //var thingModel = new ThingModel(thing, thingObj.thing.children, thingObj.thing.childrenSkip, thingObj.thing.childrenTotalItems);                    
+                    //self.mainThing.children[thingObj.thingIndex] = thingModel;
+
+                    thingObj.thing.setData(thing);
+
                     $timeout(null, 1);
                     return;
                 }
                 var childThing = self.searchThingChild(self.mainThing.children, thing.id);
                 if (childThing) {
-                    var childThingModel = new ThingModel(thing, childThing.child.children, childThing.child.childrenSkip, childThing.child.childrenTotalItems);
-                    self.mainThing.children[childThing.appIndex].children[childThing.childIndex] = childThingModel;
+                    //var childThingModel = new ThingModel(thing, childThing.child.children, childThing.child.childrenSkip, childThing.child.childrenTotalItems);
+                    //self.mainThing.children[childThing.appIndex].children[childThing.childIndex] = childThingModel;
+                    self.mainThing.children[childThing.appIndex].children[childThing.childIndex].setData(thing);
                     $timeout(null, 1);
                     return;
                 }
