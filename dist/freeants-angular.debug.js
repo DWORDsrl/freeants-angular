@@ -1817,8 +1817,10 @@
                 while(this.usersInfos.length > 0) {
                     this.usersInfos.pop();
                 }
-                for(var i = 0; i < thingData.usersInfos.length; i++)
-                    this.usersInfos.push(thingData.usersInfos[i]);
+                if (thingData.usersInfos) {
+                    for(var i = 0; i < thingData.usersInfos.length; i++)
+                        this.usersInfos.push(thingData.usersInfos[i]);
+                }
 
                 if (this.value == null || this.value == "") {
                     this.value = {};
