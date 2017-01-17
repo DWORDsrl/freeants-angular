@@ -1,8 +1,9 @@
 ﻿(function () {
+    
     'use strict';
     
-    angular.module('freeants').factory('helpers', ['accountManager', function (accountManager) {
-
+    angular.module('freeants').factory('helpers', ['accountManager', 
+    function (accountManager) {
         return {
             getSecurityHeaders: function () {
                 var accessToken = accountManager.getAccessToken();
@@ -89,4 +90,5 @@
             }
         }
     }]);
+
 }());

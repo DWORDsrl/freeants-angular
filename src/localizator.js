@@ -1,7 +1,9 @@
 ﻿(function () {
+
     'use strict';
 
-    angular.module('freeants').factory('localizator', ['$translate',  function ($translate) {
+    angular.module('freeants').factory('localizator', ['$translate',  
+    function ($translate) {
         var localStorageLabel = "Language";
         var supportedLanguages = [
             {
@@ -52,4 +54,5 @@
             }
         }
     }]);
+    
 }());

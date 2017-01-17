@@ -1,8 +1,10 @@
 ﻿(function () {
+
     'use strict';
 
     // Deprecate
-    angular.module('freeants').factory('SignalRConnector', function () {
+    angular.module('freeants').factory('SignalRConnector', 
+    function () {
 
         var authTypeT = "";
         var accessTokenOrApiKeyCallBack = null
@@ -107,7 +109,8 @@
         return SignalRConnector;
     });
 
-    angular.module('freeants').factory('notifierConnector', function () {
+    angular.module('freeants').factory('notifierConnector', 
+    function () {
 
         var authTypeT = "";
         var accessTokenOrApiKeyCallBack = null
@@ -206,4 +209,5 @@
             }
         };
     });
+    
 }());

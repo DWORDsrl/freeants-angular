@@ -2,7 +2,8 @@
     'use strict';
 
     // Deprecate
-    angular.module('freeants').factory('ThingsManager', [ '$q', 'ThingModel', function ($q, ThingModel) {
+    angular.module('freeants').factory('ThingsManager', [ '$q', 'ThingModel', 
+    function ($q, ThingModel) {
 
         var objDataContexts;
 

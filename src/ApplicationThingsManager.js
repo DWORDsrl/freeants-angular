@@ -368,4 +368,5 @@
         
         return ApplicationThingsManager;
     }]);
+    
 }());

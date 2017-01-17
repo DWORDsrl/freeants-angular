@@ -1,4 +1,5 @@
 ﻿(function () {
+    
     'use strict';
 
     angular.module('freeants').constant("thingClaims", {
@@ -80,5 +81,6 @@
             ThingUserChangeClaimsCanChangeEveryoneChangeClaims | 
             ThingUserChangeClaimsCanAddChildrenThing | ThingUserChangeClaimsCanRemoveChildrenThing
             */
-});
+    });
+
 }());

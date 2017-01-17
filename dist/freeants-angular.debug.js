@@ -1,132 +1,149 @@
 (function () {
+
     "use strict";
     angular.module("freeants", [])
+    
 })();
 (function() {
+
     'use strict';
     
     angular.module('freeants').factory('accountDataContext', ['$http', 'helpers', 'path', 
     function ($http, helpers, path) {
 
-    // routes
-    function loginUrl() {return path.server + "Token"}
-    function accountUrl() { return path.api + "/Account"; }
-    function logoutUrl() {return accountUrl() + "/Logout";}
-    function getUserInfoUrl() { return accountUrl() + "/UserInfo"; }
-    function forgotPasswordUrl(email,culture) { return accountUrl() + "/ForgotPassword/" + email + "/" +culture }
-    function resetPasswordUrl() { return accountUrl() + "/ResetPassword"; }
-    function changePasswordUrl() { return accountUrl() + "/ChangePassword"; }
-    function registerByOnlyEmailUrl(email, culture) { return accountUrl() + "/RegisterByOnlyEmail/" + email +"/" + culture }
-    function confirmAccountByOnlyEmailUrl() { return accountUrl() + "/ConfirmAccountByOnlyEmail/" }
+        // routes
+        function loginUrl() {return path.server + "Token"}
+        function accountUrl() { return path.api + "/Account"; }
+        function logoutUrl() {return accountUrl() + "/Logout";}
+        function getUserInfoUrl() { return accountUrl() + "/UserInfo"; }
+        function forgotPasswordUrl(email,culture) { return accountUrl() + "/ForgotPassword/" + email + "/" +culture }
+        function resetPasswordUrl() { return accountUrl() + "/ResetPassword"; }
+        function changePasswordUrl() { return accountUrl() + "/ChangePassword"; }
+        function registerByOnlyEmailUrl(email, culture) { return accountUrl() + "/RegisterByOnlyEmail/" + email +"/" + culture }
+        function confirmAccountByOnlyEmailUrl() { return accountUrl() + "/ConfirmAccountByOnlyEmail/" }
+        function userloginsUrl() { return accountUrl() + "/UserLogins"; }
 
-    return {
-        login : function(data) {
-            var req = $http({
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                url: loginUrl(),
-                data: $.param(data)
-            }).then(function (response) {
-                return response.data;
-            });
-            return req;
-        },
-        logout: function() {
-            var req = $http({
-                method: 'POST',
-                headers: helpers.getSecurityHeaders(),
-                url: logoutUrl()
-            }).then(function (response) {
-                return response.data;
-            });
-            return req;
-        },
-        refresh: function(data) {
-            var req = $http({
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                url: loginUrl(),
-                data: $.param(data)
-            }).then(function (response) {
-                return response.data;
-            });
-            return req;
-        },
-        forgotPassword: function(email, culture) {
-            var req = $http({
-                method: 'GET',
-                headers: helpers.getSecurityHeaders(),
-                url: forgotPasswordUrl(email, culture)
-            }).then(function (response) {
-                return response.data;
-            });
-            return req;
-        },
-        changePassword: function(passModel) {
-            var req = $http({
-                method: 'POST',
-                headers: helpers.getSecurityHeaders(),
-                url: changePasswordUrl(),
-                data: passModel
-            }).then(function (response) {
-                return response.data;
-            });
-            return req;
-        },
-        resetPassword: function(passModel) {
-            var req = $http({
-                method: 'POST',
-                headers: helpers.getSecurityHeaders(),
-                url: resetPasswordUrl(),
-                data: passModel
-            }).then(function (response) {
-                return response.data;
-            });
-            return req;
-        },
-        registerByOnlyEmail: function(email, culture) {
-            var req = $http({
-                method: 'GET',
-                headers: helpers.getSecurityHeaders(),
-                url: registerByOnlyEmailUrl(email, culture)
-            }).then(function (response) {
-                return response.data;
-            });
-            return req;
-        },
-        confirmAccountByOnlyEmail: function(confirmModel) {
-            var req = $http({
-                method: 'POST',
-                headers: helpers.getSecurityHeaders(),
-                url: confirmAccountByOnlyEmailUrl(),
-                data: confirmModel
-            }).then(function (response) {
-                return response.data;
-            });
-            return req;
-        },
-        //INFO: Deprecata o di non chiaro utilizzo
-        getUserInfo: function() {
-            var req = $http({
-                method: 'GET',
-                headers: helpers.getSecurityHeaders(),
-                url: getUserInfoUrl()
-            }).then(function (response) {
-                return response.data;
-            });
-            return req;
+        return {
+            login : function(data) {
+                var req = $http({
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    url: loginUrl(),
+                    data: $.param(data)
+                }).then(function (response) {
+                    return response.data;
+                });
+                return req;
+            },
+            logout: function() {
+                var req = $http({
+                    method: 'POST',
+                    headers: helpers.getSecurityHeaders(),
+                    url: logoutUrl()
+                }).then(function (response) {
+                    return response.data;
+                });
+                return req;
+            },
+            refresh: function(data) {
+                var req = $http({
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    url: loginUrl(),
+                    data: $.param(data)
+                }).then(function (response) {
+                    return response.data;
+                });
+                return req;
+            },
+            forgotPassword: function(email, culture) {
+                var req = $http({
+                    method: 'GET',
+                    headers: helpers.getSecurityHeaders(),
+                    url: forgotPasswordUrl(email, culture)
+                }).then(function (response) {
+                    return response.data;
+                });
+                return req;
+            },
+            changePassword: function(passModel) {
+                var req = $http({
+                    method: 'POST',
+                    headers: helpers.getSecurityHeaders(),
+                    url: changePasswordUrl(),
+                    data: passModel
+                }).then(function (response) {
+                    return response.data;
+                });
+                return req;
+            },
+            resetPassword: function(passModel) {
+                var req = $http({
+                    method: 'POST',
+                    headers: helpers.getSecurityHeaders(),
+                    url: resetPasswordUrl(),
+                    data: passModel
+                }).then(function (response) {
+                    return response.data;
+                });
+                return req;
+            },
+            registerByOnlyEmail: function(email, culture) {
+                var req = $http({
+                    method: 'GET',
+                    headers: helpers.getSecurityHeaders(),
+                    url: registerByOnlyEmailUrl(email, culture)
+                }).then(function (response) {
+                    return response.data;
+                });
+                return req;
+            },
+            confirmAccountByOnlyEmail: function(confirmModel) {
+                var req = $http({
+                    method: 'POST',
+                    headers: helpers.getSecurityHeaders(),
+                    url: confirmAccountByOnlyEmailUrl(),
+                    data: confirmModel
+                }).then(function (response) {
+                    return response.data;
+                });
+                return req;
+            },
+            //INFO: Deprecata o di non chiaro utilizzo
+            getUserInfo: function() {
+                var req = $http({
+                    method: 'GET',
+                    headers: helpers.getSecurityHeaders(),
+                    url: getUserInfoUrl()
+                }).then(function (response) {
+                    return response.data;
+                });
+                return req;
+            },
+            userLogins: function() {
+                var req = $http({
+                    method: 'GET',
+                    headers: helpers.getSecurityHeaders(),
+                    url: userloginsUrl()
+                }).then(function (response) {
+                    return response.data;
+                });
+                return req;
+            }
         }
-    }
-}]);
+    }]);
+    
 }());
 (function () {
+
     'use strict';
-    angular.module('freeants')
-    .provider('accountManager', function accountManager() {
+    
+    angular.module('freeants').provider('accountManager', 
+    function accountManager() {
 
         var appName = "";
 
@@ -238,7 +255,7 @@
         //Export Function  
         this.$get = [function() {
 
-            return {
+        return {
                 resetStorages : resetStorages,
                 // E' obbligo chiamare per prima
                 setPersistent: function (value) {
@@ -322,255 +339,259 @@
                 }
             }
         }];
-    })
-    .factory('accountManagerService', ['accountDataContext', 'path', 'accountManager', '$http', '$q', 
-        function (accountDataContext, path, accountManager, $http, $q) {
+    });
+    
+    angular.module('freeants').factory('accountManagerService', ['accountDataContext', 'path', 'accountManager', '$http', '$q', 
+    function (accountDataContext, path, accountManager, $http, $q) {
 
-            var refreshTokenTimeout = null;
+        var refreshTokenTimeout = null;
 
-            var resetRefreshTimeout = function() {
-                if (refreshTokenTimeout) {
-                    clearTimeout(refreshTokenTimeout);
-                    refreshTokenTimeout = null;
-                }                
-            }
-            var startRefreshTimeout = function(timeout) {
+        var resetRefreshTimeout = function() {
+            if (refreshTokenTimeout) {
+                clearTimeout(refreshTokenTimeout);
+                refreshTokenTimeout = null;
+            }                
+        }
+        var startRefreshTimeout = function(timeout) {
 
-                return;// TODO: Questo metodo del del timer non sembra funzionare
+            return;// TODO: Questo metodo del del timer non sembra funzionare
 
-                resetRefreshTimeout();
+            resetRefreshTimeout();
 
-                var to = timeout ? timeout : accountManager.getAccessTokenTime() * 1000;
-                refreshTokenTimeout = setTimeout(function () {
-                    var refreshModel = {
-                        grant_type: "refresh_token",
-                        refresh_token: accountManager.getRefreshToken()
-                    }   
-                    refresh(refreshModel);
-                }, to);
-            }
-            var reset = function() {
-                resetRefreshTimeout();
-                accountManager.resetStorages();
-            }
-            var refresh = function(model) {
-                return accountDataContext.refresh(model)
+            var to = timeout ? timeout : accountManager.getAccessTokenTime() * 1000;
+            refreshTokenTimeout = setTimeout(function () {
+                var refreshModel = {
+                    grant_type: "refresh_token",
+                    refresh_token: accountManager.getRefreshToken()
+                }   
+                refresh(refreshModel);
+            }, to);
+        }
+        var reset = function() {
+            resetRefreshTimeout();
+            accountManager.resetStorages();
+        }
+        var refresh = function(model) {
+            return accountDataContext.refresh(model)
+            .then(function (data) {
+                accountManager.setAccessToken(data.access_token);
+                accountManager.setRefreshToken(data.refresh_token);
+                accountManager.setAccessTokenTime(data.expires_in);
+                // TODO: Perchè non si preleva data['.expires'] come avviene nel login?
+                startRefreshTimeout();
+                return {
+                    status: true,
+                    data: data
+                };
+            }, function (data) {
+                startRefreshTimeout(30000);
+                return { 
+                    data: data,
+                    status: false 
+                }
+            });
+        }
+
+        return {
+            checkAccessToken: function() {
+                var now = new Date();
+                var now_utc = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
+                if (accountManager.getAccessToken()) {
+                    if (Date.parse(accountManager.getAccessTokenDate()) <= (Date.parse(now_utc))) {
+                        reset();
+                        return false;
+                    }
+                    // TODO: Qui dovrebbe essere avviato il timer del refresh token, ma access_token_time è quello di quando si è fatto il login e quindi non ha più senso utilizzarlo
+                    // TODo: Potrebbe essere scaduto anche il refresh_token
+                    return true;
+                }
+                reset();
+                return false;
+            },
+            login: function(model, persistent) {
+
+                reset();
+
+                return accountDataContext.login(model)
                 .then(function (data) {
+
+                    // TODO: Sarebbe bello unificare questi metodi
+                    // Deve essere chiamata per prima
+                    // Se il parametro persistent non è passato si lascia il valore per come era
+                    if (persistent)
+                        accountManager.setPersistent(persistent);
+                    accountManager.setUserId(data.userId);
+                    accountManager.setUserName(data.userName);
                     accountManager.setAccessToken(data.access_token);
                     accountManager.setRefreshToken(data.refresh_token);
                     accountManager.setAccessTokenTime(data.expires_in);
-                    // TODO: Perchè non si preleva data['.expires'] come avviene nel login?
+                    accountManager.setAccessTokenDate(data['.expires']);
+            
                     startRefreshTimeout();
+
                     return {
                         status: true,
                         data: data
-                    };
+                    }
                 }, function (data) {
-                    startRefreshTimeout(30000);
                     return { 
-                        data: data,
-                        status: false 
+                        status: false,
+                        data: data
                     }
                 });
-            }
-
-            return {
-                checkAccessToken: function() {
-                    var now = new Date();
-                    var now_utc = new Date(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds());
-                    if (accountManager.getAccessToken()) {
-                        if (Date.parse(accountManager.getAccessTokenDate()) <= (Date.parse(now_utc))) {
-                            reset();
-                            return false;
-                        }
-                        // TODO: Qui dovrebbe essere avviato il timer del refresh token, ma access_token_time è quello di quando si è fatto il login e quindi non ha più senso utilizzarlo
-                        // TODo: Potrebbe essere scaduto anche il refresh_token
-                        return true;
-                    }
-                    reset();
-                    return false;
-                },
-                login: function(model, persistent) {
-
-                    reset();
-
-                    return accountDataContext.login(model)
-                    .then(function (data) {
-
-                        // TODO: Sarebbe bello unificare questi metodi
-                        // Deve essere chiamata per prima
-                        // Se il parametro persistent non è passato si lascia il valore per come era
-                        if (persistent)
-                            accountManager.setPersistent(persistent);
-                        accountManager.setUserId(data.userId);
-                        accountManager.setUserName(data.userName);
-                        accountManager.setAccessToken(data.access_token);
-                        accountManager.setRefreshToken(data.refresh_token);
-                        accountManager.setAccessTokenTime(data.expires_in);
-                        accountManager.setAccessTokenDate(data['.expires']);
-                
-                        startRefreshTimeout();
-
-                        return {
-                            status: true,
-                            data: data
-                        }
-                    }, function (data) {
-                        return { 
-                            status: false,
-                            data: data
-                        }
-                    });
-                },
-                logout: function() {
-                    return accountDataContext.logout()
-                    .then(function (data) {
-                        return {
-                            data: data,
-                            status: true
-                        };
-                    }, function (data) {
-                        return { 
-                            data: data,
-                            status: false
-                        }
-                    })
-                    .finally(reset);
-                },
-                forgotPassword:function(email, culture) {
-                    return accountDataContext.forgotPassword(email, culture);
-                },
-                // INFO: E' sempre resa persistente
-                // TODO: Gestire il timer del refreshToken quando comunque funzionerà
-                loginFB: function (token) {
-                    
-                    var def = $q.defer();
-
-                    var req = {
-                        method: 'POST',
-                        url: path.api + '/Account/FacebookLogin',
-                        data: JSON.stringify(token),
-                        contentType: 'application/json; charset=utf-8',
-                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': '*/*' }
-                    }
-
-                    $http(req)
-                    .then(function(data) {
-
-                        var responseData = data.data;
-                        var access_token = responseData.access_token;
-
-                        if (responseData.has_registered) {
-
-                            var reqUserInfo = {
-                                method: 'GET',
-                                url: path.api + '/Account/UserInfo',
-                                contentType: 'application/json; charset=utf-8',
-                                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': '*/*', "Authorization": "Bearer " + access_token }
-                            };
-
-                            $http(reqUserInfo)
-                            .then(function (data) {
-                                accountManager.setPersistent(true);
-                                
-                                accountManager.setAccessToken(responseData.access_token);
-                                /*
-                                accountManager.setRefreshToken(responseData.refresh_token);
-                                accountManager.setAccessTokenTime(responseData.expires_in);
-                                accountManager.setAccessTokenDate(responseData['.expires']);
-                                */
-                                accountManager.setUserId(data.data.userId);
-                                accountManager.setUserName(data.data.userName);
-                                accountManager.setFacebookAccessToken(token);
-
-                                def.resolve(data);
-                                return data;
-                            }, function (data) {
-                                def.reject(data);
-                                return data;
-                            })
-                        }
-                        else
-                        {
-                            var dummy = {responseData: responseData, status: false}
-                            def.resolve(dummy);
-                        }
-                        
-                        return data;
-                        
-                    }, function (data) {
-                        def.reject(data);
-                        return data;
-                    });
-                    return def.promise;
-                },
-                // INFO: E' sempre resa persistente
-                // TODO: Gestire il timer del refreshToken quando comunque funzionerà
-                loginGP: function (token) {
-
-                    var def = $q.defer();
-                    
-                    var req = {
-                        method: 'POST',
-                        url: path.api + '/Account/GoogleLogin',
-                        data: JSON.stringify(token),
-                        contentType: 'application/json; charset=utf-8',
-                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': '*/*' },
+            },
+            logout: function() {
+                return accountDataContext.logout()
+                .then(function (data) {
+                    return {
+                        data: data,
+                        status: true
                     };
-                    
-                    $http(req)
-                    .then(function(data) {
+                }, function (data) {
+                    return { 
+                        data: data,
+                        status: false
+                    }
+                })
+                .finally(reset);
+            },
+            forgotPassword:function(email, culture) {
+                return accountDataContext.forgotPassword(email, culture);
+            },
+            // INFO: E' sempre resa persistente
+            // TODO: Gestire il timer del refreshToken quando comunque funzionerà
+            loginFB: function (token) {
+                
+                var def = $q.defer();
 
-                        var responseData = data.data;
-                        var access_token = responseData.access_token;
-
-                        if (responseData.has_registered) {
-
-                            var reqUserInfo = {
-                                method: 'GET',
-                                url: path.api + '/Account/UserInfo',
-                                contentType: 'application/json; charset=utf-8',
-                                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': '*/*', "Authorization": "Bearer " + access_token }
-                            };
-
-                            $http(reqUserInfo)
-                            .then(function (data) {
-                                accountManager.setPersistent(true);
-                                
-                                accountManager.setAccessToken(responseData.access_token);
-                                /*
-                                accountManager.setRefreshToken(responseData.refresh_token);
-                                accountManager.setAccessTokenTime(responseData.expires_in);
-                                accountManager.setAccessTokenDate(responseData['.expires']);
-                                */
-                                accountManager.setUserId(data.data.userId);
-                                accountManager.setUserName(data.data.userName);
-                                accountManager.setGoogleAccessToken(token);
-
-                                def.resolve(data);
-                                return data;
-                            }, function (data) {
-                                def.reject(data);
-                                return data;
-                            })
-                        }
-                        else
-                        {
-                            var dummy = {responseData: responseData, status: false}
-                            def.resolve(dummy);
-                        }
-                        
-                        return data;
-                        
-                    }, function (data) {
-                        def.reject(data);
-                        return data;
-                    });
-                    return def.promise;
+                var req = {
+                    method: 'POST',
+                    url: path.api + '/Account/FacebookLogin',
+                    data: JSON.stringify(token),
+                    contentType: 'application/json; charset=utf-8',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': '*/*' }
                 }
+
+                $http(req)
+                .then(function(data) {
+
+                    var responseData = data.data;
+                    var access_token = responseData.access_token;
+
+                    if (responseData.has_registered) {
+
+                        var reqUserInfo = {
+                            method: 'GET',
+                            url: path.api + '/Account/UserInfo',
+                            contentType: 'application/json; charset=utf-8',
+                            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': '*/*', "Authorization": "Bearer " + access_token }
+                        };
+
+                        $http(reqUserInfo)
+                        .then(function (data) {
+                            accountManager.setPersistent(true);
+                            
+                            accountManager.setAccessToken(responseData.access_token);
+                            /*
+                            accountManager.setRefreshToken(responseData.refresh_token);
+                            accountManager.setAccessTokenTime(responseData.expires_in);
+                            accountManager.setAccessTokenDate(responseData['.expires']);
+                            */
+                            accountManager.setUserId(data.data.userId);
+                            accountManager.setUserName(data.data.userName);
+                            accountManager.setFacebookAccessToken(token);
+
+                            def.resolve(data);
+                            return data;
+                        }, function (data) {
+                            def.reject(data);
+                            return data;
+                        })
+                    }
+                    else
+                    {
+                        var dummy = {responseData: responseData, status: false}
+                        def.resolve(dummy);
+                    }
+                    
+                    return data;
+                    
+                }, function (data) {
+                    def.reject(data);
+                    return data;
+                });
+                return def.promise;
+            },
+            // INFO: E' sempre resa persistente
+            // TODO: Gestire il timer del refreshToken quando comunque funzionerà
+            loginGP: function (token) {
+
+                var def = $q.defer();
+                
+                var req = {
+                    method: 'POST',
+                    url: path.api + '/Account/GoogleLogin',
+                    data: JSON.stringify(token),
+                    contentType: 'application/json; charset=utf-8',
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': '*/*' },
+                };
+                
+                $http(req)
+                .then(function(data) {
+
+                    var responseData = data.data;
+                    var access_token = responseData.access_token;
+
+                    if (responseData.has_registered) {
+
+                        var reqUserInfo = {
+                            method: 'GET',
+                            url: path.api + '/Account/UserInfo',
+                            contentType: 'application/json; charset=utf-8',
+                            headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': '*/*', "Authorization": "Bearer " + access_token }
+                        };
+
+                        $http(reqUserInfo)
+                        .then(function (data) {
+                            accountManager.setPersistent(true);
+                            
+                            accountManager.setAccessToken(responseData.access_token);
+                            /*
+                            accountManager.setRefreshToken(responseData.refresh_token);
+                            accountManager.setAccessTokenTime(responseData.expires_in);
+                            accountManager.setAccessTokenDate(responseData['.expires']);
+                            */
+                            accountManager.setUserId(data.data.userId);
+                            accountManager.setUserName(data.data.userName);
+                            accountManager.setGoogleAccessToken(token);
+
+                            def.resolve(data);
+                            return data;
+                        }, function (data) {
+                            def.reject(data);
+                            return data;
+                        })
+                    }
+                    else
+                    {
+                        var dummy = {responseData: responseData, status: false}
+                        def.resolve(dummy);
+                    }
+                    
+                    return data;
+                    
+                }, function (data) {
+                    def.reject(data);
+                    return data;
+                });
+                return def.promise;
+            },
+            userLogins: function() {
+                return accountDataContext.userLogins();
             }
         }
-    ]);    
+    }]);
+
 }());
 (function () {
 
@@ -942,26 +963,32 @@
         
         return ApplicationThingsManager;
     }]);
+    
 }());
 (function () {
-    'use strict';
-    angular.module('freeants').factory('asyncLoader', ['$q', '$timeout', 'translationService', function ($q, $timeout, translationService) {
-            var loader = function (options) {
-                var deferred = $q.defer();
-                var languages = translationService.getLanguages();
-                var language = {};
-                if (languages && languages[options.key])
-                    language = languages[options.key];
 
-                $timeout(function () {
-                    deferred.resolve(language);
-                }, 2000);
-                return deferred.promise;
-            };
-            return loader;
+    'use strict';
+
+    angular.module('freeants').factory('asyncLoader', ['$q', '$timeout', 'translationService', 
+    function ($q, $timeout, translationService) {
+        var loader = function (options) {
+            var deferred = $q.defer();
+            var languages = translationService.getLanguages();
+            var language = {};
+            if (languages && languages[options.key])
+                language = languages[options.key];
+
+            $timeout(function () {
+                deferred.resolve(language);
+            }, 2000);
+            return deferred.promise;
+        };
+        return loader;
     }]);
+    
 }());
 (function () {
+    
     'use strict';
 
     angular.module('freeants').constant("thingClaims", {
@@ -1043,13 +1070,15 @@
             ThingUserChangeClaimsCanChangeEveryoneChangeClaims | 
             ThingUserChangeClaimsCanAddChildrenThing | ThingUserChangeClaimsCanRemoveChildrenThing
             */
-});
+    });
+
 }());
 (function () {
+    
     'use strict';
     
-    angular.module('freeants').factory('helpers', ['accountManager', function (accountManager) {
-
+    angular.module('freeants').factory('helpers', ['accountManager', 
+    function (accountManager) {
         return {
             getSecurityHeaders: function () {
                 var accessToken = accountManager.getAccessToken();
@@ -1136,45 +1165,51 @@
             }
         }
     }]);
+
 }());
 (function () {
+
     'use strict';
-    angular.module('freeants').factory('imagesRawDataContext', ['$http', 'helpers','path', function ($http, helpers, path) {
+    angular.module('freeants').factory('imagesRawDataContext', ['$http', 'helpers','path', 
+    function ($http, helpers, path) {
 
-    function imagesRawUrl(id) { return path.api + "/imagesRaw/" + (id || ""); }
+        function imagesRawUrl(id) { return path.api + "/imagesRaw/" + (id || ""); }
 
-    return {
+        return {
 
-        createImageRaw : function (imageData) {
-            var req = $http({
-                method: 'POST',
-                headers: helpers.getSecurityHeaders(),
-                url: imagesRawUrl(),
-                data: '"' + imageData + '"'
-            }).then(function (response) {
-                return response.data;
-            });
-            return req;
-        },
+            createImageRaw : function (imageData) {
+                var req = $http({
+                    method: 'POST',
+                    headers: helpers.getSecurityHeaders(),
+                    url: imagesRawUrl(),
+                    data: '"' + imageData + '"'
+                }).then(function (response) {
+                    return response.data;
+                });
+                return req;
+            },
 
-        deleteImageRaw: function (fileName) {
-            var req = $http({
-                method: 'DELETE',
-                headers: helpers.getSecurityHeaders(),
-                url: imagesRawUrl(fileName)
-            }).then(function (response) {
-                return response.data;
-            });
-            return req;
+            deleteImageRaw: function (fileName) {
+                var req = $http({
+                    method: 'DELETE',
+                    headers: helpers.getSecurityHeaders(),
+                    url: imagesRawUrl(fileName)
+                }).then(function (response) {
+                    return response.data;
+                });
+                return req;
+            }
         }
-    }
-}]);
+    }]);
+    
 }());
 
 (function () {
+
     'use strict';
 
-    angular.module('freeants').factory('localizator', ['$translate',  function ($translate) {
+    angular.module('freeants').factory('localizator', ['$translate',  
+    function ($translate) {
         var localStorageLabel = "Language";
         var supportedLanguages = [
             {
@@ -1225,12 +1260,15 @@
             }
         }
     }]);
+    
 }());
 (function () {
+
     'use strict';
 
     // Deprecate
-    angular.module('freeants').factory('SignalRConnector', function () {
+    angular.module('freeants').factory('SignalRConnector', 
+    function () {
 
         var authTypeT = "";
         var accessTokenOrApiKeyCallBack = null
@@ -1335,7 +1373,8 @@
         return SignalRConnector;
     });
 
-    angular.module('freeants').factory('notifierConnector', function () {
+    angular.module('freeants').factory('notifierConnector', 
+    function () {
 
         var authTypeT = "";
         var accessTokenOrApiKeyCallBack = null
@@ -1434,6 +1473,7 @@
             }
         };
     });
+    
 }());
 (function() {
     'use strict';
@@ -1796,7 +1836,8 @@
     'use strict';
 
     // Deprecate
-    angular.module('freeants').factory('ThingsManager', [ '$q', 'ThingModel', function ($q, ThingModel) {
+    angular.module('freeants').factory('ThingsManager', [ '$q', 'ThingModel', 
+    function ($q, ThingModel) {
 
         var objDataContexts;
 
