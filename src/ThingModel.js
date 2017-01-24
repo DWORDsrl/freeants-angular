@@ -14,13 +14,12 @@
         }
 
         ThingModel.prototype.setData = function (thingData) {
-
+                // Viene fatto tutto questo lavoro per non perdere i riferimenti agli array di usersInfos originali
+                // nel concetto di shallowCopy                
                 var usersInfos = this.usersInfos;
-
                 if (thingData) {
                     angular.extend(this, thingData);
                 }
-
                 this.usersInfos = usersInfos;
                 while(this.usersInfos.length > 0) {
                     this.usersInfos.pop();

@@ -6,7 +6,7 @@
 
     app.factory('ApplicationThingsManager', ['$timeout', '$q', 'thingsDataContext', 'notifierConnector', 'thingClaims', 'thingsManager', 'ThingModel', 'accountManager',
     function ($timeout, $q, thingsDataContext, notifierConnector, thingClaims, thingsManager, ThingModel, accountManager) {
-        function ApplicationThingsManager(mainThing, thingKind, rightsAndClaims, usersManager) {
+        function ApplicationThingsManager(mainThing, thingKind, rightsAndClaims, usersManager, appId) {
 
             var self = this;
 
@@ -17,9 +17,11 @@
             this.mainThing = mainThing;
             this.things = this.mainThing.children;
 
+            var filterAppId = appId ? " and Id eq '" + appId + "'" : "";
+
             this.getThingsParams = {
                 //parentThingId: null,
-                filter: "Kind eq '" + this.thingKind + "'",
+                filter: "Kind eq '" + this.thingKind + "'" + filterAppId,
                 top: 10,
                 //skip: 0,
                 orderBy: null,
