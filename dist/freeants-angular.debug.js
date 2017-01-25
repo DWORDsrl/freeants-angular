@@ -608,7 +608,7 @@
             this.rightsAndClaims = rightsAndClaims;
 
             this.thingKind = thingKind;
-            this.appId = appId;
+            this.thingId = thingId;
 
             this.mainThing = mainThing;
             this.things = this.mainThing.children;
