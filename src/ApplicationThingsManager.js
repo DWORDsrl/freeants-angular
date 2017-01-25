@@ -6,32 +6,36 @@
 
     app.factory('ApplicationThingsManager', ['$timeout', '$q', 'thingsDataContext', 'notifierConnector', 'thingClaims', 'thingsManager', 'ThingModel', 'accountManager',
     function ($timeout, $q, thingsDataContext, notifierConnector, thingClaims, thingsManager, ThingModel, accountManager) {
-        function ApplicationThingsManager(mainThing, thingKind, rightsAndClaims, usersManager, appId) {
+        function ApplicationThingsManager(mainThing, thingKind, rightsAndClaims, usersManager, thingId) {
 
             var self = this;
 
             this.rightsAndClaims = rightsAndClaims;
 
             this.thingKind = thingKind;
+            this.appId = appId;
 
             this.mainThing = mainThing;
             this.things = this.mainThing.children;
 
-            var filterAppId = appId ? " and Id eq '" + appId + "'" : "";
+            var filterThingId = thingId ? " and Id eq '" + thingId + "'" : "";
 
             this.getThingsParams = {
-                //parentThingId: null,
-                filter: "Kind eq '" + this.thingKind + "'" + filterAppId,
+                // Viene sovrascritto da thingsManager
+                // parentThingId: null,
+                filter: "Kind eq '" + this.thingKind + "'" + filterThingId,
                 top: 10,
                 //skip: 0,
                 orderBy: null,
                 valueFilter: null
             }
             this.getChindrenThingsParams = {
-                parentThingId: null,
+                // Viene sovrascritto da thingsManager
+                // parentThingId: null,
                 filter: "",
                 top: 10,
-                skip: 0,
+                // Viene sovrascritto da thingsManager
+                // skip: 0,
                 orderBy: null,
                 valueFilter: null
             }
@@ -78,6 +82,9 @@
             }
 
             this.onCreateThing = function onCreateThing(thing) {
+                // Si sta gestendo una sola App
+                if (this.appId)
+                    return;
                 if (thing.kind == self.thingKind) {
                     thingsManager.addThingChild(self.mainThing, thing);
                     $timeout(null, 1);
@@ -130,23 +137,53 @@
 
             this.onUpdateThingPosition = function onUpdateThingPosition(position) {
 
-                if (mainThing.id && (mainThing.id != position.parentId))
-                    return;
+                function swapPos(things, thing, pos) {
+                    var oldThing = null;
+                    if (pos < things.length)
+                        oldThing = things[position.pos];
+                    things[position.pos] = thing;
+                    things[i] = oldThing;
+                }
 
-                if (!mainThing.id && position.parentId)
+                if (!position.parentId) {
+                    if (self.mainThing.id)
+                        return;
+                    for(var i = 0; i < self.mainThing.children.length; i++) {
+                        var childThing = self.mainThing.children[i];
+                        if (childThing.id == position.childId) {
+                            swapPos(self.mainThing.children, childThing, position.pos);
+                            $timeout(null, 1);
+                            return;
+                        }
+                    }
                     return;
+                }
+
+                if (position.parentId == self.mainThing.id) {
+                    for(var i = 0; i < self.mainThing.children.length; i++) {
+                        var childThing = self.mainThing.children[i];
+                        if (childThing.id == position.childId) {
+                            swapPos(self.mainThing.children, childThing, position.pos);
+                            $timeout(null, 1);
+                            return;
+                        }
+                    }
+                    return;
+                }
 
                 for(var i = 0; i < self.mainThing.children.length; i++) {
-                    var thing = self.mainThing.children[i];
-                    if (thing.id == position.childId) {
-                        var oldThing = null;
-                        if (position.pos < self.mainThing.children.length)
-                            oldThing = self.mainThing.children[position.pos];
-                        self.mainThing.children[position.pos] = thing;
-                        self.mainThing.children[i] = oldThing;
-                        $timeout(null, 1);
+                    var parentThing = self.mainThing.children[i];
+                    if (position.parentId == parentThing.id) {
+                        for(var i = 0; i < parentThing.children.length; i++) {
+                            var childThing = parentThing.children[i];
+                            if (childThing.id == position.childId) {
+                                swapPos(parentThing.children, childThing, position.pos);
+                                $timeout(null, 1);
+                                return;
+                            }
+                        }
                         return;
-                    }
+                    }   
                 }
             }
 
