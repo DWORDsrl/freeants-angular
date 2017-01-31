@@ -6,27 +6,27 @@
         function ThingModel(thingRaw) {
             
             this.childrenSkip = 0;
-            this.childrenTotalItems =Number.MAX_SAFE_INTEGER;
+            this.childrenTotalItems = Number.MAX_SAFE_INTEGER;
             this.children = [];
             this.usersInfos = [];
             
             this.setData(thingRaw);
         }
 
-        ThingModel.prototype.setData = function (thingData) {
+        ThingModel.prototype.setData = function (thingRaw) {
                 // Viene fatto tutto questo lavoro per non perdere i riferimenti agli array di usersInfos originali
                 // nel concetto di shallowCopy                
                 var usersInfos = this.usersInfos;
-                if (thingData) {
-                    angular.extend(this, thingData);
-                }
+                if (thingRaw) {
+                    angular.extend(this, thingRaw);
+                }                
                 this.usersInfos = usersInfos;
                 while(this.usersInfos.length > 0) {
                     this.usersInfos.pop();
                 }
-                if (thingData.usersInfos) {
-                    for(var i = 0; i < thingData.usersInfos.length; i++)
-                        this.usersInfos.push(thingData.usersInfos[i]);
+                if (thingRaw && thingRaw.usersInfos) {
+                    for(var i = 0; i < thingRaw.usersInfos.length; i++)
+                        this.usersInfos.push(thingRaw.usersInfos[i]);
                 }
 
                 if (this.value == null || this.value == "") {
@@ -42,12 +42,12 @@
                 this.children = [];
         }
         ThingModel.prototype.shallowCopy = function () {
-            var currentThing = JSON.parse(JSON.stringify(this));
+            var copyThing = JSON.parse(JSON.stringify(this));
             if (this.children)
-                currentThing.children = this.children;
+                copyThing.children = this.children;
             if (this.usersInfos)
-                currentThing.usersInfos = this.usersInfos;
-            return currentThing;
+                copyThing.usersInfos = this.usersInfos;
+            return copyThing;
         }            
 
         return ThingModel;

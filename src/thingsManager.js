@@ -25,16 +25,7 @@
                 return objDataContexts.thingsDataContext.getThings(parameter, defer)
                     .then(getSucceeded);
             },
-
-            //TODO: A cosa serve?
-            toThingModel: function (array, thingsModel, thingKind) {
-                for (var i = 0; i < array.length; i++) {
-                    var t = new ThingModel();
-                    t.kind = thingKind;
-                    t.value = array[i];
-                    thingsModel.push(t);
-                }
-            },
+            
             getThingsTree: function (parameter, timeout) {
 
                 function getThingsSuccess(deferred, pool) {
@@ -46,6 +37,7 @@
 
 					    if (data.length == 0) {
 					        deferred.resolve(things);
+                            return things;
 					    }
 
 					    var promises = [];
@@ -63,10 +55,13 @@
 					        getThingsSuccess(def, thing.children);
 					    }
 
-					    $q.all(promises).then(function (data) {
+					    $q.all(promises)
+                        .then(function (data) {
 					        deferred.resolve(things);
+                            return things;
 					    }, function (data) {
 					        deferred.reject(data);
+                            return data;
 					    });
 
 					}
@@ -75,7 +70,6 @@
 					});
 
                     return deferred.promise;
-
                 }
 
                 var deferred = $q.defer();
@@ -137,12 +131,12 @@
         }
 
         function getThing(thingId) {
-            function getSucceded(data) {
+            function getSucceded(thingRaw) {
 
                 var thing = null;
 
-                if (data) {
-                    thing = new ThingModel(data);
+                if (thingRaw) {
+                    thing = new ThingModel(thingRaw);
                 }
                 return thing;
             }
@@ -170,8 +164,8 @@
         
         function createThing(thingRaw) {
             return thingsDataContext.createThing(thingRaw)
-            .then(function (data) {
-                return new ThingModel(data);
+            .then(function (thingRaw) {
+                return new ThingModel(thingRaw);
             });
         }        
 

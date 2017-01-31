@@ -81,35 +81,31 @@
                     return null;
             }
 
-            this.onCreateThing = function onCreateThing(thing) {
-                // Si sta gestendo una sola App
-                if (this.appId)
+            this.onCreateThing = function onCreateThing(thingRaw) {
+                // Si sta gestendo una sola Thing
+                if (this.thingId)
                     return;
-                if (thing.kind == self.thingKind) {
-                    thingsManager.addThingChild(self.mainThing, thing);
+                if (thingRaw.kind == self.thingKind) {
+                    thingsManager.addThingChild(self.mainThing, thingRaw);
                     $timeout(null, 1);
                     return;
                 }
             }
-            this.onUpdateThing = function onUpdateThing(thing) {
-                var thingObj = self.searchThing(self.mainThing.children, thing.id);
+            this.onUpdateThing = function onUpdateThing(thingRaw) {
+                var thingObj = self.searchThing(self.mainThing.children, thingRaw.id);
                 if (thingObj) {
-
-                    thingObj.thing.setData(thing);
-
+                    thingObj.thing.setData(thingRaw);
                     $timeout(null, 1);
                     return;
                 }
-                var childThing = self.searchThingChild(self.mainThing.children, thing.id);
-                if (childThing) {
-                    
-                    self.mainThing.children[childThing.appIndex].children[childThing.childIndex].setData(thing);
-
+                var childThing = self.searchThingChild(self.mainThing.children, thingRaw.id);
+                if (childThing) {                    
+                    self.mainThing.children[childThing.appIndex].children[childThing.childIndex].setData(thingRaw);
                     $timeout(null, 1);
                     return;
                 }
             }
-            // TODO: Gestire la cancellazione di un Service?
+            // TODO: Gestire la cancellazione di un Child?
             this.onDeleteThing = function onDeleteThing(thingId) {
                 var thing = self.searchThing(self.mainThing.children, thingId);
                 if (thing) {
@@ -120,7 +116,6 @@
             }
 
             this.onUpdateThingValue = function onUpdateThingValue(thingId, value) {
-
                 var thingObj = self.searchThing(self.mainThing.children, thingId);
                 if (thingObj) {
                     thingObj.thing.value = angular.fromJson(value);
@@ -196,7 +191,6 @@
                         thing.thing.children.push(new ThingModel(data));
                         $timeout(null, 1);
                     });
-                    return;
                 }
             }
             this.onDeleteChildThingId = function onDeleteChildThingId(parentId, childId, kind) {
@@ -207,10 +201,16 @@
                 }
             }
 
-            // TODO: Pensare a come evitare di fare una chiamata verso il server per ottenere lo User
-            this.onCreateThingUserRights = function onCreateThingUserRights(thingId, userRights) {                   
+            // TODO: Pensare a come evitare di fare una chiamata verso il server per ottenere lo user
+            // TODO: Pensare a come evitare la getThing
+            // TODO: Se viene aggiunto uno UserRights a un figlio del figlio non si riesce a rintracciare il parentId
+            //       inoltre il server non notifica le eventuali relazioni Parent/Child ne quindi le relative posizioni
+            this.onCreateThingUserRights = function onCreateThingUserRights(thingId, userRights) {
+                
                 var thing = self.searchThing(self.mainThing.children, thingId);
                 if (thing) {
+                    if (!usersManager)
+                        return;
                     usersManager.getUser(userRights.userId)
                     .then(function (user) {
                         thing.thing.usersInfos.unshift(user);
@@ -218,26 +218,26 @@
                     $timeout(null, 1);
                     return;
                 }
-                else {
-                    var childThing = self.searchThingChild(self.mainThing.children, thingId);
-                    if (childThing) {
-                        usersManager.getUser(userRights.userId)
-                        .then(function (user) {
-                            childThing.child.usersInfos.unshift(user);                            
-                        });
-                        $timeout(null, 1);
-                    }
-                    else {
-                        thingsManager.getThing(thingId)
-                        .then(function (data) {
-                            var thing = data;
-                            if (thing && thing.kind == self.thingKind) {
-                                thingsManager.addThingChild(self.mainThing, thing);
-                            }
-                            $timeout(null, 1);
-                        });
-                    }
+                var childThing = self.searchThingChild(self.mainThing.children, thingId);
+                if (childThing) {
+                    if (!usersManager)
+                        return;
+                    usersManager.getUser(userRights.userId)
+                    .then(function (user) {
+                        childThing.child.usersInfos.unshift(user);                            
+                    });
+                    $timeout(null, 1);
+                    return;
                 }
+                thingsManager.getThing(thingId)
+                .then(function (data) {
+                    var thing = data;
+                    if (thing && thing.kind == self.thingKind) {
+                        thingsManager.addThingChild(self.mainThing, thing);
+                    }
+                    $timeout(null, 1);
+                });
+
             }
             this.onUpdateThingUserRights = function onUpdateThingUserRights(thingId, userRights) {
             }
@@ -358,7 +358,7 @@
         }            
         ApplicationThingsManager.prototype.createThing = function (thing) {
 
-            //Forzo qualunque cosa venga passata
+            //Forzo quasi qualunque cosa venga passata
 
             thing.kind = this.thingKind;
             thing.deletedStatus = thingClaims.ThingDeletedStatusOk;
@@ -385,18 +385,6 @@
         ApplicationThingsManager.prototype.shallowCopyThing = function (thing) {
             return thingsManager.shallowCopyThing(thing);
         }
-        // TODO: Credo possa essere eliminata
-        // ApplicationThingsManager.prototype.updateThingFromCopy = function (thing, thingChild) {
-        //     var app = this.searchThing(this.things, thing.id);
-        //     this.things[app.thingIndex].childrenSkip = thing.childrenSkip;
-        //     this.things[app.thingIndex].childrenTotalItems = thing.childrenTotalItems;
-        //     if (thingChild) {
-        //         var service = this.searchThing(this.things[app.thingIndex].children, thingChild.id);
-        //         this.things[app.thingIndex].children[service.thingIndex].childrenSkip = thingChild.childrenSkip;
-        //         this.things[app.thingIndex].children[service.thingIndex].childrenTotalItems = thingChild.childrenTotalItems;
-        //     }
-        // }
-
         ApplicationThingsManager.prototype.addUser = function (thingId, thingUserRights, recursive) {
             return thingsManager.addUser(thingId, thingUserRights, recursive);
         }

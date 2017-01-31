@@ -404,7 +404,7 @@
         app.controller('ThingsPositionTestController', ['$q', '$scope', 'ThingModel', 'thingsManager', 'thingsDataContext',
         function ThingsPositionTestController($q, $scope, ThingModel, thingsManager, thingsDataContext) {
 
-            $scope.mainThing = new ThingModel();
+            $scope.mainThing = new ThingModel({});
             
             var getThingsParams = {
 
@@ -417,7 +417,7 @@
             };
 
             var abortHttpCalls = $q.defer();
-            $scope.disableThingsScroll = false;
+            $scope.disableThingsScroll = true;
             $scope.getMoreThings = function() {
 
                 if ($scope.disableThingsScroll)
@@ -526,7 +526,7 @@
         function SearchThingController($q, $scope, ThingModel, thingsManager) {
 
             $scope.searchQuery = "";
-            $scope.mainThing = new ThingModel();
+            $scope.mainThing = new ThingModel({});
             
             var getThingsParams = {
 
@@ -560,7 +560,7 @@
             }
 
             var abortHttpCalls = $q.defer();
-            $scope.disableThingsScroll = true;              
+            $scope.disableThingsScroll = false;              
             $scope.getMoreThings = function() {
 
                 if ($scope.disableThingsScroll)
