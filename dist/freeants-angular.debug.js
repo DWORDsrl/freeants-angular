@@ -678,7 +678,7 @@
 
             this.onCreateThing = function onCreateThing(thingRaw) {
                 // Si sta gestendo una sola Thing
-                if (this.thingId)
+                if (self.thingId)
                     return;
                 if (thingRaw.kind == self.thingKind) {
                     thingsManager.addThingChild(self.mainThing, thingRaw);
@@ -802,9 +802,9 @@
             //       inoltre il server non notifica le eventuali relazioni Parent/Child ne quindi le relative posizioni
             this.onCreateThingUserRights = function onCreateThingUserRights(thingId, userRights) {
                 // Si sta gestendo una sola Thing
-                if (this.thingId)
+                if (self.thingId)
                     return;
-                    
+
                 var thing = self.searchThing(self.mainThing.children, thingId);
                 if (thing) {
                     if (!usersManager)
