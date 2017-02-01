@@ -206,9 +206,6 @@
             // TODO: Se viene aggiunto uno UserRights a un figlio del figlio non si riesce a rintracciare il parentId
             //       inoltre il server non notifica le eventuali relazioni Parent/Child ne quindi le relative posizioni
             this.onCreateThingUserRights = function onCreateThingUserRights(thingId, userRights) {
-                // Si sta gestendo una sola Thing
-                if (self.thingId)
-                    return;
 
                 var thing = self.searchThing(self.mainThing.children, thingId);
                 if (thing) {
@@ -232,6 +229,11 @@
                     $timeout(null, 1);
                     return;
                 }
+
+                // Si sta gestendo una sola Thing quindi non l'aggiungo
+                if (self.thingId)
+                    return;
+
                 thingsManager.getThing(thingId)
                 .then(function (data) {
                     var thing = data;
